@@ -66,6 +66,7 @@ isr_xframe_assembler:
     mov ax, 0x10
     mov ds, ax
     mov es, ax
+    mov ss, ax
 
     lea rdi, [rsp + 0x10]
     call isr_exception_handler
