@@ -27,4 +27,6 @@ void idt_assemble() {
 
     for (uint8_t vector = 0; vector < IDT_CPU_EXCEPTION_COUNT; vector++)
         idt_set_descriptor(vector, isr_stub_table[vector], IDT_DESCRIPTOR_EXCEPTION);
+
+    idt_reload(&idtr);
 }

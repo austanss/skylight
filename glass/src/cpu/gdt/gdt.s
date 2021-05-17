@@ -2,13 +2,16 @@ global gdt_reload
 gdt_reload:
     push rbp
     mov rbp, rsp
-    mov ax, si
+    mov ax, dx
+    pushfq
+    cli
     lgdt [rdi]
+    popfq
     mov ds, ax
     mov es, ax
     pop rbp
     pop rax
-    push dx
+    push rsi
     push rax
     xor rax, rax
     retfq

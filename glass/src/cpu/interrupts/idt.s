@@ -5,7 +5,6 @@ idt_reload:
     pushfq
     cli
     lidt [rdi]
-    sti
     popfq
     pop rbp
     ret

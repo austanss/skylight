@@ -31,4 +31,4 @@ clean:
 	@ make -C glass clean
 
 run:
-	@ qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive file=$(IMAGE),format=raw -net none
+	@ qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -serial stdio

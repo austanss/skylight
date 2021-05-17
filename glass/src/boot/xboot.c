@@ -1,4 +1,5 @@
 #include "stivale.h"
+#include "drivers/uart/serial.h"
 
 static uint8_t stack[0x1000];
 
@@ -41,7 +42,5 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
 }
 
 void xboot(struct stivale2_struct* ctx) {
-    struct stivale2_struct_tag_terminal* term = get_tag(ctx, STIVALE2_STRUCT_TAG_TERMINAL_ID);
-    term->term_write("glass: xboot started", 5);
-    
+    serial_terminal()->puts("Hello!");
 }
