@@ -42,5 +42,6 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
 
 void xboot(struct stivale2_struct* ctx) {
     struct stivale2_struct_tag_terminal* term = get_tag(ctx, STIVALE2_STRUCT_TAG_TERMINAL_ID);
-    term->term_write("glass: xboot started", 20);
+    term->term_write("glass: xboot started", 5);
+    
 }

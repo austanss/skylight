@@ -7,9 +7,6 @@ struct stivale2_tag {
     uint64_t next;
 } __attribute__((__packed__));
 
-/* --- Header --------------------------------------------------------------- */
-/*  Information passed from the kernel to the bootloader                      */
-
 struct stivale2_header {
     uint64_t entry_point;
     uint64_t stack;

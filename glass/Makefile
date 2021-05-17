@@ -17,11 +17,17 @@ AS 	= nasm
 CCFLAGS = \
 -ffreestanding \
 -I$(SOURCE) \
--mno-red-zone
+-mno-red-zone \
+--target=x86_64-pc-none-elf \
+-mcmodel=kernel \
+-fpie
 
 LDFLAGS = \
 -nostdlib \
--Wl,-T$(LDS)
+-Wl,-T$(LDS) \
+--target=x86_64-pc-none-elf \
+-mcmodel=kernel \
+-pie
 
 ASFLAGS = \
 -f elf64
