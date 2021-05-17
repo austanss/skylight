@@ -1,0 +1,14 @@
+name: Lint commit log messages
+on:
+  push:
+  pull_request:
+    branches: [ trunk ]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v2
