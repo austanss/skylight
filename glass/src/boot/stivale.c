@@ -41,6 +41,3 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
         current_tag = (void *)current_tag->next;
     }
 }
-
-void xboot(struct stivale2_struct* ctx) {
-}

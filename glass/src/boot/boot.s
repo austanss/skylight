@@ -1,8 +1,14 @@
 extern xboot
 extern gdt_assemble
 extern idt_assemble
+extern get_tag
+extern pmm_start
 
 global boot
+
+; Configure the environment, set up the CPU.
+; Reload the GDT, assemble an IDT, remake the
+; page tables, and start the PMM.
 boot:
     cli
     cld
@@ -11,11 +17,15 @@ boot:
     push rbp
     mov rbp, rsp
 
+    push rdi
+
     call gdt_assemble
 
     call idt_assemble
 
+    pop rdi
+
     sti
 
-    call xboot
-    jmp $
+h:  hlt
+    jmp h
