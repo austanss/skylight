@@ -24,7 +24,7 @@ struct stivale2_header_tag_framebuffer framebuffer_tag = {
 __attribute__((section(".stivale2hdr"), used))
 struct stivale2_header boot_header = {
     .entry_point = (uintptr_t)&boot,
-    .stack = (uintptr_t)&stack,
+    .stack = (uintptr_t)&stack + sizeof(stack),
     .flags = 0,
     .tags = (uintptr_t)&framebuffer_tag
 };
