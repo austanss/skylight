@@ -1,7 +1,8 @@
 #include "idt.h"
 #include "../gdt/gdt.h"
+#include "mm/paging/paging.h"
 
-__attribute__((aligned(0x1000)))
+PAGING_PAGE_ALIGNED
 idt_desc_t idt[IDT_MAX_DESCRIPTORS];
 
 idtr_t idtr;

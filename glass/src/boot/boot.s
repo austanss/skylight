@@ -2,7 +2,6 @@ extern xboot
 extern gdt_assemble
 extern idt_assemble
 extern get_tag
-extern pmm_start
 
 global boot
 

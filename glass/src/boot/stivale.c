@@ -1,8 +1,9 @@
 #include <string.h>
 #include "stivale.h"
 #include "drivers/uart/serial.h"
+#include "mm/paging/paging.h"
 
-static uint8_t stack[0x1000];
+static uint8_t stack[PAGING_PAGE_SIZE];
 
 extern void boot();
 

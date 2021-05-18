@@ -1,6 +1,7 @@
 #include "gdt.h"
+#include "mm/paging/paging.h"
 
-__attribute__((aligned(0x1000)))
+PAGING_PAGE_ALIGNED
 gdt_desc_t gdt[GDT_MAX_DESCRIPTORS];
 
 gdtr_t gdtr;
