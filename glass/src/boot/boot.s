@@ -2,6 +2,7 @@ extern xboot
 extern gdt_assemble
 extern idt_assemble
 extern get_tag
+extern pmm_start
 
 global boot
 
@@ -21,6 +22,14 @@ boot:
     call gdt_assemble
 
     call idt_assemble
+
+    pop rdi
+    push rdi
+    
+    mov rsi, 0x2187f79e8612de07
+    call get_tag
+    mov rdi, rax
+    call pmm_start
 
     pop rdi
 

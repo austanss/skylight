@@ -8,7 +8,7 @@ IMAGE	= $(OUTPUT)/skylight.hdd
 $(GLASS):
 	@ make -C glass
 	@ mkdir -p build
-	@ mv glass/build/glass.elf $(GLASS)
+	@ cp glass/build/glass.elf $(GLASS)
 
 $(IMAGE): glass
 	@ mkdir -p image

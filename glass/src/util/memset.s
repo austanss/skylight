@@ -7,6 +7,7 @@ memset:
     mov rax, rsi
     push rcx
     mov rcx, rdx
+    cld
     rep stosb
     pop rcx
     popfq

@@ -19,7 +19,8 @@ CCFLAGS = \
 -I$(SOURCE) \
 -mno-red-zone \
 -mcmodel=kernel \
--fpie
+-fpie \
+-gdwarf
 
 LDFLAGS = \
 -nostdlib \
@@ -28,7 +29,9 @@ LDFLAGS = \
 -pie
 
 ASFLAGS = \
--f elf64
+-f elf64 \
+-g \
+-F dwarf
 
 .DEFAULT-GOAL	= all
 .PHONY			= clean
