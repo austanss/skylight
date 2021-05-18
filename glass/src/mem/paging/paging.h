@@ -37,7 +37,7 @@ void* paging_desc_get_address(paging_desc_t* descriptor) {
     return (void*)(descriptor->address << 12);
 }
 
-void* paging_map_page(void* virt, void* phys, uint16_t flags);
-void* paging_remap_page(void* old_virt, void* new_virt);
-void* paging_walk_page(void* virt);
-void  paging_edit_page(void* virt, uint16_t flags);
+void*   paging_map_page(void* virt, void* phys, uint16_t flags);
+void*   paging_remap_page(void* old_virt, void* new_virt);
+void*   paging_walk_page(void* virt);
+void    paging_edit_page(void* virt, uint16_t flags);
