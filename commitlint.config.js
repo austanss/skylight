@@ -27,7 +27,8 @@ module.exports = {
                 'release',
                 'dump',
 				'perf',
-                'partial'
+                'partial',
+				'docs'
 			],
 		],
 	}
