@@ -18,14 +18,12 @@ CCFLAGS = \
 -ffreestanding \
 -I$(SOURCE) \
 -mno-red-zone \
---target=x86_64-pc-none-elf \
 -mcmodel=kernel \
 -fpie
 
 LDFLAGS = \
 -nostdlib \
 -Wl,-T$(LDS) \
---target=x86_64-pc-none-elf \
 -mcmodel=kernel \
 -pie
 
