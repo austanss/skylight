@@ -42,7 +42,5 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
     }
 }
 
-typedef void (*stivale_printer_t)(const char *, size_t);
-
 void xboot(struct stivale2_struct* ctx) {
 }

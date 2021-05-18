@@ -15,5 +15,7 @@ boot:
 
     call idt_assemble
 
+    sti
+
     call xboot
     jmp $
