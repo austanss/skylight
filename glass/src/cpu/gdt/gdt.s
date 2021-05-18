@@ -9,6 +9,7 @@ gdt_reload:
     popfq
     mov ds, ax
     mov es, ax
+    mov ss, ax
     pop rbp
     pop rax
     push rsi
