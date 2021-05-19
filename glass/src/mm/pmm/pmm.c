@@ -9,24 +9,28 @@ bool initialized = false;
 uint8_t* allocation_map = NULL;
 uint64_t map_size = 0;
 uint64_t fast_index = 0;
+uint64_t total_memory = 0;
+uint64_t free_memory = 0;
 
 void pmm_map_set(uint64_t index, bool value) {
     uint8_t bit = index % 8;
-    index -= bit;
     index /= 8;
-    allocation_map[index] |= value << bit;
+    uint8_t mask = 0x80 >> bit;
+    uint8_t byte = allocation_map[index];
+    byte &= ~mask;
+    byte |= ((mask && value) << 7) >> bit;
+    allocation_map[index] = byte;
 }
 
 uint8_t pmm_map_get(uint64_t index) {
     uint8_t bit = index % 8;
-    index -= bit;
     index /= 8;
     uint8_t byte = allocation_map[index];
-    return byte & (0b10000000 >> bit);
+    return byte & (0x80 >> bit);
 }
 
 void pmm_reindex() {
-    for (uint64_t index = 0; index < map_size; index++) {
+    for (uint64_t index = 0; index < map_size * 8; index++) {
         if (!pmm_map_get(index)) {
             fast_index = index;
             return;
@@ -43,6 +47,8 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
         return;
 
     initialized = true;
+
+    total_memory = 0;
 
     for (int i = 0; i < memory_map_info->entries; i++)
         if (memory_map_info->memmap[i].type == STIVALE2_MMAP_USABLE ||
@@ -76,10 +82,4 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
     pmm_lock_pages(allocation_map, map_size / PAGING_PAGE_SIZE);
 
     pmm_reindex();
-
-    void* page = pmm_alloc_page();
-
-    serial_terminal()->puts("pmm: test: page 0x")->puts(itoa((int)page, 16));
-
-    pmm_free_page(page);
 }
