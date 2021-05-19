@@ -6,8 +6,6 @@
 extern uint64_t total_memory;
 extern uint64_t free_memory;
 
-void    pmm_start(struct stivale2_struct_tag_memmap* memory_map);
-
 void*   pmm_alloc_page();
 void    pmm_free_page(void* page);
 void*   pmm_alloc_pool(size_t page_count);

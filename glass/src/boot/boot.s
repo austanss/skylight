@@ -3,6 +3,7 @@ extern gdt_assemble
 extern idt_assemble
 extern get_tag
 extern pmm_start
+extern paging_reload
 
 global boot
 
@@ -30,6 +31,14 @@ boot:
     call get_tag
     mov rdi, rax
     call pmm_start
+
+    pop rdi
+    push rdi
+
+    mov rsi, 0x506461d2950408fa
+    call get_tag
+    mov rdi, rax
+    call paging_reload
 
     pop rdi
 

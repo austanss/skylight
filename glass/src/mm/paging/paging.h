@@ -11,6 +11,10 @@
 #define PAGING_FLAG_LARGER_PAGES    0x040
 #define PAGING_FLAG_OS_AVAILABLE    0xE00
 
+#define PAGING_FLAG(x, y)           (x.flags & y)
+#define PAGING_FLAG_SET(x, y)       x.flags |= y
+#define PAGING_FLAG_UNSET(x, y)     x.flags &= ~y
+
 #define PAGING_FLAGS_KERNEL_PAGE    (PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE)
 #define PAGING_FLAGS_USER_PAGE      (PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE | PAGING_FLAG_USER)
 
@@ -32,11 +36,30 @@ typedef struct {
     uint16_t    pml1;
 } paging_indexer_t;
 
+typedef struct { 
+	paging_desc_t   entries[512];
+} PAGING_PAGE_ALIGNED paging_table_t;
+
 static
 __attribute__((always_inline)) 
 inline
-void paging_desc_set_address(paging_desc_t* descriptor, void* address) {
+void paging_desc_set_address(paging_desc_t* descriptor, uint64_t address) {
     descriptor->address = (uint64_t)address >> 12;
+}
+
+static
+__attribute__((always_inline)) 
+inline
+void paging_indexer_assign(paging_indexer_t* indexer, void* address) {
+    uint64_t uaddress = (uint64_t)address;
+    uaddress >>= 12;
+    indexer->pml1 = uaddress & 0x1ff;
+    uaddress >>= 9;
+    indexer->pml2 = uaddress & 0x1ff;
+    uaddress >>= 9;
+    indexer->pml3 = uaddress & 0x1ff;
+    uaddress >>= 9;
+    indexer->pml4 = uaddress & 0x1ff;
 }
 
 static
@@ -46,7 +69,8 @@ void* paging_desc_get_address(paging_desc_t* descriptor) {
     return (void*)(descriptor->address << 12);
 }
 
-void*   paging_map_page(void* virt, void* phys, uint16_t flags);
+void*   paging_map_page(void* virt, void* phys, uint16_t flags, bool execute);
+void    paging_unmap_page(void* virt);
 void*   paging_remap_page(void* old_virt, void* new_virt);
 void*   paging_walk_page(void* virt);
-void    paging_edit_page(void* virt, uint16_t flags);
+void*   paging_edit_page(void* virt, uint16_t flags, bool execute);
