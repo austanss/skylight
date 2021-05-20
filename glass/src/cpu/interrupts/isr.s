@@ -78,6 +78,7 @@ isr_xframe_assembler:
     popacrd
     popagrd
     pop rbp
+    add rsp, 0x10
     iretq
 
 isr_no_err_stub 0
