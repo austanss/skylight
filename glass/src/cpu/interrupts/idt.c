@@ -21,7 +21,6 @@ void idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags) {
     descriptor->rsv0           = 0;
 }
 
-
 void idt_assemble() {
     idtr.base = (uintptr_t)&idt[0];
     idtr.limit = sizeof(idt_desc_t) * IDT_MAX_DESCRIPTORS - 1;
