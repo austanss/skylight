@@ -1,7 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-#define GDT_MAX_DESCRIPTORS         16
+#define GDT_MAX_DESCRIPTORS         0x2000
+#define GDT_DESCRIPTOR_SIZE         0x08
 
 #define GDT_DESCRIPTOR_ACCESS       0x01
 #define GDT_DESCRIPTOR_READWRITE    0x02
@@ -25,21 +26,31 @@
 #define GDT_OFFSET_USER_CODE        (0x04 * 0x08)
 
 typedef struct {
-    uint16_t limit;         
-    uint16_t base_low;      
-    uint8_t base_mid;       
-    uint8_t flags;          
-    uint8_t granularity;    
-    uint8_t base_high;      
+    uint16_t    limit;         
+    uint16_t    base_low;      
+    uint8_t     base_mid;       
+    uint8_t     flags;          
+    uint8_t     granularity;    
+    uint8_t     base_high;      
 } __attribute__((packed)) gdt_desc_t;
+
+typedef struct {
+    uint16_t    limit_0;
+    uint16_t    addr_0;
+    uint8_t     addr_1;
+    uint8_t     type_0;
+    uint8_t     limit_1;
+    uint8_t     addr_2;
+    uint32_t    addr_3;
+    uint32_t    reserved;
+} __attribute__((packed)) gdt_tss_desc_t;
         
 typedef struct {
     uint16_t limit;         
     uintptr_t base;       
 } __attribute__((packed)) gdtr_t;
 
-void gdt_add_descriptor(uint64_t base, uint64_t limit, uint8_t access, uint8_t granularity);
-
-void gdt_reload(gdtr_t* gdtr, uint16_t code, uint16_t data);
-
-void gdt_assemble();
+void        gdt_add_descriptor(uint64_t base, uint64_t limit, uint8_t access, uint8_t granularity);
+void        gdt_reload(gdtr_t* gdtr, uint16_t code, uint16_t data);
+uint16_t    gdt_install_tss(uint64_t tss);
+void        gdt_assemble();
