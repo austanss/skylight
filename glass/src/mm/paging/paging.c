@@ -129,12 +129,20 @@ void paging_unmap_page(void* virt) {
 
 
 void* paging_edit_page(void* virt, uint16_t flags) {
-    void* phys = paging_walk_page(virt);
-    
-    if (!phys)
-        return NULL;
+    paging_indexer_t indexer;
+    paging_indexer_assign(&indexer, virt);
 
-    paging_map_page(virt, phys, flags);
+    paging_desc_t pde;
+    pde = pml4->entries[indexer.pml4];
+    pml4->entries[indexer.pml4] |= flags;
+    paging_table_t* pdp = (paging_table_t *)((uint64_t)paging_desc_get_address(&pde));
+    pdp->entries[indexer.pml3] |= flags;
+    pde = pdp->entries[indexer.pml3];
+    paging_table_t* pd = (paging_table_t *)((uint64_t)paging_desc_get_address(&pde));
+    pd->entries[indexer.pml2] |= flags;
+    pde = pd->entries[indexer.pml2];
+    paging_table_t* pt = (paging_table_t *)((uint64_t)paging_desc_get_address(&pde));
+    paging_desc_set_flags(&pt->entries[indexer.pml1], flags);
 
     paging_invlpg(virt);
 

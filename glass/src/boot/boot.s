@@ -90,5 +90,4 @@ userspace:
     push rbp
     mov rbp, rsp
 
-h:  hlt
-    jmp h
+    jmp $
