@@ -123,6 +123,8 @@ void paging_unmap_page(void* virt) {
     pde = pt->entries[indexer.pml1];
     pde = 0;
     pt->entries[indexer.pml1] = pde;
+
+    paging_invlpg(virt);
 }
 
 
@@ -133,6 +135,8 @@ void* paging_edit_page(void* virt, uint16_t flags) {
         return NULL;
 
     paging_map_page(virt, phys, flags);
+
+    paging_invlpg(virt);
 
     return virt;
 }
@@ -169,6 +173,8 @@ void* paging_remap_page(void* old, void* new) {
     paging_unmap_page(old);
 
     paging_map_page(new, (void *)paging_desc_get_address(&old_pde), old_pde &= 0x8000000000000fff);
+
+    paging_invlpg(old);
 
     return new;
 }

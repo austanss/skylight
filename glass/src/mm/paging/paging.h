@@ -84,6 +84,13 @@ void paging_desc_set_flags(paging_desc_t* descriptor, uint64_t flags) {
     *descriptor |= flags;
 }
 
+static
+__attribute__((always_inline)) 
+inline
+void paging_invlpg(void* page) {
+    asm volatile ("invlpg (%0)" : : "r"(page) : "memory");
+}
+
 void*   paging_map_page(void* virt, void* phys, uint16_t flags);
 void    paging_unmap_page(void* virt);
 void*   paging_remap_page(void* old_virt, void* new_virt);
