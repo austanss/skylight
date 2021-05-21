@@ -20,7 +20,7 @@ CCFLAGS = \
 -mno-red-zone \
 -mcmodel=kernel \
 -fpie \
--gdwarf
+-Ofast
 
 LDFLAGS = \
 -nostdlib \
@@ -30,8 +30,6 @@ LDFLAGS = \
 
 ASFLAGS = \
 -f elf64 \
--g \
--F dwarf
 
 .DEFAULT-GOAL	= all
 .PHONY			= clean

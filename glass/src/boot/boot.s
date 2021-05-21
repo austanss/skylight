@@ -1,4 +1,3 @@
-extern xboot
 extern gdt_assemble
 extern idt_assemble
 extern get_tag
