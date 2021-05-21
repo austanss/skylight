@@ -19,8 +19,7 @@ CCFLAGS = \
 -I$(SOURCE) \
 -mno-red-zone \
 -mcmodel=kernel \
--fpie \
--Ofast
+-fpie
 
 LDFLAGS = \
 -nostdlib \
