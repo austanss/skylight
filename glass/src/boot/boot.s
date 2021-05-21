@@ -6,14 +6,12 @@ extern paging_reload
 extern tss_install
 extern paging_edit_page
 extern pmm_alloc_page
+extern acpi_load_rsdp
+extern acpi_get_table
 
 global boot
 
-; Configure the environment, set up the CPU.
-; Reload the GDT, assemble an IDT, remake the
-; page tables, start the PMM, and load the TSS.
 
-; Then, maneuver into userspace ring 3 w/ iretq.
 boot:
     cli
     cld
@@ -55,14 +53,22 @@ boot:
     mov rsi, (0x001 | 0x002 | 0x004)
     call paging_edit_page
 
-    xor rdi, rdi
-    xor rsi, rsi
-    call pmm_alloc_page
-    mov rbx, rax
+    mov rbx, rsp
+    and rbx, 0x99f
     mov rdi, rbx
     mov rsi, (0x001 | 0x002 | 0x004)
     call paging_edit_page
     add rbx, 0x1000
+
+    pop rdi
+    push rdi
+
+    mov rsi, 0x9e1786930a375e78
+    call get_tag
+    lea rdi, [rax + (8 * 2)]
+    call acpi_load_rsdp
+    mov rdi, madt_signature
+    call acpi_get_table
 
     pop rdi
     xor rdi, rdi
@@ -82,6 +88,9 @@ boot:
     lea rcx, [rel userspace]
     push rcx
     iretq
+
+madt_signature:
+    db "MADT",0
 
 align 4096
 userspace:

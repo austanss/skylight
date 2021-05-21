@@ -3,7 +3,9 @@
 #include "drivers/uart/serial.h"
 #include "mm/paging/paging.h"
 
-static uint8_t stack[PAGING_PAGE_SIZE];
+static
+PAGING_PAGE_ALIGNED
+uint8_t stack[PAGING_PAGE_SIZE];
 
 extern void boot();
 
