@@ -1,5 +1,6 @@
 #include "tables.h"
 #include "drivers/uart/serial.h"
+#include "mm/paging/paging.h"
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
@@ -12,27 +13,29 @@ void acpi_load_rsdp(void* rsdp) {
 }
 
 acpi_sdt_header_t* acpi_rsdt_get(uint16_t index) {
-    acpi_sdt_header_t* rsdt_header = (acpi_sdt_header_t *)(uint64_t)(acpi_rsdp->rsdt);
+    acpi_sdt_header_t* rsdt_header = (acpi_sdt_header_t *)((uint64_t)(acpi_rsdp->rsdt) + PAGING_VIRTUAL_OFFSET);
 
     uint16_t rsdt_entries = (rsdt_header->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
 
     if (index >= rsdt_entries)
         return (acpi_sdt_header_t *)NULL;
 
-    uint32_t* rsdt = (uint32_t *)((uint64_t)acpi_rsdp->rsdt + sizeof(acpi_sdt_header_t));
+    uint32_t* rsdt = (uint32_t *)((uint64_t)acpi_rsdp->rsdt + sizeof(acpi_sdt_header_t) + PAGING_VIRTUAL_OFFSET);
 
-    return (acpi_sdt_header_t *)(uint64_t)rsdt[index];
+    return (acpi_sdt_header_t *)((uint64_t)rsdt[index] + PAGING_VIRTUAL_OFFSET);
 }
 
 acpi_sdt_header_t* acpi_xsdt_get(uint16_t index) {
-    uint16_t xsdt_entries = (acpi_rsdp->xsdt->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
+    acpi_sdt_header_t* xsdt_header = (acpi_sdt_header_t *)((uint64_t)(acpi_rsdp->xsdt) + PAGING_VIRTUAL_OFFSET);
+
+    uint16_t xsdt_entries = (xsdt_header->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
 
     if (index >= xsdt_entries)
         return (acpi_sdt_header_t *)NULL;
 
-    uint64_t* xsdt = (uint64_t *)((uint64_t)acpi_rsdp->xsdt + sizeof(acpi_sdt_header_t));
+    uint64_t* xsdt = (uint64_t *)((uint64_t)acpi_rsdp->xsdt + sizeof(acpi_sdt_header_t) + PAGING_VIRTUAL_OFFSET);
 
-    return (acpi_sdt_header_t *)(uint64_t)xsdt[index];
+    return (acpi_sdt_header_t *)((uint64_t)xsdt[index] + PAGING_VIRTUAL_OFFSET);
 }
 
 acpi_sdt_header_t* acpi_get_table(char* signature) {

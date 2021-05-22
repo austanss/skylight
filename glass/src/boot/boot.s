@@ -8,6 +8,7 @@ extern paging_edit_page
 extern pmm_alloc_page
 extern acpi_load_rsdp
 extern acpi_get_table
+extern apic_initialize
 
 global boot
 
@@ -41,7 +42,7 @@ boot:
     pop rdi
     push rdi
 
-    mov rsi, 0x506461d2950408fa
+    mov rsi, 0x2187f79e8612de07
     call get_tag
     mov rdi, rax
     call paging_reload
@@ -53,8 +54,10 @@ boot:
     mov rsi, (0x001 | 0x002 | 0x004)
     call paging_edit_page
 
-    mov rbx, rsp
-    and rbx, 0x99f
+    xor rdi, rdi
+    xor rsi, rsi
+    call pmm_alloc_page
+    mov rbx, rax
     mov rdi, rbx
     mov rsi, (0x001 | 0x002 | 0x004)
     call paging_edit_page

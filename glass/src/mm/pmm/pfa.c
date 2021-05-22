@@ -20,7 +20,7 @@ void* pmm_alloc_page() {
     if (!fast_index)
         return NULL;
 
-    void* page = (void *)(fast_index * PAGING_PAGE_SIZE);
+    void* page = (void *)(fast_index * PAGING_PAGE_SIZE + PAGING_VIRTUAL_OFFSET);
 
     pmm_lock_page(page);
 
@@ -32,7 +32,7 @@ void pmm_free_page(void* page) {
 }
 
 void pmm_lock_page(void* page) {
-    uint64_t address = (uint64_t)page;
+    uint64_t address = (uint64_t)page - PAGING_VIRTUAL_OFFSET;
 
     if (address > total_memory)
         return;
@@ -44,7 +44,7 @@ void pmm_lock_page(void* page) {
 }
 
 void pmm_unlock_page(void* page) {
-    uint64_t address = (uint64_t)page;
+    uint64_t address = (uint64_t)page - PAGING_VIRTUAL_OFFSET;
 
     if (address > total_memory)
         return;

@@ -19,6 +19,9 @@
 #define PAGING_PAGE_BOUNDARY        0x1000
 #define PAGING_PAGE_ALIGNED         __attribute__((aligned(PAGING_PAGE_SIZE)))
 
+#define PAGING_KERNEL_OFFSET        0xffffffff80000000
+#define PAGING_VIRTUAL_OFFSET          0xffff800000000000
+
 typedef uint64_t paging_desc_t;
 
 typedef struct {

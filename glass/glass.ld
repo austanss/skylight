@@ -5,7 +5,7 @@ SECTIONS
 {
 	. = 0xffffffff80000000 + 2M;
 
-	__code_base = .;
+	__load_base = .;
 
 	.stivalehdr : {
         KEEP(*(.stivalehdr))
@@ -14,8 +14,6 @@ SECTIONS
 	.text : ALIGN(0x40) {
 		*(.text*)
 	}
-	
-	__code_end = .;
 
 	.data : ALIGN(0x40) {
 		*(.data*)
@@ -29,4 +27,6 @@ SECTIONS
 		*(COMMON)
 		*(.bss*)
 	}
+	
+	__load_max = .;
 }

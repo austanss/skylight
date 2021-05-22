@@ -1,20 +1,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-char* itoa(int value, unsigned int base) {
-    static char buffer[64] = {};
-    static const char convert[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-    
-    int i = 60;
+char* itoa(long int value, unsigned int base) {
+	static char buf[64] = {0};
 
-    if (value < 0) {
-        buffer[i] = '-';
-        i--;
-    }
+	int i = 60;
 
-    for(; value && i; i++, value /= base) {
-        buffer[i] = convert[value % base];
-    }
+	for(; value && i ; --i, value /= base)
 
-    return &buffer[++i];
+		buf[i] = "0123456789abcdef"[value % base];
+
+	return &buf[i+1];
 }

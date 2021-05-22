@@ -56,14 +56,14 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
             memory_map_info->memmap[i].type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE ||
             memory_map_info->memmap[i].type == STIVALE2_MMAP_ACPI_RECLAIMABLE ||
             memory_map_info->memmap[i].type == STIVALE2_MMAP_ACPI_NVS)
-                total_memory += memory_map_info->memmap[i].length;
+                total_memory = memory_map_info->memmap[i].base + memory_map_info->memmap[i].length;
 
     map_size = total_memory / PAGING_PAGE_SIZE / 8;
 
     for (int i = 0; i < memory_map_info->entries; i++) {
         if (memory_map_info->memmap[i].type == 1) {
             if (memory_map_info->memmap[i].length >= map_size && memory_map_info->memmap[i].base >= 0x100000) {
-                allocation_map = (uint8_t *)memory_map_info->memmap[i].base;
+                allocation_map = (uint8_t *)memory_map_info->memmap[i].base + PAGING_VIRTUAL_OFFSET;
                 break;
             }
         }
@@ -73,9 +73,12 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
 
     free_memory = 0;
 
-    for (int i = 0; i < memory_map_info->entries; i++)
+    for (int i = 0; i < memory_map_info->entries; i++) {
         if (memory_map_info->memmap[i].type == 1)
             pmm_unlock_pages((void *)memory_map_info->memmap[i].base, memory_map_info->memmap[i].length / PAGING_PAGE_SIZE);
+
+        serial_terminal()->puts(itoa(memory_map_info->memmap[i].type, 16))->putc(' ')->puts(itoa(memory_map_info->memmap[i].length / PAGING_PAGE_SIZE, 10))->putc('\n');
+    }
 
     pmm_lock_pages((void *)0x0, 0x100000 / PAGING_PAGE_SIZE);
 
