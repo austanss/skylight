@@ -12,8 +12,6 @@ void paging_reload(struct stivale2_struct_tag_memmap* map) {
 
     memset(pml4, 0x00, PAGING_PAGE_SIZE);
 
-    
-
     for (int i = 0; i < map->entries; i++)
         if (map->memmap[i].type == STIVALE2_MMAP_ACPI_RECLAIMABLE ||
             map->memmap[i].type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE ||

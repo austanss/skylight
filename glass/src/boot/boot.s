@@ -12,14 +12,13 @@ extern apic_initialize
 
 global boot
 
+section .text
 
 boot:
     cli
     cld
     
     xor rbp, rbp
-    push rbp
-    mov rbp, rsp
 
     push rdi
 
@@ -92,8 +91,12 @@ boot:
     push rcx
     iretq
 
+section .rodata
+
 madt_signature:
     db "MADT",0
+
+section .text
 
 align 4096
 userspace:
