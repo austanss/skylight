@@ -5,6 +5,7 @@
 paging_table_t* pml4;
 
 void* paging_map_page(void* virt, void* phys, uint16_t flags) {
+    flags &= 0x0fff;
     paging_indexer_t indexer;
     paging_indexer_assign(&indexer, virt);
     paging_desc_t pde;
@@ -16,7 +17,7 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         memset(pdp, 0, PAGING_PAGE_SIZE);
         paging_desc_set_address(&pde, (uint64_t)pdp);
         paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
-        paging_desc_set_flags(&pde, flags);
+        pde |= flags;
         pml4->entries[indexer.pml4] = pde;
         paging_map_page((void *)pdp, (void *)pdp, PAGING_FLAGS_KERNEL_PAGE);
     } else
@@ -30,7 +31,7 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         memset(pd, 0, PAGING_PAGE_SIZE);
         paging_desc_set_address(&pde, (uint64_t)pd);
         paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
-        paging_desc_set_flags(&pde, flags);
+        pde |= flags;
         pdp->entries[indexer.pml3] = pde;
         paging_map_page((void *)pd, (void *)pd, PAGING_FLAGS_KERNEL_PAGE);
     } else
@@ -43,7 +44,7 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         memset(pt, 0, PAGING_PAGE_SIZE);
         paging_desc_set_address(&pde, (uint64_t)pt);
         paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
-        paging_desc_set_flags(&pde, flags);
+        pde |= flags;
         pd->entries[indexer.pml2] = pde;
         paging_map_page((void *)pt, (void *)pt, PAGING_FLAGS_KERNEL_PAGE);
     } else
