@@ -3,7 +3,7 @@
 #include <string.h>
 
 size_t strlen(const char * __s) {
-    const char * a = __s;
-    for (; *__s; __s++);
-    return __s-a;
+    size_t len = 0;
+    for (; !!*__s; __s++, len++);
+    return len;
 }
