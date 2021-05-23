@@ -83,7 +83,7 @@ static
 __attribute__((always_inline)) 
 inline
 void paging_desc_set_flags(paging_desc_t* descriptor, uint64_t flags) {
-    *descriptor &= ~0x8000000000000fff;
+    *descriptor &= ~0x0fff;
     *descriptor |= flags;
 }
 

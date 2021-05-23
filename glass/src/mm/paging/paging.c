@@ -180,7 +180,7 @@ void* paging_remap_page(void* old, void* new) {
     
     paging_unmap_page(old);
 
-    paging_map_page(new, (void *)paging_desc_get_address(&old_pde), old_pde &= 0x8000000000000fff);
+    paging_map_page(new, (void *)paging_desc_get_address(&old_pde), old_pde &= 0x0fff);
 
     paging_invlpg(old);
 
