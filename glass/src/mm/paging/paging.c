@@ -12,7 +12,7 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
     pde = pml4->entries[indexer.pml4];
     paging_table_t* pdp;
     if (!paging_desc_get_flag(&pde, PAGING_FLAG_PRESENT)) {
-        pdp = (paging_table_t *)pmm_alloc_page();
+        pdp = (paging_table_t *)((uint64_t)pmm_alloc_page() - PAGING_VIRTUAL_OFFSET);
         memset(pdp, 0, PAGING_PAGE_SIZE);
         paging_desc_set_address(&pde, (uint64_t)pdp);
         paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
@@ -26,7 +26,7 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
     pde = pdp->entries[indexer.pml3];
     paging_table_t* pd;
     if (!paging_desc_get_flag(&pde, PAGING_FLAG_PRESENT)) {
-        pd = (paging_table_t *)pmm_alloc_page();
+        pd = (paging_table_t *)((uint64_t)pmm_alloc_page() - PAGING_VIRTUAL_OFFSET);
         memset(pd, 0, PAGING_PAGE_SIZE);
         paging_desc_set_address(&pde, (uint64_t)pd);
         paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
@@ -39,7 +39,7 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
     pde = pd->entries[indexer.pml2];
     paging_table_t* pt;
     if (!paging_desc_get_flag(&pde, PAGING_FLAG_PRESENT)) {
-        pt = (paging_table_t *)pmm_alloc_page();
+        pt = (paging_table_t *)((uint64_t)pmm_alloc_page() - PAGING_VIRTUAL_OFFSET);
         memset(pt, 0, PAGING_PAGE_SIZE);
         paging_desc_set_address(&pde, (uint64_t)pt);
         paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
