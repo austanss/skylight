@@ -5,6 +5,7 @@ memcpy:
     pushfq
     mov rdi, rdi
     mov rsi, rsi
+    mov rax, rsi
     push rcx
     mov rcx, rdx
     cld
