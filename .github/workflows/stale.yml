@@ -16,7 +16,7 @@ jobs:
     - uses: actions/stale@v3
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        stale-issue-message: 'Stale issue message'
-        stale-pr-message: 'Stale pull request message'
+        stale-issue-message: 'Your issue has gone stale due to inactivity. If the issue still persists, reopen the issue.'
+        stale-pr-message: 'Your pull request has not been merged. It has gone stale, therefore it will be closed.'
         stale-issue-label: 'no-issue-activity'
         stale-pr-label: 'no-pr-activity'
