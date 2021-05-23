@@ -11,17 +11,18 @@ $(GLASS):
 	@ cp glass/build/glass.elf $(GLASS)
 
 $(IMAGE): glass
-	@ mkdir -p image
-	@ mkdir -p image/EFI
-	@ mkdir -p image/EFI/BOOT
-	@ mkdir -p image/sys
-	@ mkdir -p image/sys/start
 	@ wget https://github.com/limine-bootloader/limine/raw/latest-binary/BOOTX64.EFI
-	@ mv BOOTX64.EFI image/EFI/BOOT/BOOTX64.EFI
-	@ cp $(GLASS) image/sys/start/glass.sys
-	@ cp boot.cfg image/limine.cfg
-	@ ./f32pack.sh $(IMAGE) 260 image
-	@ rm -rf image
+	@ dd if=/dev/zero of=fat.img bs=1K count=1440
+	@ mformat -i fat.img -f 1440 ::
+	@ mmd -i fat.img ::/EFI
+	@ mmd -i fat.img ::/EFI/BOOT
+	@ mmd -i fat.img ::/sys
+	@ mmd -i fat.img ::/sys/start
+	@ mcopy -i fat.img BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
+	@ mcopy -i fat.img $(GLASS) ::/sys/start/glass.sys
+	@ mcopy -i fat.img boot.cfg ::/limine.cfg
+	@ rm BOOTX64.EFI
+	@ mv fat.img build/skylight.hdd
 
 glass: $(GLASS)
 image: $(IMAGE)
