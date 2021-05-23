@@ -49,7 +49,6 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
     } else
         pt = (paging_table_t*)((uint64_t)paging_desc_get_address(&pde));
 
-
     pde = pt->entries[indexer.pml1];
     paging_desc_set_address(&pde, (uint64_t)phys);
     paging_desc_set_flag(&pde, PAGING_FLAG_PRESENT, true);
