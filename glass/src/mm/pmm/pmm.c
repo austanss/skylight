@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-bool initialized = false;
+bool pfa_allowing_allocations = false;
 uint8_t* allocation_map = NULL;
 uint64_t map_size = 0;
 uint64_t fast_index = 0;
@@ -41,10 +41,10 @@ void pmm_reindex() {
 }
 
 void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
-    if (initialized)
+    if (pfa_allowing_allocations)
         return;
 
-    initialized = true;
+    pfa_allowing_allocations = true;
 
     total_memory = 0;
 

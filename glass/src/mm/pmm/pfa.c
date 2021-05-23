@@ -2,7 +2,7 @@
 #include "../paging/paging.h"
 #include <stdbool.h>
 
-extern bool     initialized;
+extern bool     pfa_allowing_allocations;
 extern uint8_t* allocation_map;
 extern uint64_t fast_index;
 
