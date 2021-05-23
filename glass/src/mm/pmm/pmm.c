@@ -78,7 +78,7 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
         serial_terminal()->putul(memory_map_info->memmap[i].type)->putc(' ')->putul(memory_map_info->memmap[i].length / PAGING_PAGE_SIZE)->putc('\n');
     }
 
-    pmm_lock_pages((void *)(0x0 + PAGING_PAGE_SIZE), 0x100000 / PAGING_PAGE_SIZE);
+    pmm_lock_pages((void *)(0x0 + PAGING_VIRTUAL_OFFSET), 0x100000 / PAGING_PAGE_SIZE);
 
     pmm_lock_pages(allocation_map, map_size / PAGING_PAGE_SIZE);
 
