@@ -40,8 +40,6 @@ void pmm_reindex() {
     return;
 }
 
-char* itoa(int value, unsigned int base);
-
 void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
     if (initialized)
         return;
@@ -77,7 +75,7 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
         if (memory_map_info->memmap[i].type == 1)
             pmm_unlock_pages((void *)memory_map_info->memmap[i].base, memory_map_info->memmap[i].length / PAGING_PAGE_SIZE);
 
-        serial_terminal()->puts(itoa(memory_map_info->memmap[i].type, 16))->putc(' ')->puts(itoa(memory_map_info->memmap[i].length / PAGING_PAGE_SIZE, 10))->putc('\n');
+        serial_terminal()->putul(memory_map_info->memmap[i].type)->putc(' ')->putul(memory_map_info->memmap[i].length / PAGING_PAGE_SIZE)->putc('\n');
     }
 
     pmm_lock_pages((void *)0x0, 0x100000 / PAGING_PAGE_SIZE);
