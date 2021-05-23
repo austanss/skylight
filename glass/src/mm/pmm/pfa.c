@@ -11,6 +11,9 @@ uint8_t pmm_map_get(uint64_t index);
 void pmm_reindex();
 
 void* pmm_alloc_page() {
+    if (!pfa_allowing_allocations)
+        return NULL;
+
     if (!free_memory)
         return NULL;
 
@@ -28,10 +31,16 @@ void* pmm_alloc_page() {
 }
 
 void pmm_free_page(void* page) {
+    if (!pfa_allowing_allocations)
+        return;
+
     pmm_unlock_page(page);
 }
 
 void pmm_lock_page(void* page) {
+    if (!pfa_allowing_allocations)
+        return;
+        
     uint64_t address = (uint64_t)page - PAGING_VIRTUAL_OFFSET;
 
     if (address > total_memory)
@@ -44,6 +53,9 @@ void pmm_lock_page(void* page) {
 }
 
 void pmm_unlock_page(void* page) {
+    if (!pfa_allowing_allocations)
+        return;
+        
     uint64_t address = (uint64_t)page - PAGING_VIRTUAL_OFFSET;
 
     if (address > total_memory)
@@ -56,11 +68,17 @@ void pmm_unlock_page(void* page) {
 }
 
 void pmm_lock_pages(void* page, size_t count) {
+    if (!pfa_allowing_allocations)
+        return;
+        
     for (size_t i = 0; i < count; i++)
         pmm_lock_page(page + i * 0x1000);
 }
 
 void pmm_unlock_pages(void* page, size_t count) {
+    if (!pfa_allowing_allocations)
+        return;
+        
     for (size_t i = 0; i < count; i++)
         pmm_unlock_page(page + i * 0x1000);
 }
