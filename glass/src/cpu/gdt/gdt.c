@@ -42,7 +42,7 @@ void gdt_add_descriptor(uint64_t base, uint64_t limit, uint8_t access, uint8_t g
 #define TSS_SIZE 0x70
 
 uint16_t gdt_install_tss(uint64_t tss) {
-    uint16_t tss_type = GDT_DESCRIPTOR_ACCESS | GDT_DESCRIPTOR_EXECUTABLE | GDT_DESCRIPTOR_PRESENT;
+    uint8_t tss_type = GDT_DESCRIPTOR_ACCESS | GDT_DESCRIPTOR_EXECUTABLE | GDT_DESCRIPTOR_PRESENT;
 
     gdt_tss_desc_t* tss_desc = (gdt_tss_desc_t *)&gdt[gindex];
 
@@ -52,7 +52,7 @@ uint16_t gdt_install_tss(uint64_t tss) {
     tss_desc->limit_0 = TSS_SIZE & 0xFFFF;
     tss_desc->addr_0 = tss & 0xFFFF;
     tss_desc->addr_1 = (tss & 0xFF0000) >> 16;
-    tss_desc->type_0 = (uint16_t)(tss_type & 0x00FF);
+    tss_desc->type_0 = tss_type;
     tss_desc->limit_1 = (TSS_SIZE & 0xF0000) >> 16;
     tss_desc->addr_2 = (tss & 0xFF000000) >> 24;
     tss_desc->addr_3 = tss >> 32;
