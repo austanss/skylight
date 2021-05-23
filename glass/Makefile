@@ -21,7 +21,7 @@ CCFLAGS = \
 -mcmodel=kernel \
 -fpie \
 -gdwarf \
--O1 \
+-Og \
 -fwrapv
 
 LDFLAGS = \
