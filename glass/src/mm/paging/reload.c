@@ -8,11 +8,11 @@ extern uint8_t __load_base;
 extern uint8_t __load_max;
 
 void paging_reload(struct stivale2_struct_tag_memmap* map) {
-    asm volatile ("mov %%cr3, %0" : "=a"(pml4));
+    pml4 = (paging_table_t *)pmm_alloc_page();
 
     memset(pml4, 0x00, PAGING_PAGE_SIZE);
 
-    for (int i = 0; i < map->entries; i++)
+    for (uint64_t i = 0; i < map->entries; i++)
         if (map->memmap[i].type == STIVALE2_MMAP_ACPI_RECLAIMABLE ||
             map->memmap[i].type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE ||
             map->memmap[i].type == STIVALE2_MMAP_KERNEL_AND_MODULES ||

@@ -5,7 +5,7 @@
 serial_terminal_t singleton_terminal_instance;
 
 void serial_message(const char* message) {
-    while (*message) {
+    while (!!*message) {
         outb(0x3F8, *message);
         message++;
     }

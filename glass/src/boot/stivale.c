@@ -33,14 +33,14 @@ struct stivale2_header boot_header = {
 };
 
 void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
-    struct stivale2_tag *current_tag = (void *)bctx->tags;
+    struct stivale2_tag *current_tag = bctx->tags;
     for (;;) {
-        if (current_tag == NULL)
+        if (!current_tag)
             return NULL;
  
         if (current_tag->identifier == id)
-            return current_tag;
+            return (void *)current_tag;
  
-        current_tag = (void *)current_tag->next;
+        current_tag = current_tag->next;
     }
 }

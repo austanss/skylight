@@ -56,11 +56,11 @@ void pmm_unlock_page(void* page) {
 }
 
 void pmm_lock_pages(void* page, size_t count) {
-    for (int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
         pmm_lock_page(page + i * 0x1000);
 }
 
 void pmm_unlock_pages(void* page, size_t count) {
-    for (int i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
         pmm_unlock_page(page + i * 0x1000);
 }

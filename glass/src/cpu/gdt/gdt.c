@@ -23,7 +23,7 @@ void gdt_assemble() {
     gdt_reload(&gdtr, GDT_OFFSET_KERNEL_CODE, GDT_OFFSET_KERNEL_DATA);
 }
 
-void gdt_add_descriptor(uint64_t base, uint64_t limit, uint8_t access, uint8_t granularity) {
+void gdt_add_descriptor(uint64_t base, uint16_t limit, uint8_t access, uint8_t granularity) {
     if (gindex >= GDT_MAX_DESCRIPTORS) 
         return;
 
@@ -31,7 +31,7 @@ void gdt_add_descriptor(uint64_t base, uint64_t limit, uint8_t access, uint8_t g
     gdt[gindex].base_mid = (base >> 16) & 0xFF;
     gdt[gindex].base_high = (base >> 24) & 0xFF;
 
-    gdt[gindex].limit = limit & 0xFFFF;
+    gdt[gindex].limit = limit;
 
     gdt[gindex].flags = access;
     gdt[gindex].granularity = granularity;

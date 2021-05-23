@@ -48,7 +48,7 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
 
     total_memory = 0;
 
-    for (int i = 0; i < memory_map_info->entries; i++)
+    for (uint64_t i = 0; i < memory_map_info->entries; i++)
         if (memory_map_info->memmap[i].type == STIVALE2_MMAP_USABLE ||
             memory_map_info->memmap[i].type == STIVALE2_MMAP_KERNEL_AND_MODULES ||
             memory_map_info->memmap[i].type == STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE ||
@@ -58,7 +58,7 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
 
     map_size = total_memory / PAGING_PAGE_SIZE / 8;
 
-    for (int i = 0; i < memory_map_info->entries; i++) {
+    for (uint64_t i = 0; i < memory_map_info->entries; i++) {
         if (memory_map_info->memmap[i].type == 1) {
             if (memory_map_info->memmap[i].length >= map_size && memory_map_info->memmap[i].base >= 0x100000) {
                 allocation_map = (uint8_t *)memory_map_info->memmap[i].base + PAGING_VIRTUAL_OFFSET;
@@ -67,11 +67,11 @@ void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
         }
     }
 
-    memset(allocation_map, 0xFF, map_size);
+    memset(allocation_map, 0xFF, (size_t)map_size);
 
     free_memory = 0;
 
-    for (int i = 0; i < memory_map_info->entries; i++) {
+    for (uint64_t i = 0; i < memory_map_info->entries; i++) {
         if (memory_map_info->memmap[i].type == 1)
             pmm_unlock_pages((void *)memory_map_info->memmap[i].base, memory_map_info->memmap[i].length / PAGING_PAGE_SIZE);
 

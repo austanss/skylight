@@ -23,7 +23,7 @@ void idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags) {
 
 void idt_assemble() {
     idtr.base = (uintptr_t)&idt[0];
-    idtr.limit = sizeof(idt_desc_t) * IDT_MAX_DESCRIPTORS - 1;
+    idtr.limit = (uint16_t)sizeof(idt_desc_t) * IDT_MAX_DESCRIPTORS - 1;
 
     for (uint8_t vector = 0; vector < IDT_CPU_EXCEPTION_COUNT; vector++)
         idt_set_descriptor(vector, isr_stub_table[vector], IDT_DESCRIPTOR_EXCEPTION);
