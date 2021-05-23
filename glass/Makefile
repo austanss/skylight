@@ -20,7 +20,8 @@ CCFLAGS = \
 -mno-red-zone \
 -mcmodel=kernel \
 -fpie \
--gdwarf
+-gdwarf \
+-O1
 
 LDFLAGS = \
 -nostdlib \
