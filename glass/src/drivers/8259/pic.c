@@ -62,3 +62,9 @@ void pic_send_eoi(uint8_t irq) {
         outb(PIC_SLAVE_COMMAND, PIC_EOI);
     outb(PIC_MASTER_COMMAND, PIC_EOI);
 }
+
+void pic_disable() {
+    pic_remap_offsets(0x20);
+    for (uint8_t irq = 0; irq < 16; irq++)
+        pic_mask_irq(irq);
+}
