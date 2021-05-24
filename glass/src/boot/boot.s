@@ -97,7 +97,7 @@ boot:
 section .rodata
 
 madt_signature:
-    db "MADT",0
+    db "APIC",0
 
 section .text
 
