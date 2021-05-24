@@ -56,3 +56,9 @@ void pic_remap(uint8_t offset) {
     outb(PIC_MASTER_DATA, master_mask);
     outb(PIC_SLAVE_DATA, slave_mask);
 }
+
+void pic_send_eoi(uint8_t irq) {
+    if (irq >= 8)
+        outb(PIC_SLAVE_COMMAND, PIC_EOI);
+    outb(PIC_MASTER_COMMAND, PIC_EOI);
+}
