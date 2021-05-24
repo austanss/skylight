@@ -39,7 +39,7 @@ acpi_sdt_header_t* acpi_xsdt_get(uint16_t index) {
 }
 
 acpi_sdt_header_t* acpi_get_table(char* signature) {
-    if (!acpi_rsdp)
+    if (acpi_rsdp nullvptr)
         return (acpi_sdt_header_t *)NULL;
 
     if (strlen(signature) != 4)

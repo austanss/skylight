@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 #define PAGING_FLAG_PRESENT         0x001
@@ -21,6 +22,8 @@
 
 #define PAGING_KERNEL_OFFSET        0xffffffff80000000
 #define PAGING_VIRTUAL_OFFSET       0xffff800000000000
+
+#define nullvptr                     - PAGING_VIRTUAL_OFFSET == NULL
 
 typedef uint64_t paging_desc_t;
 

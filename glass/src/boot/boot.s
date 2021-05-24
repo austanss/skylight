@@ -67,7 +67,8 @@ boot:
 
     mov rsi, 0x9e1786930a375e78
     call get_tag
-    lea rdi, [rax + (8 * 2)]
+    lea rdi, [rax + (8*2)]
+    mov rdi, [rdi]
     call acpi_load_rsdp
     mov rdi, madt_signature
     call acpi_get_table
