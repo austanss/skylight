@@ -12,8 +12,8 @@ $(GLASS):
 
 $(IMAGE): glass
 	@ wget https://github.com/limine-bootloader/limine/raw/latest-binary/BOOTX64.EFI
-	@ dd if=/dev/zero of=fat.img bs=1K count=1440
-	@ mformat -i fat.img -f 1440 ::
+	@ dd if=/dev/zero of=fat.img bs=1M count=128
+	@ mformat -i fat.img -F ::
 	@ mmd -i fat.img ::/EFI
 	@ mmd -i fat.img ::/EFI/BOOT
 	@ mmd -i fat.img ::/sys
