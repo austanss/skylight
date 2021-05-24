@@ -35,7 +35,7 @@ void pic_unmask_irq(uint8_t irq) {
     outb(port, masks);
 }
 
-void pic_remap(uint8_t offset) {
+void pic_remap_offsets(uint8_t offset) {
     uint8_t master_mask, slave_mask;
 
     master_mask = inb(PIC_MASTER_DATA);
