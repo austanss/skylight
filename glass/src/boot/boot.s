@@ -70,8 +70,7 @@ boot:
     lea rdi, [rax + (8*2)]
     mov rdi, [rdi]
     call acpi_load_rsdp
-    mov rdi, madt_signature
-    call acpi_get_table
+    
     mov rdi, rax
     call apic_initialize
 

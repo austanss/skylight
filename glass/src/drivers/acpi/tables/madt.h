@@ -7,6 +7,8 @@
 #define ACPI_MADT_RECORD_TYPE_NMI                       4
 #define ACPI_MADT_RECORD_TYPE_LAPIC_ADDRESS_OVERRIDE    5
 
+#define ACPI_MADT_GET() (acpi_madt_header_t *)acpi_get_table("APIC");
+
 typedef struct {
     acpi_sdt_header_t   common;
     uint32_t            lapic_address;
