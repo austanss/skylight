@@ -34,3 +34,25 @@ void pic_unmask_irq(uint8_t irq) {
     masks &= ~(1 << irq);
     outb(port, masks);
 }
+
+void pic_remap(uint8_t offset) {
+    uint8_t master_mask, slave_mask;
+
+    master_mask = inb(PIC_MASTER_DATA);
+    slave_mask = inb(PIC_SLAVE_DATA);
+
+    outb(PIC_MASTER_COMMAND, PIC_ICW1_INIT | PIC_ICW1_ICW4);
+    outb(PIC_SLAVE_COMMAND, PIC_ICW1_INIT | PIC_ICW1_ICW4);
+
+    outb(PIC_MASTER_DATA, offset);
+    outb(PIC_SLAVE_DATA, offset + 0x08);
+
+    outb(PIC_MASTER_DATA, 0x04);
+    outb(PIC_SLAVE_DATA, 0x02);
+
+    outb(PIC_MASTER_DATA, PIC_ICW4_8086);
+    outb(PIC_SLAVE_DATA, PIC_ICW4_8086);
+
+    outb(PIC_MASTER_DATA, master_mask);
+    outb(PIC_SLAVE_DATA, slave_mask);
+}
