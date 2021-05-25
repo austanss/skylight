@@ -7,6 +7,9 @@
 #define ACPI_MADT_RECORD_TYPE_NMI                       4
 #define ACPI_MADT_RECORD_TYPE_LAPIC_ADDRESS_OVERRIDE    5
 
+#define ACPI_MADT_RECORD_ISO_NMI_FLAG_ACTIVE_LOW        0x02
+#define ACPI_MADT_RECORD_ISO_NMI_FLAG_LEVEL_TRIGGERED   0x80
+
 #define ACPI_MADT_GET() (acpi_madt_header_t *)acpi_get_table("APIC");
 
 typedef struct {
