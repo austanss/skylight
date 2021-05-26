@@ -1,7 +1,8 @@
 #include "../acpi/tables/madt.h"
 #include "../8259/pic.h"
 #include "../uart/serial.h"
-#include "cpuid.h"
+#include "lapic.h"
+#include <cpuid.h>
 #include <stdbool.h>
 
 void apic_initialize() {
