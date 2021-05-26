@@ -1,6 +1,8 @@
 #include "../acpi/tables/madt.h"
 #include "../8259/pic.h"
 #include "../uart/serial.h"
+#include "mm/pmm/pmm.h"
+#include "debug.h"
 #include "lapic.h"
 #include <cpuid.h>
 #include <stdbool.h>
@@ -20,5 +22,5 @@ void apic_initialize() {
         asm volatile ("cli; hlt");
     }
 
-    
+    apic_local_set_base((void *)rdmsr(IA32_APIC_BASE));
 }

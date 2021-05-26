@@ -1,5 +1,9 @@
 #pragma once
 #include <stdint.h>
+#include "../io.h"
+#include "mm/paging/paging.h"
+
+#define IA32_APIC_BASE	0x1B
 
 typedef enum {
 	APIC_LOCAL_REGISTER_ID					    = 0x0020,
@@ -29,14 +33,26 @@ typedef enum {
 	APIC_LOCAL_REGISTER_DIVIDE_CONFIG			= 0x03E0
 } apic_local_register_t;
 
-extern uint32_t* apic_local_base;
+extern uint32_t* apic_virtual_base;
 
+static
+inline void apic_local_set_base(void* base) {
+	base = (void *)((uint64_t)base & 0xffffffff);
+	wrmsr(IA32_APIC_BASE, (uint64_t)base);
+	apic_virtual_base = (uint32_t *)paging_map_page(base + PAGING_VIRTUAL_OFFSET, base, PAGING_FLAGS_KERNEL_PAGE);
+}
+
+
+static
 inline void apic_local_write(apic_local_register_t local_register, uint32_t value) {
-	uint32_t volatile* destination = (uint32_t *)((uint64_t)apic_local_base + local_register);
+	uint32_t volatile* destination = (uint32_t *)((uint64_t)apic_virtual_base + local_register);
 	*destination = value;
 }
 
+static
 inline uint32_t apic_local_read(apic_local_register_t local_register) {
-	uint32_t volatile* destination = (uint32_t *)((uint64_t)apic_local_base + local_register);
+	uint32_t volatile* destination = (uint32_t *)((uint64_t)apic_virtual_base + local_register);
 	return *destination;
 }
+
+void	apic_local_send_eoi();

@@ -73,8 +73,8 @@ uint64_t rdmsr(uint64_t msr) {
 
     asm volatile ("wrmsr" : "=a"(eax), "=d"(edx) : "c"(msr));
 
-    uint64_t value = eax;
-    value |= (edx << 0x20);
+    uint64_t value = (uint64_t)eax;
+    value |= ((uint64_t)edx << 0x20);
 
     return value;
 }

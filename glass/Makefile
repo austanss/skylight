@@ -21,7 +21,8 @@ CCFLAGS = \
 -mcmodel=kernel \
 -fpie \
 -gdwarf \
--fwrapv
+-fwrapv \
+-D__DEBUG__
 
 LDFLAGS = \
 -nostdlib \
