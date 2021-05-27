@@ -36,10 +36,10 @@ void idt_assemble() {
 }
 
 uint8_t idt_allocate_vector() {
-    for (uint8_t i = 0; i < IDT_MAX_DESCRIPTORS; i++) {
+    for (unsigned int i = 0; i < IDT_MAX_DESCRIPTORS; i++) {
         if (!i) {
             vectors[i] = true;
-            return i;
+            return (uint8_t)i;
         }
     }
 
