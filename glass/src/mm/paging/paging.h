@@ -94,7 +94,7 @@ static
 __attribute__((always_inline)) 
 inline
 void paging_invlpg(void* page) {
-    asm volatile ("invlpg (%0)" : : "r"(page) : "memory");
+    __asm__ volatile ("invlpg (%0)" : : "r"(page) : "memory");
 }
 
 void*   paging_map_page(void* virt, void* phys, uint16_t flags);

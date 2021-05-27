@@ -22,7 +22,8 @@ CCFLAGS = \
 -fpie \
 -gdwarf \
 -fwrapv \
--D__DEBUG__
+-D__DEBUG__ \
+-pedantic
 
 LDFLAGS = \
 -nostdlib \

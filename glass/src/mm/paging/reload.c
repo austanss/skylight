@@ -24,5 +24,5 @@ void paging_reload(struct stivale2_struct_tag_memmap* map) {
     for (uint64_t t = (uint64_t)&__load_base; t < (uint64_t)&__load_max; t+=PAGING_PAGE_SIZE)
         paging_map_page((void *)t, (void *)(t - PAGING_KERNEL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
 
-    asm volatile ("mov %0, %%cr3" : : "a"(paging_walk_page(pml4)));
+    __asm__ volatile ("mov %0, %%cr3" : : "a"(paging_walk_page(pml4)));
 }

@@ -24,7 +24,7 @@ void apic_initialize() {
 
     if (!apic) {
         serial_terminal()->puts("ERROR: Hardware unsupported (cpuid.01h.edx.9): APIC missing; get a new computer");
-        asm volatile ("cli; hlt");
+        __asm__ volatile ("cli; hlt");
     }
 
     apic_local_set_base((void *)rdmsr(IA32_APIC_BASE));
@@ -32,7 +32,7 @@ void apic_initialize() {
     default_apic_ist = tss_add_stack(0);
 
     uint8_t spurious_vector = idt_allocate_vector();
-    idt_set_descriptor(spurious_vector, &spurious_handler, IDT_DESCRIPTOR_EXTERNAL, default_apic_ist);
+    idt_set_descriptor(spurious_vector, (uint64_t)&spurious_handler, IDT_DESCRIPTOR_EXTERNAL, default_apic_ist);
 
     apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | spurious_vector);
 

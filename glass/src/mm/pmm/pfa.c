@@ -72,7 +72,7 @@ void pmm_lock_pages(void* page, size_t count) {
         return;
         
     for (size_t i = 0; i < count; i++)
-        pmm_lock_page(page + i * 0x1000);
+        pmm_lock_page((void *)((uint64_t)page + i * 0x1000));
 }
 
 void pmm_unlock_pages(void* page, size_t count) {
@@ -80,5 +80,5 @@ void pmm_unlock_pages(void* page, size_t count) {
         return;
         
     for (size_t i = 0; i < count; i++)
-        pmm_unlock_page(page + i * 0x1000);
+        pmm_unlock_page((void *)((uint64_t)page + i * 0x1000));
 }

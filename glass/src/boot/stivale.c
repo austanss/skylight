@@ -28,7 +28,7 @@ __attribute__((section(".stivale2hdr"), used))
 struct stivale2_header boot_header = {
     .entry_point = (uintptr_t)&boot,
     .stack = (uintptr_t)&stack + sizeof(stack),
-    .flags = 0b10,
+    .flags = 0x02,
     .tags = (uintptr_t)&framebuffer_tag
 };
 

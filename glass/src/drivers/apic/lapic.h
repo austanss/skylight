@@ -39,7 +39,7 @@ static
 inline void apic_local_set_base(void* base) {
 	base = (void *)((uint64_t)base & 0xffffffff);
 	wrmsr(IA32_APIC_BASE, (uint64_t)base);
-	apic_virtual_base = (uint32_t *)paging_map_page(base + PAGING_VIRTUAL_OFFSET, base, PAGING_FLAGS_KERNEL_PAGE);
+	apic_virtual_base = (uint32_t *)paging_map_page((void *)((uint64_t)base + PAGING_VIRTUAL_OFFSET), base, PAGING_FLAGS_KERNEL_PAGE);
 }
 
 
