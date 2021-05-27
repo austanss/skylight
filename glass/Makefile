@@ -23,7 +23,8 @@ CCFLAGS = \
 -gdwarf \
 -fwrapv \
 -D__DEBUG__ \
--pedantic
+-pedantic \
+-Werror
 
 LDFLAGS = \
 -nostdlib \
