@@ -15,7 +15,7 @@
 #define IDT_DESCRIPTOR_PRESENT			0x80
 
 #define IDT_DESCRIPTOR_EXCEPTION		(IDT_DESCRIPTOR_X32_INTERRUPT | IDT_DESCRIPTOR_PRESENT)
-#define IDT_DESCRIPTOR_IRQ				(IDT_DESCRIPTOR_X32_INTERRUPT | IDT_DESCRIPTOR_PRESENT)
+#define IDT_DESCRIPTOR_EXTERNAL			(IDT_DESCRIPTOR_X32_INTERRUPT | IDT_DESCRIPTOR_PRESENT)
 #define IDT_DESCRIPTOR_CALL				(IDT_DESCRIPTOR_X32_INTERRUPT | IDT_DESCRIPTOR_PRESENT | IDT_DESCRIPTOR_RING3)
 
 typedef struct {
@@ -33,6 +33,8 @@ typedef struct {
 	uint64_t	base;
 } __attribute__((packed)) idtr_t;
 
-void idt_reload(idtr_t* idtr);
-void idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags);
-void idt_assemble();
+void 		idt_reload(idtr_t* idtr);
+uint8_t 	idt_allocate_vector();
+void 		idt_free_vector(uint8_t vector);
+void 		idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags, uint8_t ist);
+void 		idt_assemble();
