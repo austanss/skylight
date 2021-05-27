@@ -56,3 +56,6 @@ inline uint32_t apic_local_read(apic_local_register_t local_register) {
 }
 
 void	apic_local_send_eoi();
+void	apic_local_reflect_ipi(uint8_t vector);
+void	apic_local_broadcast_ipi(uint8_t vector);
+void	apic_local_message_ipi(uint8_t vector, uint8_t num_cpu);
