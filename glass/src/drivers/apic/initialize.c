@@ -1,7 +1,6 @@
 #include "../acpi/tables/madt.h"
 #include "../8259/pic.h"
 #include "../uart/serial.h"
-#include "mm/pmm/pmm.h"
 #include "debug.h"
 #include "lapic.h"
 #include <cpuid.h>
@@ -23,4 +22,8 @@ void apic_initialize() {
     }
 
     apic_local_set_base((void *)rdmsr(IA32_APIC_BASE));
+
+    apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | 0x27);
+
+
 }
