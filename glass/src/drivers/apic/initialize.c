@@ -5,6 +5,7 @@
 #include "cpu/tss/tss.h"
 #include "debug.h"
 #include "lapic.h"
+#include "ioapic.h"
 #include <cpuid.h>
 #include <stdbool.h>
 
@@ -61,6 +62,11 @@ void apic_initialize() {
             entry |= (uint32_t)active_low << 15;
 
             apic_local_write(lvt, entry);
+        }
+
+        if (madt_record->type == ACPI_MADT_RECORD_TYPE_IOAPIC) {
+            acpi_madt_record_ioapic_t* ioapic_record = (acpi_madt_record_ioapic_t *)madt_record;
+            apic_io_register_controller(*ioapic_record);
         }
     }
 }
