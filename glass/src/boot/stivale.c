@@ -7,9 +7,9 @@ static
 PAGING_PAGE_ALIGNED
 uint8_t stack[PAGING_PAGE_SIZE];
 
-extern void boot();
+extern void boot(struct stivale2_struct*);
 
-struct stivale2_header_tag_terminal terminal_tag = {
+static struct stivale2_header_tag_terminal terminal_tag = {
     .tag = {
         .identifier = STIVALE2_HEADER_TAG_TERMINAL_ID,
         .next = 0
@@ -17,7 +17,7 @@ struct stivale2_header_tag_terminal terminal_tag = {
     .flags = 0
 };
 
-struct stivale2_header_tag_framebuffer framebuffer_tag = {
+static struct stivale2_header_tag_framebuffer framebuffer_tag = {
     .tag = {
         .identifier = STIVALE2_HEADER_TAG_FRAMEBUFFER_ID,
         .next = (uintptr_t)&terminal_tag
@@ -25,7 +25,7 @@ struct stivale2_header_tag_framebuffer framebuffer_tag = {
 };
 
 __attribute__((section(".stivale2hdr"), used))
-struct stivale2_header boot_header = {
+static struct stivale2_header boot_header = {
     .entry_point = (uintptr_t)&boot,
     .stack = (uintptr_t)&stack + sizeof(stack),
     .flags = 0x02,

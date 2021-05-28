@@ -6,13 +6,15 @@
 
 static tss_t tss_descriptors[TSS_MAX_CPUS];
 
-int ist_index = 0;
+static uint8_t ist_index = 0;
 
 uint8_t tss_add_stack(int num_cpu) {
     if (ist_index >= 7)
         return 1;
 
-    tss_descriptors[num_cpu].ist[ist_index] = (uint64_t)pmm_alloc_page() + PAGING_PAGE_SIZE;
+    void* stack = pmm_alloc_page();
+
+    tss_descriptors[num_cpu].ist[ist_index] = (uint64_t)stack + PAGING_PAGE_SIZE;
     ist_index++;
     return ist_index;
 }

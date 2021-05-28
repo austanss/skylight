@@ -34,7 +34,7 @@ typedef struct {
 } __attribute__((packed)) idtr_t;
 
 void 		idt_reload(idtr_t* idtr);
-uint8_t 	idt_allocate_vector();
+uint8_t 	idt_allocate_vector(void);
 void 		idt_free_vector(uint8_t vector);
 void 		idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags, uint8_t ist);
-void 		idt_assemble();
+void 		idt_assemble(void);

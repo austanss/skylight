@@ -6,7 +6,7 @@
 extern uint64_t total_memory;
 extern uint64_t free_memory;
 
-void*   pmm_alloc_page();
+void*   pmm_alloc_page(void);
 void    pmm_free_page(void* page);
 void*   pmm_alloc_pool(size_t page_count);
 void*   pmm_realloc_pool(void* pool, size_t page_count);

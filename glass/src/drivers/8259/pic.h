@@ -20,7 +20,7 @@
 #define PIC_ICW4_BUF_SLAVE  0x08
 #define PIC_ICW4_BUF_MASTER 0x0C
 
-void pic_disable();
+void pic_disable(void);
 void pic_remap_offsets(uint8_t irq_offset);
 void pic_mask_irq(uint8_t irq);
 void pic_unmask_irq(uint8_t irq);

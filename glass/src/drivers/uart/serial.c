@@ -2,11 +2,11 @@
 #include "serial.h"
 #include "../io.h"
 
-serial_terminal_t singleton_terminal_instance;
+static serial_terminal_t singleton_terminal_instance;
 
-void serial_message(const char* message) {
+static void serial_message(const char* message) {
     while (!!*message) {
-        outb(0x3F8, *message);
+        outc(0x3F8, *message);
         message++;
     }
 }
@@ -15,17 +15,17 @@ serial_terminal_t* serial_terminal() {
     return &singleton_terminal_instance;
 }
 
-serial_terminal_t* puts(const char* s) {
+static serial_terminal_t* puts(const char* s) {
     serial_message(s);
     return &singleton_terminal_instance;
 }
 
-serial_terminal_t* putc(const char c) {
-    outb(0x3F8, c);
+static serial_terminal_t* putc(const char c) {
+    outc(0x3F8, c);
     return &singleton_terminal_instance;
 }
 
-serial_terminal_t* putul(uint64_t ul) {
+static serial_terminal_t* putul(uint64_t ul) {
 
     if (!ul) {
         serial_message("0x0");
@@ -56,7 +56,7 @@ serial_terminal_t* putul(uint64_t ul) {
     return &singleton_terminal_instance;
 }
 
-serial_terminal_t* putd(int64_t d) {
+static serial_terminal_t* putd(int64_t d) {
 
     if (!d) {
         serial_message("0");
@@ -92,7 +92,7 @@ serial_terminal_t* putd(int64_t d) {
     return &singleton_terminal_instance;
 }
 
-serial_terminal_t singleton_terminal_instance = {
+static serial_terminal_t singleton_terminal_instance = {
     puts,
     putc,
     putul,

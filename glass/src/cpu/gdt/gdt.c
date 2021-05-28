@@ -2,12 +2,13 @@
 #include "mm/paging/paging.h"
 #include <stddef.h>
 
+static
 PAGING_PAGE_ALIGNED
 gdt_desc_t gdt[GDT_MAX_DESCRIPTORS];
 
-gdtr_t gdtr;
+static gdtr_t gdtr;
 
-uint16_t gindex;
+static uint16_t gindex;
 
 void gdt_assemble() {
     gdtr.limit = (sizeof(gdt_desc_t) * GDT_MAX_DESCRIPTORS) - 1;

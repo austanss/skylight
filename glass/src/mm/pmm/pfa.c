@@ -8,7 +8,7 @@ extern uint64_t fast_index;
 
 void pmm_map_set(uint64_t index, bool value);
 uint8_t pmm_map_get(uint64_t index);
-void pmm_reindex();
+void pmm_reindex(void);
 
 void* pmm_alloc_page() {
     if (!pfa_allowing_allocations)

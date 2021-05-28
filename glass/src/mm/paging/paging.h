@@ -79,14 +79,15 @@ __attribute__((always_inline))
 inline
 void paging_desc_set_flag(paging_desc_t* descriptor, uint64_t flag, bool value) {
     *descriptor &= ~flag;
-    *descriptor |= flag;
+    if (value)
+        *descriptor |= flag;
 }
 
 static
 __attribute__((always_inline)) 
 inline
 void paging_desc_set_flags(paging_desc_t* descriptor, uint64_t flags) {
-    *descriptor &= ~0x0fff;
+    *descriptor &= ~0x0ffful;
     *descriptor |= flags;
 }
 

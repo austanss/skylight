@@ -42,7 +42,6 @@ inline void apic_local_set_base(void* base) {
 	apic_virtual_base = (uint32_t *)paging_map_page((void *)((uint64_t)base + PAGING_VIRTUAL_OFFSET), base, PAGING_FLAGS_KERNEL_PAGE);
 }
 
-
 static
 inline void apic_local_write(apic_local_register_t local_register, uint32_t value) {
 	uint32_t volatile* destination = (uint32_t *)((uint64_t)apic_virtual_base + local_register);
@@ -55,7 +54,7 @@ inline uint32_t apic_local_read(apic_local_register_t local_register) {
 	return *destination;
 }
 
-void	apic_local_send_eoi();
+void	apic_local_send_eoi(void);
 void	apic_local_reflect_ipi(uint8_t vector);
 void	apic_local_broadcast_ipi(uint8_t vector);
 void	apic_local_message_ipi(uint8_t vector, uint8_t num_cpu);

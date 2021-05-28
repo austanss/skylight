@@ -6,16 +6,18 @@
 #include <stdbool.h>
 #include <string.h>
 
+extern acpi_rdsp2_t* acpi_rsdp;
 acpi_rdsp2_t* acpi_rsdp = NULL;
 
 void acpi_load_rsdp(void* rsdp) {
     acpi_rsdp = (acpi_rdsp2_t *)rsdp;
 }
 
+acpi_sdt_header_t* acpi_rsdt_get(uint16_t index);
 acpi_sdt_header_t* acpi_rsdt_get(uint16_t index) {
     acpi_sdt_header_t* rsdt_header = (acpi_sdt_header_t *)((uint64_t)(acpi_rsdp->rsdt) + PAGING_VIRTUAL_OFFSET);
 
-    uint16_t rsdt_entries = (rsdt_header->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
+    uint64_t rsdt_entries = (rsdt_header->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
 
     if (index >= rsdt_entries)
         return (acpi_sdt_header_t *)NULL;
@@ -25,10 +27,11 @@ acpi_sdt_header_t* acpi_rsdt_get(uint16_t index) {
     return (acpi_sdt_header_t *)((uint64_t)rsdt[index] + PAGING_VIRTUAL_OFFSET);
 }
 
+acpi_sdt_header_t* acpi_xsdt_get(uint16_t index);
 acpi_sdt_header_t* acpi_xsdt_get(uint16_t index) {
     acpi_sdt_header_t* xsdt_header = (acpi_sdt_header_t *)((uint64_t)(acpi_rsdp->xsdt) + PAGING_VIRTUAL_OFFSET);
 
-    uint16_t xsdt_entries = (xsdt_header->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
+    uint64_t xsdt_entries = (xsdt_header->length - sizeof(acpi_sdt_header_t)) / sizeof(uintptr_t);
 
     if (index >= xsdt_entries)
         return (acpi_sdt_header_t *)NULL;
@@ -47,7 +50,7 @@ acpi_sdt_header_t* acpi_get_table(char* signature) {
 
     bool xsdt = (!!acpi_rsdp->xsdt);
 
-    for (int i = 0; ; i++) {
+    for (uint16_t i = 0; ; i++) {
         acpi_sdt_header_t* header;
 
         if (xsdt)

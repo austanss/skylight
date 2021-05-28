@@ -5,23 +5,28 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern bool pfa_allowing_allocations;
 bool pfa_allowing_allocations = false;
+extern uint8_t* allocation_map;
 uint8_t* allocation_map = NULL;
-uint64_t map_size = 0;
+static uint64_t map_size = 0;
+extern uint64_t fast_index;
 uint64_t fast_index = 0;
 uint64_t total_memory = 0;
 uint64_t free_memory = 0;
 
+void pmm_map_set(uint64_t index, bool value);
 void pmm_map_set(uint64_t index, bool value) {
     uint8_t bit = index % 8;
     index /= 8;
-    uint8_t mask = 0x80 >> bit;
+    uint8_t mask = 0x80u >> bit;
     uint8_t byte = allocation_map[index];
     byte &= ~mask;
     byte |= ((mask && value) << 7) >> bit;
     allocation_map[index] = byte;
 }
 
+uint8_t pmm_map_get(uint64_t index);
 uint8_t pmm_map_get(uint64_t index) {
     uint8_t bit = index % 8;
     index /= 8;
@@ -29,6 +34,7 @@ uint8_t pmm_map_get(uint64_t index) {
     return byte & (0x80 >> bit);
 }
 
+void pmm_reindex(void);
 void pmm_reindex() {
     for (uint64_t index = 0; index < map_size * 8; index++) {
         if (!pmm_map_get(index)) {
@@ -40,6 +46,7 @@ void pmm_reindex() {
     return;
 }
 
+void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info);
 void pmm_start(struct stivale2_struct_tag_memmap* memory_map_info) {
     if (pfa_allowing_allocations)
         return;

@@ -8,10 +8,11 @@
 #include <cpuid.h>
 #include <stdbool.h>
 
-extern void spurious_handler();
+extern void spurious_handler(void);
 
-uint8_t default_apic_ist = 0;
+static uint8_t default_apic_ist = 0;
 
+void apic_initialize(void);
 void apic_initialize() {
     acpi_madt_header_t* madt = ACPI_MADT_GET();
 
@@ -27,7 +28,7 @@ void apic_initialize() {
         __asm__ volatile ("cli; hlt");
     }
 
-    apic_local_set_base((void *)rdmsr(IA32_APIC_BASE));
+    apic_local_set_base((void *)(uint64_t)madt->lapic_address);
 
     default_apic_ist = tss_add_stack(0);
 
@@ -35,6 +36,4 @@ void apic_initialize() {
     idt_set_descriptor(spurious_vector, (uint64_t)&spurious_handler, IDT_DESCRIPTOR_EXTERNAL, default_apic_ist);
 
     apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | spurious_vector);
-
-    
 }

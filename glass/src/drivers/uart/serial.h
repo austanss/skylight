@@ -8,4 +8,4 @@ typedef struct serial_terminal {
     struct serial_terminal* (*putd)(int64_t d);
 } serial_terminal_t;
 
-serial_terminal_t* serial_terminal();
+serial_terminal_t* serial_terminal(void);

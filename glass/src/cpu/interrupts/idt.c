@@ -2,12 +2,13 @@
 #include "../gdt/gdt.h"
 #include "mm/paging/paging.h"
 
+static
 PAGING_PAGE_ALIGNED
 idt_desc_t idt[IDT_MAX_DESCRIPTORS];
 
-idtr_t idtr;
+static idtr_t idtr;
 
-bool vectors[IDT_MAX_DESCRIPTORS];
+static bool vectors[IDT_MAX_DESCRIPTORS];
 
 extern uint64_t isr_stub_table[];
 
