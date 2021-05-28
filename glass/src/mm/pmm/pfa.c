@@ -147,11 +147,13 @@ void pmm_free_pool(void* pool) {
     if (!new->next)
         return;
 
+    page_pool_t* ahead = new->next->next;
+
     uint64_t pages = new->next->pages;
 
     free(new->next);
 
-    new->next = NULL;
+    new->next = ahead;
 
     pmm_unlock_pages(pool, pages);
 }
