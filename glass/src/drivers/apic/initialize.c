@@ -9,14 +9,7 @@
 #include <cpuid.h>
 #include <stdbool.h>
 
-static uint8_t default_apic_ist = 0;
-
-void apic_initialize(void);
-void apic_initialize() {
-    acpi_madt_header_t* madt = ACPI_MADT_GET();
-
-    pic_disable();
-
+static void detect_apic() {
     uint32_t erax, erbx, ercx, erdx;
     __cpuid(1, erax, erbx, ercx, erdx);
 
@@ -26,10 +19,10 @@ void apic_initialize() {
         serial_terminal()->puts("ERROR: Hardware unsupported (cpuid.01h.edx.9): APIC missing; get a new computer");
         __asm__ volatile ("cli; hlt");
     }
+}
 
+static void configure_local_apic(acpi_madt_header_t* madt) {
     apic_local_set_base((void *)(uintptr_t)madt->lapic_address);
-
-    default_apic_ist = tss_add_stack(0);
 
     apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | apic_local_read(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR));
 
@@ -37,9 +30,7 @@ void apic_initialize() {
 
     const uint8_t nmi = 0x04 & 0x07;
 
-    acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));
-
-    for (;;) {
+    for (acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));;) {
         if (((uintptr_t)madt_record - (uintptr_t)madt) >= madt->common.length)
             break;
 
@@ -63,10 +54,32 @@ void apic_initialize() {
 
             apic_local_write(lvt, entry);
         }
+    }
+}
+
+static void configure_io_apic(acpi_madt_header_t* madt) {
+    for (acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));;) {
+        if (((uintptr_t)madt_record - (uintptr_t)madt) >= madt->common.length)
+            break;
+
+        madt_record = (acpi_madt_record_t *)((uintptr_t)madt_record + madt_record->length);
 
         if (madt_record->type == ACPI_MADT_RECORD_TYPE_IOAPIC) {
-            acpi_madt_record_ioapic_t* ioapic_record = (acpi_madt_record_ioapic_t *)madt_record;
-            apic_io_register_controller(*ioapic_record);
+            acpi_madt_record_ioapic_t* ioapic = (acpi_madt_record_ioapic_t *)madt_record;
+            apic_io_register_controller(*ioapic);
         }
     }
+}
+
+void apic_initialize(void);
+void apic_initialize() {
+    acpi_madt_header_t* madt = ACPI_MADT_GET();
+
+    pic_disable();
+
+    detect_apic();
+
+    configure_local_apic(madt);
+
+    configure_io_apic(madt);
 }
