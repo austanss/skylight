@@ -1,4 +1,5 @@
 #include "ioapic.h"
+#include "mm/paging/paging.h"
 #include <stdlib.h>
 
 apic_io_controller_node_t* ioapics = NULL;
@@ -18,8 +19,10 @@ void apic_io_register_controller(acpi_madt_record_ioapic_t controller) {
         new_ioapic = before_new->next;
     }
 
-    new_ioapic->base = (void *)(uintptr_t)controller.ioapic_address;
+    new_ioapic->base = (void *)((uintptr_t)controller.ioapic_address + PAGING_VIRTUAL_OFFSET);
     new_ioapic->ioapic_id = controller.ioapic_id;
+
+    paging_map_page((void *)((uintptr_t)controller.ioapic_address + PAGING_VIRTUAL_OFFSET), (void *)(uintptr_t)controller.ioapic_address, PAGING_FLAGS_KERNEL_PAGE);
 }
 
 void* apic_io_get_base(uint64_t ioapic_id) {
@@ -27,7 +30,7 @@ void* apic_io_get_base(uint64_t ioapic_id) {
 
     for (ioapic = ioapics; !!ioapic->next; ioapic = ioapic->next)
         if (ioapic->ioapic_id == ioapic_id)
-            return (void *)ioapic->base;
+            return (void *)(ioapic->base);
 
     return NULL;
 }

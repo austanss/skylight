@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "../acpi/tables/madt.h"
 
 #define IOAPIC_REGISTER_ID              0x0000
@@ -21,6 +22,7 @@ extern apic_io_controller_node_t* ioapics;
 
 void    apic_io_register_controller(acpi_madt_record_ioapic_t controller);
 void*   apic_io_get_base(uint64_t ioapic_id);
+void    apic_io_create_redirect(uint8_t irq, uint8_t vector, bool alow, bool ltriggered);
 
 static
 inline
