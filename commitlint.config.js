@@ -28,7 +28,8 @@ module.exports = {
                 'dump',
 				'perf',
                 'partial',
-				'docs'
+				'docs',
+				'looks'
 			],
 		],
 	}
