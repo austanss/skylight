@@ -64,5 +64,5 @@ void apic_initialize() {
         }
     }
 
-    
+    apic_local_send_ipi(0, 0x20);
 }

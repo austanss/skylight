@@ -18,7 +18,7 @@ void apic_local_send_ipi(uint8_t lapic_id, uint8_t vector) {
     ipi |= (uint32_t)vector;
     ipi |= (uint32_t)(0x00 << 8);
     ipi |= (uint32_t)(0x00 << 11);
-    ipi |= (uint32_t)(0x00 << 14);
+    ipi |= (uint32_t)(0x01 << 14);
     ipi |= (uint32_t)(0x00 << 15);
     ipi |= (uint32_t)(0x00 << 18);
 
@@ -33,7 +33,7 @@ void apic_local_cast_ipi(uint8_t vector) {
     ipi |= (uint32_t)vector;
     ipi |= (uint32_t)(0x00 << 8);
     ipi |= (uint32_t)(0x00 << 11);
-    ipi |= (uint32_t)(0x00 << 14);
+    ipi |= (uint32_t)(0x01 << 14);
     ipi |= (uint32_t)(0x00 << 15);
     ipi |= (uint32_t)(0x03 << 18);
 
