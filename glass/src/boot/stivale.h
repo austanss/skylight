@@ -43,9 +43,6 @@ struct stivale2_header_tag_smp {
 
 #define STIVALE2_HEADER_TAG_UNMAP_NULL_ID 0x92919432b16fe7e7
 
-/* --- Struct --------------------------------------------------------------- */
-/*  Information passed from the bootloader to the kernel                      */
-
 struct stivale2_struct {
 #define STIVALE2_BOOTLOADER_BRAND_SIZE 64
     char bootloader_brand[STIVALE2_BOOTLOADER_BRAND_SIZE];
