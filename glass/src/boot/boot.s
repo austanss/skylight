@@ -95,11 +95,6 @@ boot:
     push rcx
     iretq
 
-section .rodata
-
-madt_signature:
-    db "APIC",0
-
 section .text
 
 align 4096
