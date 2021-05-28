@@ -63,6 +63,4 @@ void apic_initialize() {
             apic_local_write(lvt, entry);
         }
     }
-
-    apic_local_send_ipi(0, 0x20);
 }

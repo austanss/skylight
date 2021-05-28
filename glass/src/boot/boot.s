@@ -85,6 +85,8 @@ boot:
 
     pop rbp
 
+    sti
+
     push rax
     push rbx
     pushfq
