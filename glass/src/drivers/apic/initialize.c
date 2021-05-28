@@ -8,8 +8,6 @@
 #include <cpuid.h>
 #include <stdbool.h>
 
-extern void spurious_handler(void);
-
 static uint8_t default_apic_ist = 0;
 
 void apic_initialize(void);
@@ -28,12 +26,43 @@ void apic_initialize() {
         __asm__ volatile ("cli; hlt");
     }
 
-    apic_local_set_base((void *)(uint64_t)madt->lapic_address);
+    apic_local_set_base((void *)(uintptr_t)madt->lapic_address);
 
     default_apic_ist = tss_add_stack(0);
 
-    uint8_t spurious_vector = idt_allocate_vector();
-    idt_set_descriptor(spurious_vector, (uint64_t)&spurious_handler, IDT_DESCRIPTOR_EXTERNAL, default_apic_ist);
+    apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | apic_local_read(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR));
 
-    apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | spurious_vector);
+    uint32_t lapic_id = apic_local_read(APIC_LOCAL_REGISTER_ID);
+
+    const uint8_t nmi = 0x04 & 0x07;
+
+    acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));
+
+    for (;;) {
+        if (((uintptr_t)madt_record - (uintptr_t)madt) >= madt->common.length)
+            break;
+
+        madt_record = (acpi_madt_record_t *)((uintptr_t)madt_record + madt_record->length);
+
+        if (madt_record->type == ACPI_MADT_RECORD_TYPE_NMI) {
+            acpi_madt_record_nmi_t* lint01_record = (acpi_madt_record_nmi_t *)madt_record;
+            if (lint01_record->processor_id != lapic_id && lint01_record->processor_id != 0xff)
+                continue;
+            
+            apic_local_register_t lvt = lint01_record->lint_no == 0 ? APIC_LOCAL_REGISTER_LVT_LINT0 : APIC_LOCAL_REGISTER_LVT_LINT1;
+
+            uint32_t entry = 0x00000000;
+            entry |= (nmi & 0x07) << 8;
+
+            bool level_triggered = !!(lint01_record->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_LEVEL_TRIGGERED);
+            bool active_low = !!(lint01_record->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_ACTIVE_LOW);
+
+            entry |= (uint32_t)level_triggered << 13;
+            entry |= (uint32_t)active_low << 15;
+
+            apic_local_write(lvt, entry);
+        }
+    }
+
+    
 }

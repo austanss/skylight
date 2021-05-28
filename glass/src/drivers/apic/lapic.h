@@ -22,6 +22,7 @@ typedef enum {
 	APIC_LOCAL_REGISTER_ERROR_STATUS			= 0x0280,
 	APIC_LOCAL_REGISTER_CMCI					= 0x02F0,
 	APIC_LOCAL_REGISTER_INTERRUPT_COMMAND		= 0x0300,
+	APIC_LOCAL_REGISTER_INTERRUPT_DESTINATION	= 0x0310,
 	APIC_LOCAL_REGISTER_LVT_TIMER				= 0x0320,
 	APIC_LOCAL_REGISTER_LVT_THERMAL_SENSOR	    = 0x0330,
 	APIC_LOCAL_REGISTER_LVT_PMC					= 0x0340,
@@ -55,6 +56,5 @@ inline uint32_t apic_local_read(apic_local_register_t local_register) {
 }
 
 void	apic_local_send_eoi(void);
-void	apic_local_reflect_ipi(uint8_t vector);
-void	apic_local_broadcast_ipi(uint8_t vector);
-void	apic_local_message_ipi(uint8_t vector, uint8_t num_cpu);
+void	apic_local_send_ipi(uint8_t lapic_id, uint8_t vector);
+void 	apic_local_cast_ipi(uint8_t vector);
