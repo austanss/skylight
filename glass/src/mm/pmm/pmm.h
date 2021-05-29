@@ -15,3 +15,4 @@ void    pmm_lock_page(void* page);
 void    pmm_unlock_page(void* page);
 void    pmm_lock_pages(void* page, size_t count);
 void    pmm_unlock_pages(void* page, size_t count);
+
