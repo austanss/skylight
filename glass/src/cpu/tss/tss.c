@@ -4,7 +4,8 @@
 #include "mm/pmm/pmm.h"
 #include <string.h>
 
-static tss_t tss_descriptors[TSS_MAX_CPUS];
+extern tss_t tss_descriptors[];
+tss_t tss_descriptors[TSS_MAX_CPUS];
 
 static uint8_t ist_index = 0;
 

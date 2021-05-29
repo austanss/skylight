@@ -9,6 +9,7 @@ extern pmm_alloc_page
 extern acpi_load_rsdp
 extern apic_initialize
 extern configure_math_extensions
+extern install_syscalls
 
 global boot
 
@@ -76,6 +77,8 @@ boot:
     
     mov rdi, rax
     call apic_initialize
+
+    call install_syscalls
 
     pop rdi
     xor rdi, rdi
