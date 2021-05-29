@@ -7,8 +7,8 @@ extern tss_install
 extern paging_edit_page
 extern pmm_alloc_page
 extern acpi_load_rsdp
-extern acpi_get_table
 extern apic_initialize
+extern configure_math_extensions
 
 global boot
 
@@ -25,6 +25,8 @@ boot:
     call gdt_assemble
 
     call idt_assemble
+
+    call configure_math_extensions
 
     xor rax, rax
     mov fs, ax
