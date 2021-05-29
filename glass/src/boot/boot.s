@@ -25,6 +25,7 @@ boot:
     call gdt_assemble
 
     call idt_assemble
+    sti
 
     call configure_math_extensions
 
@@ -86,8 +87,6 @@ boot:
     mov es, ax
 
     pop rbp
-
-    sti
 
     push rax
     push rbx
