@@ -10,6 +10,7 @@ extern acpi_load_rsdp
 extern apic_initialize
 extern configure_math_extensions
 extern install_syscalls
+extern pci_conf_load_cache
 
 global boot
 
@@ -77,6 +78,8 @@ boot:
     
     mov rdi, rax
     call apic_initialize
+
+    call pci_conf_load_cache
 
     call install_syscalls
 
