@@ -3,7 +3,7 @@
 
 typedef struct {
     uint64_t    id;
-    uint64_t    length;
+    uint64_t    data_length;
 } echoes_packet_t;
 
 uint64_t    echoes_establish_broadcaster(uint64_t id);

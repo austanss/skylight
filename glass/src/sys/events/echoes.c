@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct _echoes_subscriber_node echoes_subscriber_node_t;
 struct _echoes_subscriber_node {
@@ -127,4 +128,25 @@ void echoes_unsubscribe_event(uint64_t hook) {
     tbd->prev->next = next;
 
     free(tbd);
+}
+
+void echoes_broadcast_event(echoes_packet_t* packet) {
+    echoes_broadcaster_node_t* broadcaster = NULL;
+
+    for (broadcaster = &null_broadcaster_node; !!broadcaster; broadcaster = broadcaster->next) {
+        if (broadcaster->id == packet->id)
+            break;
+    }
+
+    if (!broadcaster)
+        return;
+
+    uint64_t packet_size = sizeof(echoes_packet_t) + packet->data_length;
+
+    for (echoes_subscriber_node_t* subscriber = broadcaster->subscribers; !!subscriber; subscriber = subscriber->next) {
+        echoes_packet_t* local_packet = (echoes_packet_t *)malloc(packet_size);
+        memcpy(&local_packet, &packet, packet_size);
+        subscriber->handler(local_packet);
+        free(local_packet);
+    }
 }
