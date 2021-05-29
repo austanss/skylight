@@ -3,8 +3,14 @@ global syscall_dispatch
 %define nsyscalls 0
 
 syscall_dispatch:
+    push rcx
+    mov rcx, 0xC0000102
+    rdmsr
+    pop rcx
+    shr rdx, 0x20
+    or rax, rdx
     mov r10, rsp
-    rdgsbase rsp
+    mov rsp, rax
     mov rbp, rsp
     push rbp
     push r10

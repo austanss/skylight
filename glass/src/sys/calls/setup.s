@@ -28,8 +28,13 @@ install_syscalls:
     xor eax, eax
     lea rax, [rel tss_descriptors]
     lea rsi, [rax + 0x04]
-    mov rsi, [rsi]
-    wrgsbase rsi
+    mov rax, [rsi]
+    mov rax, rdx
+    shr rdx, 0x20
+    mov eax, eax
+    mov edx, edx
+    mov rcx, 0xC0000102
+    wrmsr
 
     cli
     hlt
