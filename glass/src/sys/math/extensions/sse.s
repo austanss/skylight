@@ -5,3 +5,4 @@ allow_sse:
     or rax, 0x400
     mov cr4, rax
     ret
+    

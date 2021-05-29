@@ -16,3 +16,4 @@ gdt_reload:
     push rax
     xor rax, rax
     retfq
+    

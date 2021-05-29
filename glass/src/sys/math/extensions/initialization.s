@@ -6,3 +6,4 @@ configure_math_extensions:
     call enable_fpu
     call allow_sse
     ret
+    
