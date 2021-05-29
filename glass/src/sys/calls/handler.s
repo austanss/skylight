@@ -7,7 +7,7 @@ syscall_dispatch:
     push rbp
     push r10
 
-    xor r10, r10
+    xor r10d, r10d
 
     pop rsp
     pop rbp

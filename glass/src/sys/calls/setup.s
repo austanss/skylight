@@ -22,7 +22,7 @@ install_syscalls:
     mov edx, 0x00100008
     wrmsr
 
-    xor rax, rax
+    xor eax, eax
     lea rax, [rel tss_descriptors]
     lea rsi, [rax + 0x04]
     lea rdi, [rel syscall_sp]

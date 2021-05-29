@@ -19,7 +19,7 @@ boot:
     cli
     cld
     
-    xor rbp, rbp
+    xor ebp, ebp
 
     push rdi
 
@@ -30,7 +30,7 @@ boot:
 
     call configure_math_extensions
 
-    xor rax, rax
+    xor eax, eax
     mov fs, ax
     mov gs, ax
 
@@ -50,15 +50,15 @@ boot:
     mov rdi, rax
     call paging_reload
 
-    xor rdi, rdi
+    xor edi, edi
     call tss_install
 
     lea rdi, [rel userspace]
     mov rsi, (0x001 | 0x002 | 0x004)
     call paging_edit_page
 
-    xor rdi, rdi
-    xor rsi, rsi
+    xor edi, edi
+    xor esi, esi
     call pmm_alloc_page
     mov rbx, rax
     mov rdi, rbx
@@ -81,9 +81,9 @@ boot:
     call install_syscalls
 
     pop rdi
-    xor rdi, rdi
-    xor rsi, rsi
-    xor rax, rax
+    xor edi, edi
+    xor esi, esi
+    xor eax, eax
 
     mov ax, 0x1B
     mov ds, ax
