@@ -36,7 +36,7 @@ static void configure_local_apic(acpi_madt_header_t* madt) {
 
         madt_record = (acpi_madt_record_t *)((uintptr_t)madt_record + madt_record->length);
 
-        if (madt_record->type == ACPI_MADT_RECORD_TYPE_NMI) {
+        if (madt_record->type == ACPI_MADT_RECORD_TYPE_LOCAL_NMI) {
             acpi_madt_record_nmi_t* lint01_record = (acpi_madt_record_nmi_t *)madt_record;
             if (lint01_record->processor_id != lapic_id && lint01_record->processor_id != 0xff)
                 continue;
@@ -67,6 +67,21 @@ static void configure_io_apic(acpi_madt_header_t* madt) {
         if (madt_record->type == ACPI_MADT_RECORD_TYPE_IOAPIC) {
             acpi_madt_record_ioapic_t* ioapic = (acpi_madt_record_ioapic_t *)madt_record;
             apic_io_register_controller(*ioapic);
+        }
+    }
+
+    for (acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));;) {
+        if (((uintptr_t)madt_record - (uintptr_t)madt) >= madt->common.length)
+            break;
+
+        madt_record = (acpi_madt_record_t *)((uintptr_t)madt_record + madt_record->length);
+
+        if (madt_record->type == ACPI_MADT_RECORD_TYPE_ISO) {
+            acpi_madt_record_iso_t* override = (acpi_madt_record_iso_t *)madt_record;
+            apic_io_redirect_irq(override->irq_source, 
+                                (uint8_t)override->gsi, 
+                                !!(override->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_ACTIVE_LOW), 
+                                !!(override->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_LEVEL_TRIGGERED));
         }
     }
 }

@@ -4,7 +4,8 @@
 #define ACPI_MADT_RECORD_TYPE_LAPIC                     0
 #define ACPI_MADT_RECORD_TYPE_IOAPIC                    1
 #define ACPI_MADT_RECORD_TYPE_ISO                       2
-#define ACPI_MADT_RECORD_TYPE_NMI                       4
+#define ACPI_MADT_RECORD_TYPE_IOAPIC_NMI                3
+#define ACPI_MADT_RECORD_TYPE_LOCAL_NMI                 4
 #define ACPI_MADT_RECORD_TYPE_LAPIC_ADDRESS_OVERRIDE    5
 
 #define ACPI_MADT_RECORD_ISO_NMI_FLAG_ACTIVE_LOW        0x02
