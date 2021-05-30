@@ -1,6 +1,7 @@
 #include "confrw.h"
 #include "devices.h"
 #include "../acpi/tables/mcfg.h"
+#include "../uart/serial.h"
 #include "mm/paging/paging.h"
 #include <stdlib.h>
 
@@ -62,7 +63,25 @@ void pci_conf_load_cache() {
             }
         }
     }
-    cached = true;   
+    cached = true;
+
+    serial_terminal()->puts("\n\npci function cache:\n\n");
+
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* function = &pci_function_cache[i];
+        pci_dev_header_t* header = (pci_dev_header_t *)function->base;
+        serial_terminal()->puts("location: ");
+        serial_terminal()->putd(function->segment)->putc('/');
+        serial_terminal()->putd(function->bus)->putc('/');
+        serial_terminal()->putd(function->device)->putc('/');
+        serial_terminal()->putd(function->function)->puts(", ");
+
+        serial_terminal()->puts("id: ");
+        serial_terminal()->putul(header->vendor_id)->putc(':')->putul(header->device_id)->puts(", ");
+
+        serial_terminal()->puts("class: ");
+        serial_terminal()->putul(header->device_class)->putc(':')->putul(header->device_subclass)->putc(':')->putul(header->program_interface)->putc('\n');
+    }
 }
 
 void pci_conf_write_byte(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset, uint8_t value) {
