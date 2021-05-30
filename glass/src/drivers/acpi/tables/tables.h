@@ -26,4 +26,4 @@ typedef struct {
 } __attribute__((packed)) acpi_rdsp2_t;
 
 void                acpi_load_rsdp(void* rsdp);
-acpi_sdt_header_t*  acpi_get_table(char* signature);
+acpi_sdt_header_t*  acpi_get_table(char* signature, uint16_t index);

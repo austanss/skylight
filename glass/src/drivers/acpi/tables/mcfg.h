@@ -1,7 +1,7 @@
 #pragma once
 #include "tables.h"
 
-#define ACPI_MCFG_GET() (acpi_mcfg_header_t *)acpi_get_table("MCFG")
+#define ACPI_MCFG_GET() (acpi_mcfg_header_t *)acpi_get_table("MCFG", 0)
 #define ACPI_MCFG_GET_ENTRY(mcfg, index) (acpi_mcfg_entry_t *)(((uintptr_t)mcfg + sizeof(acpi_mcfg_header_t)) + (sizeof(acpi_mcfg_entry_t) * index))
 
 typedef struct {

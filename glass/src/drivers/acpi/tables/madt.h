@@ -11,7 +11,7 @@
 #define ACPI_MADT_RECORD_ISO_NMI_FLAG_ACTIVE_LOW        0x02
 #define ACPI_MADT_RECORD_ISO_NMI_FLAG_LEVEL_TRIGGERED   0x80
 
-#define ACPI_MADT_GET() (acpi_madt_header_t *)acpi_get_table("APIC")
+#define ACPI_MADT_GET() (acpi_madt_header_t *)acpi_get_table("APIC", 0)
 
 typedef struct {
     acpi_sdt_header_t   common;

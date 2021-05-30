@@ -41,7 +41,7 @@ acpi_sdt_header_t* acpi_xsdt_get(uint16_t index) {
     return (acpi_sdt_header_t *)((uint64_t)xsdt[index] + PAGING_VIRTUAL_OFFSET);
 }
 
-acpi_sdt_header_t* acpi_get_table(char* signature) {
+acpi_sdt_header_t* acpi_get_table(char* signature, uint16_t index) {
     if (acpi_rsdp nullvptr)
         return (acpi_sdt_header_t *)NULL;
 
@@ -49,6 +49,8 @@ acpi_sdt_header_t* acpi_get_table(char* signature) {
         return (acpi_sdt_header_t *)NULL;
 
     bool xsdt = (!!acpi_rsdp->xsdt);
+
+    uint16_t table_occurence = 0;
 
     for (uint16_t i = 0; ; i++) {
         acpi_sdt_header_t* header;
@@ -61,8 +63,10 @@ acpi_sdt_header_t* acpi_get_table(char* signature) {
         if (!header)
             break;
 
-        if (!strncmp((const char *)&header->signature[0], signature, 4))
+        if (!strncmp((const char *)&header->signature[0], signature, 4) && table_occurence == index)
             return header;
+        else if (!strncmp((const char *)&header->signature[0], signature, 4))
+            table_occurence++;
     }
 
     return (acpi_sdt_header_t *)NULL;
