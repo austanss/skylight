@@ -4,8 +4,8 @@
 #include "mm/paging/paging.h"
 #include <stdlib.h>
 
-static size_t cache_entries = 0;
-static pci_function_t* cache = NULL;
+size_t pci_function_cache_entries = 0;
+pci_function_t* pci_function_cache = NULL;
 
 static bool cached = false;
 
@@ -44,14 +44,14 @@ void pci_conf_load_cache() {
                     if (function_header->device_id == 0x0000 || function_header->device_id == 0xFFFF)
                         continue;
 
-                    cache_entries++;
+                    pci_function_cache_entries++;
 
-                    if (!cache)
-                        cache = (pci_function_t *)malloc(sizeof(pci_function_t) * cache_entries);
+                    if (!pci_function_cache)
+                        pci_function_cache = (pci_function_t *)malloc(sizeof(pci_function_t) * pci_function_cache_entries);
                     else
-                        cache = (pci_function_t *)realloc(cache, sizeof(pci_function_t) * cache_entries);
+                        pci_function_cache = (pci_function_t *)realloc(pci_function_cache, sizeof(pci_function_t) * pci_function_cache_entries);
                     
-                    pci_function_t* cached_function = &cache[cache_entries - 1];
+                    pci_function_t* cached_function = &pci_function_cache[pci_function_cache_entries - 1];
 
                     cached_function->base = (void *)function_header;
                     cached_function->function = function;
@@ -69,8 +69,8 @@ void pci_conf_write_byte(uint16_t segment, uint8_t bus, uint8_t device, uint8_t 
     if (!cached)
         pci_conf_load_cache();
     
-    for (size_t i = 0; i < cache_entries; i++) {
-        pci_function_t* iterator = &cache[i];
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* iterator = &pci_function_cache[i];
         
         if (iterator->segment != segment) continue;
 
@@ -89,8 +89,8 @@ void pci_conf_write_word(uint16_t segment, uint8_t bus, uint8_t device, uint8_t 
     if (!cached)
         pci_conf_load_cache();
     
-    for (size_t i = 0; i < cache_entries; i++) {
-        pci_function_t* iterator = &cache[i];
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* iterator = &pci_function_cache[i];
         
         if (iterator->segment != segment) continue;
 
@@ -109,8 +109,8 @@ void pci_conf_write_long(uint16_t segment, uint8_t bus, uint8_t device, uint8_t 
     if (!cached)
         pci_conf_load_cache();
     
-    for (size_t i = 0; i < cache_entries; i++) {
-        pci_function_t* iterator = &cache[i];
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* iterator = &pci_function_cache[i];
         
         if (iterator->segment != segment) continue;
 
@@ -129,8 +129,8 @@ uint8_t pci_conf_read_byte(uint16_t segment, uint8_t bus, uint8_t device, uint8_
     if (!cached)
         pci_conf_load_cache();
     
-    for (size_t i = 0; i < cache_entries; i++) {
-        pci_function_t* iterator = &cache[i];
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* iterator = &pci_function_cache[i];
         
         if (iterator->segment != segment) continue;
 
@@ -151,8 +151,8 @@ uint16_t pci_conf_read_word(uint16_t segment, uint8_t bus, uint8_t device, uint8
     if (!cached)
         pci_conf_load_cache();
     
-    for (size_t i = 0; i < cache_entries; i++) {
-        pci_function_t* iterator = &cache[i];
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* iterator = &pci_function_cache[i];
         
         if (iterator->segment != segment) continue;
 
@@ -173,8 +173,8 @@ uint32_t pci_conf_read_long(uint16_t segment, uint8_t bus, uint8_t device, uint8
     if (!cached)
         pci_conf_load_cache();
     
-    for (size_t i = 0; i < cache_entries; i++) {
-        pci_function_t* iterator = &cache[i];
+    for (size_t i = 0; i < pci_function_cache_entries; i++) {
+        pci_function_t* iterator = &pci_function_cache[i];
         
         if (iterator->segment != segment) continue;
 

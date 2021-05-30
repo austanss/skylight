@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stddef.h>
 
 typedef struct {
     uint16_t    vendor_id;
@@ -24,3 +25,8 @@ typedef struct {
     uint8_t function;
     uint32_t : 24;
 } pci_function_t;
+
+extern size_t pci_function_cache_entries;
+extern pci_function_t* pci_function_cache;
+
+pci_function_t* find_device(uint8_t class, uint8_t subclass, uint8_t interface);
