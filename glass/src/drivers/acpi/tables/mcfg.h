@@ -10,7 +10,7 @@ typedef struct {
 } __attribute__((packed)) acpi_mcfg_header_t;
 
 typedef struct {
-    void*               configuration_base;
+    void*               base;
     uint16_t            segment;
     uint8_t             start_bus;
     uint8_t             end_bus;
