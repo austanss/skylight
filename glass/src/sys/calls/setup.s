@@ -36,7 +36,4 @@ install_syscalls:
     mov rcx, 0xC0000102
     wrmsr
 
-    cli
-    hlt
-
     ret
