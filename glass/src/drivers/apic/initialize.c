@@ -21,6 +21,7 @@ static void detect_apic() {
     }
 }
 
+
 static void configure_local_apic(acpi_madt_header_t* madt) {
     serial_terminal()->puts("\n\nlocal apic configuration:\n\n");
     apic_local_set_base((void *)(uintptr_t)madt->lapic_address);
