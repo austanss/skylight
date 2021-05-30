@@ -171,3 +171,21 @@ void free(void* p) {
 
     _free_allocations(index, allocations);
 }
+
+void* realloc(void* old, size_t size) {
+    void* new = malloc(size);
+    
+    uint64_t index = ((uint64_t)old - PAGING_VIRTUAL_OFFSET) / PAGING_PAGE_SIZE; 
+    malloc_node_t* tbr = &node_root;
+
+    for (tbr = &node_root; tbr->index != index && !!tbr; tbr = tbr->next);
+
+    if (!tbr)
+        return new;
+
+    memcpy(new, old, tbr->allocations * MINIMUM_ALLOCATION_SIZE);
+
+    free(old);
+
+    return new;
+}

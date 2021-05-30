@@ -15,6 +15,5 @@ void pci_conf_load_cache() {
     acpi_mcfg_header_t* mcfg = ACPI_MCFG_GET();
     uint64_t table_length = mcfg->common.length - sizeof(acpi_mcfg_header_t);
     uint64_t table_entries = table_length / sizeof(acpi_mcfg_entry_t);
-
     (void)table_entries;
 }
