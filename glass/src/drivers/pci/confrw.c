@@ -16,9 +16,11 @@ typedef struct {
 static size_t cache_entries = 0;
 static pci_function_t* cache = NULL;
 
+static bool cached = false;
+
 void pci_conf_load_cache() {
     acpi_mcfg_header_t* mcfg = ACPI_MCFG_GET();
-    
+
     if (!mcfg)
         return;
 
@@ -69,4 +71,131 @@ void pci_conf_load_cache() {
             }
         }
     }
+    cached = true;   
+}
+
+void pci_conf_write_byte(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset, uint8_t value) {
+    if (!cached)
+        pci_conf_load_cache();
+    
+    for (size_t i = 0; i < cache_entries; i++) {
+        pci_function_t* iterator = &cache[i];
+        
+        if (iterator->segment != segment) continue;
+
+        if (iterator->bus != bus) continue;
+
+        if (iterator->device != device) continue;
+
+        if (iterator->function != function) continue;
+
+        uint8_t volatile* destination = (uint8_t *)((uintptr_t)iterator->base + offset);
+        *destination = value;
+    }
+}
+
+void pci_conf_write_word(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset, uint16_t value) {
+    if (!cached)
+        pci_conf_load_cache();
+    
+    for (size_t i = 0; i < cache_entries; i++) {
+        pci_function_t* iterator = &cache[i];
+        
+        if (iterator->segment != segment) continue;
+
+        if (iterator->bus != bus) continue;
+
+        if (iterator->device != device) continue;
+
+        if (iterator->function != function) continue;
+
+        uint16_t volatile* destination = (uint16_t *)((uintptr_t)iterator->base + offset);
+        *destination = value;
+    }
+}
+
+void pci_conf_write_long(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset, uint32_t value) {
+    if (!cached)
+        pci_conf_load_cache();
+    
+    for (size_t i = 0; i < cache_entries; i++) {
+        pci_function_t* iterator = &cache[i];
+        
+        if (iterator->segment != segment) continue;
+
+        if (iterator->bus != bus) continue;
+
+        if (iterator->device != device) continue;
+
+        if (iterator->function != function) continue;
+
+        uint32_t volatile* destination = (uint32_t *)((uintptr_t)iterator->base + offset);
+        *destination = value;
+    }
+}
+
+uint8_t pci_conf_read_byte(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset) {
+    if (!cached)
+        pci_conf_load_cache();
+    
+    for (size_t i = 0; i < cache_entries; i++) {
+        pci_function_t* iterator = &cache[i];
+        
+        if (iterator->segment != segment) continue;
+
+        if (iterator->bus != bus) continue;
+
+        if (iterator->device != device) continue;
+
+        if (iterator->function != function) continue;
+
+        uint8_t volatile* destination = (uint8_t *)((uintptr_t)iterator->base + offset);
+        uint8_t value = *destination;
+        return value;
+    }
+    return 0;
+}
+
+uint16_t pci_conf_read_word(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset) {
+    if (!cached)
+        pci_conf_load_cache();
+    
+    for (size_t i = 0; i < cache_entries; i++) {
+        pci_function_t* iterator = &cache[i];
+        
+        if (iterator->segment != segment) continue;
+
+        if (iterator->bus != bus) continue;
+
+        if (iterator->device != device) continue;
+
+        if (iterator->function != function) continue;
+
+        uint16_t volatile* destination = (uint16_t *)((uintptr_t)iterator->base + offset);
+        uint16_t value = *destination;
+        return value;
+    }
+    return 0;
+}
+
+uint32_t pci_conf_read_long(uint16_t segment, uint8_t bus, uint8_t device, uint8_t function, uint16_t offset) {
+    if (!cached)
+        pci_conf_load_cache();
+    
+    for (size_t i = 0; i < cache_entries; i++) {
+        pci_function_t* iterator = &cache[i];
+        
+        if (iterator->segment != segment) continue;
+
+        if (iterator->bus != bus) continue;
+
+        if (iterator->device != device) continue;
+
+        if (iterator->function != function) continue;
+
+        uint32_t volatile* destination = (uint32_t *)((uintptr_t)iterator->base + offset);
+        uint32_t value = *destination;
+        return value;
+    }
+    return 0;
 }
