@@ -153,7 +153,7 @@ void* malloc(size_t size) {
 }
 
 void free(void* p) {
-    uint64_t index = ((uint64_t)p - PAGING_VIRTUAL_OFFSET) / PAGING_PAGE_SIZE; 
+    uint64_t index = ((uint64_t)p - HEAP_VIRTUAL_BASE) / MINIMUM_ALLOCATION_SIZE; 
     malloc_node_t* tbf = &node_root;
 
     for (tbf = &node_root; tbf->next->index != index && !!tbf->next; tbf = tbf->next);
@@ -175,7 +175,7 @@ void free(void* p) {
 void* realloc(void* old, size_t size) {
     void* new = malloc(size);
     
-    uint64_t index = ((uint64_t)old - PAGING_VIRTUAL_OFFSET) / PAGING_PAGE_SIZE; 
+    uint64_t index = ((uint64_t)old - HEAP_VIRTUAL_BASE) / MINIMUM_ALLOCATION_SIZE; 
     malloc_node_t* tbr = &node_root;
 
     for (tbr = &node_root; !!tbr && tbr->index != index; tbr = tbr->next);
