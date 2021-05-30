@@ -18,6 +18,10 @@ static pci_function_t* cache = NULL;
 
 void pci_conf_load_cache() {
     acpi_mcfg_header_t* mcfg = ACPI_MCFG_GET();
+    
+    if (!mcfg)
+        return;
+
     uint64_t table_length = mcfg->common.length - sizeof(acpi_mcfg_header_t);
     uint64_t table_entries = table_length / sizeof(acpi_mcfg_entry_t);
     
