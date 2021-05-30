@@ -160,7 +160,16 @@ void pmm_free_pool(void* pool) {
 
 void* pmm_realloc_pool(void* pool, size_t page_count) {
     void* new_pool = pmm_alloc_pool(page_count);
-    memcpy(new_pool, pool, page_count * PAGING_PAGE_SIZE);
+
+    uint64_t index = ((uint64_t)pool - PAGING_VIRTUAL_OFFSET) / PAGING_PAGE_SIZE; 
+    page_pool_t* old = &pool_root;
+
+    for (old = &pool_root; !!old && old->index != index; old = old->next);
+
+    if (!old)
+        return new_pool;
+
+    memcpy(new_pool, pool, old->pages * PAGING_PAGE_SIZE);
     pmm_free_pool(pool);
     return new_pool;
 }
