@@ -4,15 +4,6 @@
 #include "mm/paging/paging.h"
 #include <stdlib.h>
 
-typedef struct {
-    void* base;
-    uint16_t segment;
-    uint8_t bus;
-    uint8_t device;
-    uint8_t function;
-    uint32_t : 24;
-} pci_function_t;
-
 static size_t cache_entries = 0;
 static pci_function_t* cache = NULL;
 

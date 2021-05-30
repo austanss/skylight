@@ -15,3 +15,12 @@ typedef struct {
     uint8_t     header_type;
     uint8_t     bist;
 } pci_dev_header_t;
+
+typedef struct {
+    void* base;
+    uint16_t segment;
+    uint8_t bus;
+    uint8_t device;
+    uint8_t function;
+    uint32_t : 24;
+} pci_function_t;
