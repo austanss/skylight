@@ -11,7 +11,7 @@ $(GLASS):
 	@ cp glass/build/glass.elf $(GLASS)
 
 $(IMAGE): glass
-	@ wget https://github.com/limine-bootloader/limine/raw/latest-binary/BOOTX64.EFI
+	@ wget https://github.com/limine-bootloader/limine/raw/latest-binary/BOOTX64.EFI --quiet
 	@ dd if=/dev/zero of=fat.img bs=1M count=128
 	@ mformat -i fat.img -F ::
 	@ mmd -i fat.img ::/EFI
