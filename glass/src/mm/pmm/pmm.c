@@ -1,6 +1,6 @@
 #include "pmm.h"
 #include "../paging/paging.h"
-#include "drivers/uart/serial.h"
+#include "dev/uart/serial.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>

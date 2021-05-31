@@ -1,5 +1,5 @@
 #include "isr.h"
-#include "drivers/uart/serial.h"
+#include "dev/uart/serial.h"
 
 void isr_exception_handler(isr_xframe_t* frame);
 void isr_exception_handler(isr_xframe_t* frame) {

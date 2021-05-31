@@ -1,6 +1,6 @@
 #include <string.h>
 #include "stivale.h"
-#include "drivers/uart/serial.h"
+#include "dev/uart/serial.h"
 #include "mm/paging/paging.h"
 
 static
