@@ -26,11 +26,22 @@ typedef struct {
     vfs_node_t*     files;
 } vfs_volume_t;
 
+typedef struct {
+    bool    executable  :1;
+    bool    writable    :1;
+    bool    owner       :1;
+    bool    system      :1;
+    bool    hidden      :1;
+    bool    open        :1;
+    bool                :2;
+} vfs_permissions_t;
+
 struct _vfs_node {
-    char            identifier[VFS_MAX_FILENAME_LENGTH];
-    vfs_volume_t*   volume;
-    vfs_node_t*     parent;
-    vfs_node_t*     children;
-    vfs_node_t*     next;
-    uint8_t         available[16];
+    char                identifier[VFS_MAX_FILENAME_LENGTH];
+    vfs_volume_t*       volume;
+    vfs_node_t*         parent;
+    vfs_node_t*         children;
+    vfs_node_t*         next;
+    vfs_permissions_t   permissions;
+    uint8_t             available[16];
 };
