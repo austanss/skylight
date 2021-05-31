@@ -10,6 +10,7 @@
 #define VFS_STATUS_BOUND_RANGE_EXCEEDED     -3
 #define VFS_STATUS_NAME_TOO_LONG            -4
 #define VFS_STATUS_INVALID_PERMISSIONS      -5
+#define VFS_STATUS_FILE_WRITELOCKED         -6
 
 typedef struct {
     int         (*fread)(vfs_node_t* target, size_t position, size_t bytes, void* buffer);
