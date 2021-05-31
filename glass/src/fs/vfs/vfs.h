@@ -8,7 +8,8 @@ typedef enum {
     VFS_STATUS_UNAUTHORIZED             = -2,
     VFS_STATUS_DUPLICATE                = -3,
     VFS_STATUS_LOCKED                   = -4,
-    VFS_STATUS_FAILED                   = -5
+    VFS_STATUS_FAILED                   = -5,
+    VFS_STATUS_BAD_HANDLE               = -6
 } vfs_status_t;
 
 typedef uint8_t vfs_handle_flags_t;
@@ -50,14 +51,7 @@ typedef enum {
     VFS_OPEN_FLAG_UNBUFFERED            = 0x08
 } vfs_open_flag_t;
 
-
-typedef struct {
-    char                    path[256];
-    vfs_driver_t*           driver;
-    vfs_volume_t*           volume;
-    vfs_handle_flags_t      flags;
-    vfs_extras_t            available;
-} vfs_handle_t;
+typedef struct _vfs_handle vfs_handle_t;
 
 typedef struct {
     vfs_status_t            (*fread)(vfs_handle_t* handle, void* buffer, size_t seek, size_t count);
@@ -69,14 +63,23 @@ typedef struct {
 } vfs_driver_t;
 
 typedef struct {
-    unsigned char           identifier;
     vfs_driver_t*           driver;
+    unsigned char           identifier;
     vfs_volume_flags_t      flags;
+    uint64_t                :48;
 } vfs_volume_t;
+
+struct _vfs_handle {
+    char                    path[256];
+    vfs_driver_t*           driver;
+    vfs_volume_t*           volume;
+    vfs_handle_flags_t      flags;
+    vfs_extras_t            available;
+};
 
 vfs_status_t    vopen(vfs_handle_t* out, char* path, vfs_open_flags_t flags);
 vfs_status_t    vclose(vfs_handle_t* handle);
 vfs_status_t    vread(vfs_handle_t* handle, void* buffer, size_t seek, size_t count);
 vfs_status_t    vwrite(vfs_handle_t* handle, void* data, size_t seek, size_t count);
-vfs_status_t    vcreate(vfs_handle_t* out, char* path);
+vfs_status_t    vcreate(vfs_handle_t* out, char* path, vfs_permission_flags_t flags);
 vfs_status_t    vdelete(char* path);
