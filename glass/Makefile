@@ -25,7 +25,8 @@ CCFLAGS = \
 -D__DEBUG__ \
 -pedantic \
 -Weverything \
--Werror
+-Werror \
+-pipe
 
 LDFLAGS = \
 -nostdlib \

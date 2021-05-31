@@ -6,7 +6,7 @@ IMAGE	= $(OUTPUT)/skylight.hdd
 .PHONY			= clean
 
 $(GLASS):
-	@ make -C glass
+	@ make -C glass -j10
 	@ mkdir -p build
 	@ cp glass/build/glass.elf $(GLASS)
 
