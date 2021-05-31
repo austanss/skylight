@@ -46,6 +46,7 @@ typedef enum {
 typedef struct {
     char                    path[256];
     vfs_driver_t*           driver;
+    vfs_volume_t*           volume;
     vfs_handle_flags_t      flags;
     vfs_extras_t            available;
 } vfs_handle_t;
@@ -64,3 +65,10 @@ typedef struct {
     vfs_driver_t*           driver;
     vfs_volume_flags_t      flags;
 } vfs_volume_t;
+
+vfs_status_t    vopen(vfs_handle_t* out, char* path);
+vfs_status_t    vclose(vfs_handle_t* handle);
+vfs_status_t    vread(vfs_handle_t* handle, void* buffer, size_t seek, size_t count);
+vfs_status_t    vwrite(vfs_handle_t* handle, void* data, size_t seek, size_t count);
+vfs_status_t    vcreate(vfs_handle_t* out, char* path);
+vfs_status_t    vdelete(char* path);
