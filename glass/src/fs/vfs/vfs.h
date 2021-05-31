@@ -14,6 +14,7 @@ typedef enum {
 typedef uint8_t vfs_handle_flags_t;
 typedef uint8_t vfs_permission_flags_t;
 typedef uint8_t vfs_volume_flags_t;
+typedef uint8_t vfs_open_flags_t;
 
 typedef uint8_t vfs_extras_t[23];
 
@@ -42,6 +43,13 @@ typedef enum {
     VFS_VOLUME_FLAG_UNBUFFERED          = 0x20
 } vfs_volume_flag_t;
 
+typedef enum {
+    VFS_OPEN_FLAG_CREATE                = 0x01,
+    VFS_OPEN_FLAG_TRUNCATE              = 0x02,
+    VFS_OPEN_FLAG_WRITE                 = 0x04,
+    VFS_OPEN_FLAG_UNBUFFERED            = 0x08
+} vfs_open_flag_t;
+
 
 typedef struct {
     char                    path[256];
@@ -56,7 +64,7 @@ typedef struct {
     vfs_status_t            (*fwrite)(vfs_handle_t* handle, void* data, size_t seek, size_t count);
     vfs_status_t            (*fcreate)(vfs_handle_t* out, char* path, vfs_permission_flags_t permissions);
     vfs_status_t            (*fremove)(char* path);
-    vfs_status_t            (*fopen)(vfs_handle_t* out, char* path);
+    vfs_status_t            (*fopen)(vfs_handle_t* out, char* path, vfs_open_flags_t flags);
     vfs_status_t            (*fclose)(vfs_handle_t* handle);
 } vfs_driver_t;
 
@@ -66,7 +74,7 @@ typedef struct {
     vfs_volume_flags_t      flags;
 } vfs_volume_t;
 
-vfs_status_t    vopen(vfs_handle_t* out, char* path);
+vfs_status_t    vopen(vfs_handle_t* out, char* path, vfs_open_flags_t flags);
 vfs_status_t    vclose(vfs_handle_t* handle);
 vfs_status_t    vread(vfs_handle_t* handle, void* buffer, size_t seek, size_t count);
 vfs_status_t    vwrite(vfs_handle_t* handle, void* data, size_t seek, size_t count);
