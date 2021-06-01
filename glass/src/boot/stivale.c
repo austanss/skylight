@@ -44,3 +44,16 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
         current_tag = (struct stivale2_tag *)current_tag->next;
     }
 }
+
+struct stivale2_module* get_module(struct stivale2_struct* bctx, char* cmdline) {
+    struct stivale2_struct_tag_modules* modules = (struct stivale2_struct_tag_modules *)get_tag(bctx, STIVALE2_STRUCT_TAG_MODULES_ID);
+
+    if (strlen(cmdline) > 128)
+        return NULL;
+
+    for (size_t i = 0; i < modules->module_count; i++)
+        if (!strcmp(cmdline, modules->modules[i].string))
+            return &modules->modules[i];
+
+    return NULL;
+}
