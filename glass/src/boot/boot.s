@@ -36,6 +36,10 @@ boot:
     mov gs, ax
 
     pop rdi
+
+    lea rax, [rel bootctx]
+    mov [rax], rdi
+
     push rdi
     
     mov rsi, 0x2187f79e8612de07
@@ -129,3 +133,7 @@ userspace:
 
     jmp $
     
+section .bss
+global bootctx
+bootctx:
+    resq 1
