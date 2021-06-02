@@ -14,7 +14,7 @@ static tty_buffer_entry_t* tty_buffer;
 
 extern struct stivale2_struct* bootctx;
 
-static ssfn_t ctx = { 0 };                                 /* the renderer context */
+static ssfn_t ctx = { 0 };
 static ssfn_buf_t buf;
 
 
