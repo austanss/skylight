@@ -24,7 +24,6 @@ CCFLAGS = \
 -fwrapv \
 -D__DEBUG__ \
 -pedantic \
--Weverything \
 -Werror \
 -pipe
 

@@ -27,9 +27,7 @@
  * @brief Scalable Screen Font renderers
  *
  */
-
-#ifndef _SSFN_H_
-#define _SSFN_H_
+#pragma once
 
 #define SSFN_VERSION 0x0200
 
@@ -254,12 +252,12 @@ const char *ssfn_errstr[] = { "",
 /**
  * Decode an UTF-8 multibyte, advance string pointer and return UNICODE. Watch out, no input checks
  *
- * @param **s pointer to an UTF-8 string pointer
+ * @param s pointer to an UTF-8 string pointer
  * @return unicode, and *s moved to next multibyte sequence
  */
 uint32_t ssfn_utf8(char **s)
 {
-    uint32_t c = **s;
+    uint32_t c = (uint32_t)**s;
 
     if((**s & 128) != 0) {
         if(!(**s & 32)) { c = ((**s & 0x1F)<<6)|(*(*s+1) & 0x3F); *s += 1; } else
@@ -1640,5 +1638,3 @@ namespace SSFN {
 #endif
 }
 #endif
-
-#endif /* _SSFN_H_ */

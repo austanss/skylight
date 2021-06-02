@@ -10,6 +10,7 @@
 #define MINIMUM_ALLOCATION_SIZE 0x40
 #define HEAP_BITMAP_PAGES       0x10
 #define HEAP_BITMAP_SIZE        HEAP_BITMAP_PAGES * PAGING_PAGE_SIZE * 8
+#define HEAP_PAGES              0x2000
 
 static bool malloc_started = false;
 static void* heap_start;
@@ -133,9 +134,9 @@ void* malloc(size_t size) {
 
     _mark_allocations(index, allocations);
 
-    malloc_node_t* new;
+    malloc_node_t* new = &node_root;
 
-    for (new = &node_root; !!new->next; new = new->next);
+    for (; !!new->next && new->next != (malloc_node_t *)~0x00; new = new->next);
 
     new->next = (malloc_node_t *)_malloc_single_allocation();
 

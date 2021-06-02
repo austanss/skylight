@@ -11,6 +11,7 @@ extern apic_initialize
 extern configure_math_extensions
 extern install_syscalls
 extern pci_conf_load_cache
+extern tty_putc
 
 global boot
 
@@ -91,6 +92,9 @@ boot:
     xor edi, edi
     xor esi, esi
     xor eax, eax
+
+    mov rdi, 'C'
+    call tty_putc
 
     mov ax, 0x1B
     mov ds, ax
