@@ -37,7 +37,7 @@ static void _initialize() {
     memset(buf.ptr, 000, buf.h * buf.p);
 
     ssfn_load(&ctx, (const void *)font->begin);
-    ssfn_select(&ctx, SSFN_FAMILY_MONOSPACE, "Source Code Pro", SSFN_STYLE_REGULAR, 16);
+    ssfn_select(&ctx, SSFN_FAMILY_ANY, NULL, SSFN_STYLE_REGULAR, 16);
 
     _initialized = true;
     tty_puts("glass: initialized kernel tty");
