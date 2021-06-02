@@ -15,5 +15,5 @@ gdt_reload:
     push rsi
     push rax
     xor rax, rax
-    retfq
+    o64 retf
     
