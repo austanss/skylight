@@ -10,7 +10,7 @@
 #define MINIMUM_ALLOCATION_SIZE 0x40
 #define HEAP_BITMAP_PAGES       0x10
 #define HEAP_BITMAP_SIZE        HEAP_BITMAP_PAGES * PAGING_PAGE_SIZE * 8
-#define HEAP_PAGES              0x100
+#define HEAP_PAGES              0x2000
 
 static bool malloc_started = false;
 static void* heap_start;

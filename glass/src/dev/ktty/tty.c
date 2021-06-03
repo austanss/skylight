@@ -58,9 +58,10 @@ void tty_putc(char c) {
 
     if (!c)
         return;
-
-    char cbuf[] = {0,0};
-    cbuf[0] = c;
     
-    ssfn_render(&ctx, &buf, (const char *)&cbuf);
+    if (c == ' ') {
+        
+    }
+
+    ssfn_render(&ctx, &buf, (const char *)&c);
 }
