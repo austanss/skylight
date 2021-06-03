@@ -22,10 +22,11 @@ CCFLAGS = \
 -fpie \
 -gdwarf \
 -fwrapv \
--D__DEBUG__ \
+-DNDEBUG \
 -pedantic \
 -Werror \
--pipe
+-pipe \
+-nostdinc++
 
 LDFLAGS = \
 -nostdlib \
