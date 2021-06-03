@@ -10,7 +10,7 @@
 #define MINIMUM_ALLOCATION_SIZE 0x40
 #define HEAP_BITMAP_PAGES       0x10
 #define HEAP_BITMAP_SIZE        HEAP_BITMAP_PAGES * PAGING_PAGE_SIZE * 8
-#define HEAP_PAGES              0x2000
+#define HEAP_PAGES              0x100
 
 static bool malloc_started = false;
 static void* heap_start;
@@ -74,7 +74,7 @@ static void malloc_init() {
     heap_start = paging_map_page(vbase, (void *)((uintptr_t)hpage - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
     heap_end = (void *)((uintptr_t)vbase + PAGING_PAGE_SIZE);
 
-    for (size_t i = 0; i < HEAP_BITMAP_PAGES; i++) {
+    for (size_t i = 0; i < HEAP_PAGES; i++) {
         void* page = pmm_alloc_page();
         void* virt = (void *)heap_end;
         paging_map_page(virt, (void *)((uintptr_t)page - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);

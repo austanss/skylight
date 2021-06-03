@@ -47,10 +47,9 @@ void tty_puts(const char* s) {
     if (!_initialized)
         _initialize();
 
-    size_t n = strlen(s);
-    for (size_t i = 0; i < n; i++) {
-        tty_putc(s[i]);
-    }
+    int ret = 0;
+    while((ret = ssfn_render(&ctx, &buf, s)) > 0)
+        s += ret;
 }
 
 void tty_putc(char c) {
@@ -59,11 +58,9 @@ void tty_putc(char c) {
 
     if (!c)
         return;
-    
-    if (c == '\n') {
-        ctx.line++;
-        return;
-    }
 
-    ssfn_render(&ctx, &buf, &c);
+    char cbuf[] = {0,0};
+    cbuf[0] = c;
+    
+    ssfn_render(&ctx, &buf, (const char *)&cbuf);
 }
