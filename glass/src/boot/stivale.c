@@ -5,7 +5,7 @@
 
 static
 PAGING_PAGE_ALIGNED
-uint8_t stack[PAGING_PAGE_SIZE];
+uint8_t stack[PAGING_PAGE_SIZE * 16];
 
 extern void boot(struct stivale2_struct*);
 
