@@ -1,6 +1,6 @@
 #pragma once
 #include "dev/uart/serial.h"
 
-#ifdef NDEBUG
+#ifndef NDEBUG
 #define DEBUG_PRINT(x, y) serial_terminal()->put##y(x);
 #endif

@@ -22,7 +22,6 @@ CCFLAGS = \
 -fpie \
 -gdwarf \
 -fwrapv \
--DNDEBUG \
 -pedantic \
 -Werror \
 -pipe \
