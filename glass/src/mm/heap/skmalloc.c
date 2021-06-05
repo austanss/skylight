@@ -136,7 +136,7 @@ void* malloc(size_t size) {
 
     malloc_node_t* new = &node_root;
 
-    for (; !!new->next && new->next != (malloc_node_t *)~0x00; new = new->next);
+    for (; !!new->next; new = new->next);
 
     new->next = (malloc_node_t *)_malloc_single_allocation();
 
