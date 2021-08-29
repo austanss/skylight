@@ -22,7 +22,6 @@ CCFLAGS = \
 -fpie \
 -gdwarf \
 -fwrapv \
--pedantic \
 -Werror \
 -pipe \
 -nostdinc++

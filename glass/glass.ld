@@ -28,5 +28,7 @@ SECTIONS
 		*(.bss*)
 	}
 	
+	. = ALIGN(0x1000);
+	
 	__load_max = .;
 }
