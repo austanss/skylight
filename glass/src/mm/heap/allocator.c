@@ -157,8 +157,6 @@ void* realloc(void* pointer, size_t size) {
 
     memcpy(new, pointer, size);
 
-    serial_terminal()->puts("realloc: new=")->putul(size)->puts(",old=")->putul(copy_size)->putc('\n');
-
     free(pointer);
 
     return new;

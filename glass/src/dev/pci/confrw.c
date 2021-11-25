@@ -47,8 +47,6 @@ void pci_conf_load_cache() {
 
                     pci_function_cache_entries++;
 
-                    serial_terminal()->puts("pci_function_cache: ")->putul((uint64_t)pci_function_cache)->putc('\n');
-
                     if (!pci_function_cache)
                         pci_function_cache = (pci_function_t *)malloc(sizeof(pci_function_t) * pci_function_cache_entries);
                     else
@@ -67,8 +65,6 @@ void pci_conf_load_cache() {
     }
     
     cached = true;
-                    
-    serial_terminal()->puts("pci_function_cache: ")->putul((uint64_t)pci_function_cache)->putc('\n');
 
     serial_terminal()->puts("\n\npci function cache:\n\n");
 
