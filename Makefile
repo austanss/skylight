@@ -35,3 +35,6 @@ clean:
 
 run:
 	@ qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -serial stdio -machine q35
+
+debug:
+	@ qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -S -gdb tcp::1234 -machine q35

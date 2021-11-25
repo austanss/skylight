@@ -7,3 +7,5 @@ Skylight builds with clang12, however Skylight also compiles with `-pedantic` so
 Just install mtools, no compatibility issues have been detected at this moment.
 ### wget
 You should already have this. If not, install it.
+### ovmf
+You need to have OVMF installed if you wish to run the OS through the Makefile.

@@ -47,6 +47,8 @@ void pci_conf_load_cache() {
 
                     pci_function_cache_entries++;
 
+                    serial_terminal()->puts("pci_function_cache: ")->putul((uint64_t)pci_function_cache)->putc('\n');
+
                     if (!pci_function_cache)
                         pci_function_cache = (pci_function_t *)malloc(sizeof(pci_function_t) * pci_function_cache_entries);
                     else
@@ -63,13 +65,17 @@ void pci_conf_load_cache() {
             }
         }
     }
+    
     cached = true;
+                    
+    serial_terminal()->puts("pci_function_cache: ")->putul((uint64_t)pci_function_cache)->putc('\n');
 
     serial_terminal()->puts("\n\npci function cache:\n\n");
 
     for (size_t i = 0; i < pci_function_cache_entries; i++) {
         pci_function_t* function = &pci_function_cache[i];
         pci_dev_header_t* header = (pci_dev_header_t *)function->base;
+
         serial_terminal()->puts("location: ");
         serial_terminal()->putd(function->segment)->putc('/');
         serial_terminal()->putd(function->bus)->putc('/');

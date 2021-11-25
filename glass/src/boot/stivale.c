@@ -28,12 +28,15 @@ __attribute__((section(".stivale2hdr"), used))
 static struct stivale2_header boot_header = {
     .entry_point = (uintptr_t)&boot,
     .stack = (uintptr_t)&stack + sizeof(stack),
-    .flags = 0x02,
+    .flags = 0x12,
     .tags = (uintptr_t)&framebuffer_tag
 };
 
 void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
+    serial_terminal()->puts("\nGetting boot context from ")->putul((uint64_t)bctx);
+
     struct stivale2_tag *current_tag = (struct stivale2_tag *)bctx->tags;
+
     for (;;) {
         if (!current_tag)
             return NULL;

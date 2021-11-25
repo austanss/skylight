@@ -11,7 +11,7 @@ extern apic_initialize
 extern configure_math_extensions
 extern install_syscalls
 extern pci_conf_load_cache
-extern tty_putc
+extern paging_map_page
 
 global boot
 
@@ -75,6 +75,16 @@ boot:
     pop rdi
     push rdi
 
+    mov rsi, rdi
+    mov rdx, 0xffffffff00000000
+    not rdx
+    and rsi, rdx
+    mov rdx, (0x01 | 0x02)
+    call paging_map_page
+
+    pop rdi
+    push rdi
+
     mov rsi, 0x9e1786930a375e78
     call get_tag
     lea rdi, [rax + (8*2)]
@@ -93,8 +103,7 @@ boot:
     xor esi, esi
     xor eax, eax
 
-    mov rdi, 'C'
-    call tty_putc
+    jmp $
 
     mov ax, 0x1B
     mov ds, ax
