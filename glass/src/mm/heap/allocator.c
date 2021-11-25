@@ -60,6 +60,8 @@ void header_combine_backward(heap_seg_header_t* segment) {
     if (segment->last != NULL && segment->last->free) header_combine_forward(segment->last);
 }
 
+bool heap_initialized = false;
+
 void heap_initialize(void* address, size_t pages){
     void* pos = address;
 
@@ -78,6 +80,8 @@ void heap_initialize(void* address, size_t pages){
     start->last = NULL;
     start->free = true;
     last_header = start;
+
+    heap_initialized = true;
 }
 
 void heap_expand(size_t length) {
@@ -109,8 +113,6 @@ void free(void* address){
     header_combine_forward(segment);
     header_combine_backward(segment);
 }
-
-bool heap_initialized = false;
 
 void* malloc(size_t size) {
 
