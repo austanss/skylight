@@ -26,7 +26,7 @@ void psf_load(void* psf, size_t bytes) {
     psf_glyphs = (psf_glyph_t *)(psf + font->header_size);
     psf_translation_table = (uint16_t *)calloc(USHRT_MAX, 2);
 
-    while (unicode_table > (unsigned char *)end) {
+    while (unicode_table < (unsigned char *)end) {
         uint16_t unicode = (uint16_t)(unicode_table[0]);
 
         if (unicode == 0xFF) {
