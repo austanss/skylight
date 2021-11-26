@@ -22,6 +22,7 @@ $(IMAGE): glass
 	@ mcopy -i fat.img BOOTX64.EFI ::/EFI/BOOT/BOOTX64.EFI
 	@ mcopy -i fat.img $(GLASS) ::/sys/start/glass.sys
 	@ mcopy -i fat.img boot.cfg ::/limine.cfg
+	@ mcopy -i fat.img MicroKnight.psf ::/sys/share/font.psf
 	@ rm BOOTX64.EFI
 	@ mv fat.img build/skylight.hdd
 

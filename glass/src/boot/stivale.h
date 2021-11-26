@@ -243,3 +243,5 @@ struct stivale2_struct_vmap {
 
 void* get_tag(struct stivale2_struct *bctx, uint64_t id);
 struct stivale2_module* get_module(struct stivale2_struct *bctx, char* cmdline);
+
+extern struct stivale2_struct* bootctx;

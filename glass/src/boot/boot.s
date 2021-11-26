@@ -12,6 +12,7 @@ extern configure_math_extensions
 extern install_syscalls
 extern pci_conf_load_cache
 extern paging_map_page
+extern tty_render_glyph
 
 global boot
 
@@ -98,10 +99,16 @@ boot:
 
     call install_syscalls
 
+    mov rdi, 24
+    mov rsi, 24
+    mov rdx, 'C'
+    call tty_render_glyph
+
     pop rdi
     xor edi, edi
     xor esi, esi
     xor eax, eax
+
 
     jmp $
 
