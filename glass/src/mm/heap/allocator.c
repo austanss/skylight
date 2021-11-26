@@ -161,3 +161,10 @@ void* realloc(void* pointer, size_t size) {
 
     return new;
 }
+
+void* calloc(size_t elements, size_t size) {
+    size_t real_size = elements * size;
+    void* alloc = malloc(real_size);
+    memset(alloc, 0x00, real_size);
+    return alloc;
+}
