@@ -107,8 +107,6 @@ boot:
 
     call tty_enable
 
-    jmp $
-
     call tty_disable
 
     mov ax, 0x1B
