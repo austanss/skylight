@@ -99,16 +99,10 @@ boot:
 
     call install_syscalls
 
-    mov rdi, 24
-    mov rsi, 24
-    mov rdx, 'C'
-    call tty_render_glyph
-
     pop rdi
     xor edi, edi
     xor esi, esi
     xor eax, eax
-
 
     jmp $
 
