@@ -24,7 +24,7 @@ void tty_render_glyph(size_t x, size_t y, char c) {
 
     for (size_t yy = 15; yy < 16; yy--)
         for (size_t xx = 7; xx < 8; xx--)
-            ((uint32_t *)fb->framebuffer_addr)[(y * fb->framebuffer_width + x) + ((15 - yy) * fb->framebuffer_width + (7 - xx))] = (glyph.data[yy] >> xx) & 1 ? 0xFFFFFFFF : 0x00000000;
+            ((uint32_t *)fb->framebuffer_addr)[(y * fb->framebuffer_width + x) + (yy * fb->framebuffer_width + (7 - xx))] = (glyph.data[yy] >> xx) & 1 ? 0xFFFFFFFF : 0x00000000;
 }
 
 void tty_enable() {
