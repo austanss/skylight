@@ -123,8 +123,6 @@ boot:
     push rcx
     iretq
 
-section .text
-
 align 4096
 userspace:
     xor rbp, rbp
@@ -147,6 +145,8 @@ userspace:
     xor r13, r13
     xor r14, r14
     xor r15, r15
+
+    mov rdi, rsp
 
     jmp $
     
