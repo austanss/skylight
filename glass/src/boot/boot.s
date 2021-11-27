@@ -12,7 +12,8 @@ extern configure_math_extensions
 extern install_syscalls
 extern pci_conf_load_cache
 extern paging_map_page
-extern tty_render_glyph
+extern tty_enable
+extern tty_disable
 
 global boot
 
@@ -104,7 +105,11 @@ boot:
     xor esi, esi
     xor eax, eax
 
+    call tty_enable
+
     jmp $
+
+    call tty_disable
 
     mov ax, 0x1B
     mov ds, ax
