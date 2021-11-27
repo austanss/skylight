@@ -6,9 +6,7 @@ SCODE	= $(shell find $(SOURCE) -type f -name '*.s')
 OBJECTS	= $(patsubst $(SOURCE)/%.c, $(OUTPUT)/%.c.o, $(CCODE))
 OBJECTS += $(patsubst $(SOURCE)/%.s, $(OUTPUT)/%.s.o, $(SCODE))
 
-LDS = glass.ld
-
-GLASS	= $(OUTPUT)/glass.sys
+FRAME	= $(OUTPUT)/frame.se
 
 CC 	= clang
 LD 	= clang
@@ -27,8 +25,6 @@ CCFLAGS = \
 
 LDFLAGS = \
 -nostdlib \
--Wl,-T$(LDS) \
--mcmodel=kernel \
 -pie
 
 ASFLAGS = \
@@ -49,11 +45,11 @@ $(OUTPUT)/%.s.o: $(SOURCE)/%.s
 	@ mkdir -p $(@D)
 	@ $(AS) $(ASFLAGS) $^ -o $@
 
-$(GLASS): $(OBJECTS)
+$(FRAME): $(OBJECTS)
 	@ echo "	link $@"
-	@ $(LD) $(LDFLAGS) $(OBJECTS) -o $(GLASS)
+	@ $(LD) $(LDFLAGS) $(OBJECTS) -o $(FRAME)
 
 clean:
 	@ rm -rf build
 
-all: $(GLASS)
+all: $(FRAME)

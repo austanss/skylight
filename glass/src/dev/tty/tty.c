@@ -33,7 +33,7 @@ void tty_enable() {
         return;
     }
 
-    struct stivale2_module* font = get_module(bootctx, "TTY-PSF");
+    struct stivale2_module* font = get_module(bootctx, "font.psf");
     psf_load((void *)font->begin, (size_t)(font->end - font->begin));
     fb = get_tag(bootctx, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
     

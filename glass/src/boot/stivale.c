@@ -33,8 +33,6 @@ static struct stivale2_header boot_header = {
 };
 
 void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
-    serial_terminal()->puts("\nGetting boot context from ")->putul((uint64_t)bctx);
-
     struct stivale2_tag *current_tag = (struct stivale2_tag *)bctx->tags;
 
     for (;;) {
@@ -50,6 +48,8 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
 
 struct stivale2_module* get_module(struct stivale2_struct* bctx, char* cmdline) {
     struct stivale2_struct_tag_modules* modules = (struct stivale2_struct_tag_modules *)get_tag(bctx, STIVALE2_STRUCT_TAG_MODULES_ID);
+
+    serial_terminal()->puts("Loading module \"")->puts(cmdline)->puts("\"...\n");
 
     if (strlen(cmdline) > 128)
         return NULL;
