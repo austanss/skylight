@@ -28,6 +28,11 @@ void tty_render_glyph(size_t x, size_t y, char c) {
 }
 
 void tty_enable() {
+    if (tty_enabled) {
+        tty_clear();
+        return;
+    }
+
     struct stivale2_module* font = get_module(bootctx, "TTY-PSF");
     psf_load((void *)font->begin, (size_t)(font->end - font->begin));
     fb = get_tag(bootctx, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
@@ -39,6 +44,9 @@ void tty_enable() {
 }
 
 void tty_disable() {
+    if (!tty_enabled)
+        return;
+
     tty_clear();
     tty_enabled = false;
     free(psf_translation_table);
@@ -50,11 +58,17 @@ void tty_set_pos(size_t x, size_t y) {
 }
 
 void tty_clear() {
+    if (!tty_enabled)
+        return;
+
     tty_set_pos(0, 0);
     memset((void *)fb->framebuffer_addr, 0x00, fb->framebuffer_height * fb->framebuffer_width * (fb->framebuffer_bpp / 8));
 }
 
 void tty_putc(char c) {
+    if (!tty_enabled)
+        return;
+
     tty_render_glyph(tty_x, tty_y, c);
 
     switch (c) {
@@ -80,6 +94,9 @@ void tty_putc(char c) {
 }
 
 void tty_puts(char* s) {
+    if (!tty_enabled)
+        return;
+
     size_t len = strlen(s);
     for (size_t i = 0; i < len; i++) {
         tty_putc(s[i]);

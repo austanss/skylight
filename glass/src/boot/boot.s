@@ -58,6 +58,8 @@ boot:
     mov rdi, rax
     call paging_reload
 
+    call tty_enable
+
     xor edi, edi
     call tss_install
 
@@ -104,8 +106,6 @@ boot:
     xor edi, edi
     xor esi, esi
     xor eax, eax
-
-    call tty_enable
 
     call tty_disable
 
