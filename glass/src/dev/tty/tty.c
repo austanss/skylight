@@ -40,7 +40,6 @@ void tty_enable() {
     tty_enabled = true;
 
     tty_clear();
-    tty_puts("Skylight v0.3: \"Sunrise\"");
 }
 
 void tty_disable() {
