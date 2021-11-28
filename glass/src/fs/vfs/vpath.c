@@ -67,6 +67,5 @@ vfs_status_t vopen(vfs_handle_t* out, char* path, vfs_open_flags_t flags) {
     if (!volume->identifier)
         return VFS_STATUS_NOT_FOUND;
 
-    // 0xffffffff8140d804
     return volume->driver->fopen(out, path, flags);
 }

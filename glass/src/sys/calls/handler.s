@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 0
+%define nsyscalls 1
 
 syscall_dispatch:
     push rcx
@@ -37,5 +37,10 @@ syscall_dispatch:
     mov [rcx], rax
     jmp .sysret
 
+section .data
+
+extern rdinfo
+
 syscall_table:
+    dq rdinfo
     dq 0x0000000000000000
