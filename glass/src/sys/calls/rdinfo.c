@@ -35,7 +35,7 @@ uint64_t display_bpp() {
     return fb->framebuffer_bpp;
 }
 
-uint64_t (*subfunction[])() = {
+uint64_t (*retriever[])() = {
     total_ram,
     free_ram,
     display_width,
@@ -44,5 +44,5 @@ uint64_t (*subfunction[])() = {
 };
 
 uint64_t rdinfo(uint64_t field) {
-    return subfunction[field]();
+    return retriever[field]();
 }
