@@ -5,7 +5,7 @@
 According to [dictionary.com](https://www.dictionary.com/browse/skylight#), a "skylight" is:
 > an opening in a roof or ceiling, fitted with glass, for admitting daylight.
 
-Skylight is an operating system that is modeled after Windows, and aims to be cleaner and more efficient.
+Skylight is an operating system that is uniquely modeled, and aims to be cleaner (like a window) and more efficient.
 
 ### **License**
 I have waived my copyrights on this entire repository, under the Creative Commons Zero license.
@@ -36,8 +36,9 @@ In order to test, you need to ensure that your testing emulator/hardware support
  - PAE/NX
  - SSE2
  - ACPI
+ - PCIe
  - UEFI v2.0
- - 128MiB RAM (min.)
+ - 256MiB RAM (min.)
 
 To test in an emulator, enter the source tree after building an image, and type `make run`.
 
