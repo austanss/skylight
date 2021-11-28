@@ -14,6 +14,8 @@ extern pci_conf_load_cache
 extern paging_map_page
 extern tty_enable
 extern tty_disable
+extern elf_load_program
+extern get_module
 
 global boot
 
@@ -109,6 +111,14 @@ boot:
 
     call tty_disable
 
+    lea rax, [rel bootctx]
+    mov rdi, [rax]
+    mov rsi, frame_id
+    call get_module
+    mov rdi, [rax]
+    call elf_load_program
+    mov rcx, rax
+
     mov ax, 0x1B
     mov ds, ax
     mov es, ax
@@ -119,7 +129,6 @@ boot:
     push rbx
     pushfq
     push 0x23
-    lea rcx, [rel userspace]
     push rcx
     iretq
 
@@ -150,7 +159,12 @@ userspace:
 
     jmp $
     
+section .data
+frame_id:
+    db "frame.se",0
+
 section .bss
+
 global bootctx
 bootctx:
     resq 1
