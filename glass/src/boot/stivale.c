@@ -58,5 +58,7 @@ struct stivale2_module* get_module(struct stivale2_struct* bctx, char* cmdline) 
         if (!strcmp(cmdline, modules->modules[i].string))
             return &modules->modules[i];
 
+    serial_terminal()->puts("Could not locate requested module.\n");
+
     return NULL;
 }
