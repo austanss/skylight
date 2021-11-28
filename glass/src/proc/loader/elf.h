@@ -6,7 +6,7 @@
 #define ELF_SEGMENT_DYNAMIC     0x02
 #define ELF_SEGMENT_INTERP      0x03
 
-#define ELF_HEADER_MAGIC        "\127ELF"
+#define ELF_HEADER_MAGIC        "\177ELF"
 
 #define ELF_ARCH_IRRELEVANT     0x00
 #define ELF_ARCH_SPARC	        0x02
