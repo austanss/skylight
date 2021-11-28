@@ -52,8 +52,8 @@ void* elf_load_program(void* file) {
 
     size_t header_table_size = header->program_table_entry_size * header->program_table_entries;
 
-    for (elf_program_header_t* pheader = (elf_program_header_t *)header->header_table;;) {
-        if (((uint64_t)pheader - header->header_table) >= header_table_size)
+    for (elf_program_header_t* pheader = (elf_program_header_t *)(file + header->header_table);;) {
+        if (((uint64_t)pheader - ((uint64_t)file + header->header_table)) >= header_table_size)
             break;
 
         if (pheader->type == ELF_SEGMENT_LOAD)
