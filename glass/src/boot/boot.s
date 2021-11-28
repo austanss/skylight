@@ -117,7 +117,9 @@ boot:
     call get_module
     mov rdi, [rax]
     call elf_load_program
-    mov rcx, rax
+    mov rdx, rax
+
+    lea rcx, [rel userspace]
 
     mov ax, 0x1B
     mov ds, ax
@@ -138,6 +140,8 @@ userspace:
     push rbp
     mov rbp, rsp
 
+    push rdx
+
     xor rax, rax
     xor rbx, rbx
     xor rcx, rcx
@@ -155,9 +159,11 @@ userspace:
     xor r14, r14
     xor r15, r15
 
+    pop rdx
+
     mov rdi, rsp
 
-    jmp $
+    call rdx
     
 section .data
 frame_id:

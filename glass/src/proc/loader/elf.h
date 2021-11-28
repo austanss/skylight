@@ -39,8 +39,9 @@ typedef struct {
     uint16_t    resc;
     uint16_t    architecture;
     uint32_t    elf_version;
-    uint64_t    program_entry;
+    uint64_t    program_entry;  
     uint64_t    header_table;
+    uint64_t    section_table;
     uint32_t    flags;
     uint16_t    header_size;
     uint16_t    program_table_entry_size;

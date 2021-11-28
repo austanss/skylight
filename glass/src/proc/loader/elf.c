@@ -10,7 +10,7 @@
 bool elf_load_segment(void* file, elf_program_header_t* header) {
     size_t pages = header->p_memsz / 0x1000;
 
-    if (pages % 0x1000 > 0)
+    if (header->p_memsz % 0x1000 > 0)
         pages++;
 
     void* segment = (void *)header->p_vaddr;
