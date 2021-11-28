@@ -16,16 +16,12 @@ CCFLAGS = \
 -ffreestanding \
 -I$(SOURCE) \
 -mno-red-zone \
--mcmodel=kernel \
--fpie \
+-fpic \
 -gdwarf \
--fwrapv \
--Werror \
--pipe
+-Werror 
 
 LDFLAGS = \
--nostdlib \
--pie
+-nostdlib
 
 ASFLAGS = \
 -f elf64 \
