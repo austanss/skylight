@@ -33,11 +33,8 @@ To build, simply enter the root of the source tree, and run `make image`. A FAT3
 ### Testing
 In order to test, you need to ensure that your testing emulator/hardware supports:
  - x86-64
- - PAE/NX
- - SSE2
- - ACPI
- - PCIe
  - UEFI v2.0
+ - PCIe
  - 256MiB RAM (min.)
 
 To test in an emulator, enter the source tree after building an image, and type `make run`.
