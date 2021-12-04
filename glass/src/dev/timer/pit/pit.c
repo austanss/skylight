@@ -12,13 +12,19 @@ void __pit_builtin_handler(void* frame) {
     return;
 }
 
-void pit_enable(void) {
+void pit_enable() {
     if (pit_vector > 0)
         return;
 
     pit_vector = idt_allocate_vector();
     apic_io_redirect_irq(0, pit_vector, false, false);
     idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, tss_add_stack(0));
+}
+
+void pit_disable() {
+    apic_io_mask_irq(0);
+    idt_free_vector(pit_vector);
+    pit_vector = 0;
 }
 
 void pit_set_divisor(uint16_t divisor) {
