@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 1
+%define nsyscalls 3
 
 syscall_dispatch:
     push rcx
@@ -40,7 +40,11 @@ syscall_dispatch:
 section .data
 
 extern rdinfo
+extern pmap
+extern punmap
 
 syscall_table:
     dq rdinfo
+    dq pmap
+    dq punmap
     dq 0x0000000000000000
