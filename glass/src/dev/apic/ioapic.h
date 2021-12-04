@@ -22,7 +22,7 @@ extern apic_io_controller_node_t* ioapics;
 
 void    apic_io_register_controller(acpi_madt_record_ioapic_t controller);
 void*   apic_io_get_base(uint64_t ioapic_id);
-void    apic_io_redirect_irq(uint8_t irq, uint8_t vector, bool alow, bool ltriggered);
+void    apic_io_redirect_irq(uint8_t irq, uint8_t vector, bool active_low, bool level_triggered);
 void    apic_io_mask_irq(uint8_t irq);
 void    apic_io_unmask_irq(uint8_t irq);
 
