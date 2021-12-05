@@ -40,6 +40,8 @@ void local_timer_calibrate() {
     asm ("hlt");
 
     calibrated = true;
+
+    local_timer_set_frequency(1);
 }
 
 uint64_t local_timer_get_tpms() {
@@ -51,6 +53,11 @@ void local_timer_set_handler(void (*handler)) {
 }
 
 void local_timer_set_frequency(uint64_t hz) {
+    if (hz == 0) {
+        apic_local_write(APIC_LOCAL_REGISTER_INITIAL_COUNT, 0);
+        return;
+    }
+
     uint64_t counts_per_tick = (tpms * 1000) / hz;
     apic_local_write(APIC_LOCAL_REGISTER_INITIAL_COUNT, counts_per_tick);
 }

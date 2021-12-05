@@ -16,6 +16,7 @@ extern tty_enable
 extern tty_disable
 extern elf_load_program
 extern get_module
+extern local_timer_calibrate
 
 global boot
 
@@ -103,6 +104,8 @@ boot:
     call pci_conf_load_cache
 
     call install_syscalls
+
+    call local_timer_calibrate
 
     pop rdi
     xor edi, edi
