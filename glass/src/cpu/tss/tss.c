@@ -25,6 +25,8 @@ void tss_install(int num_cpu) {
     memset((void *)tss_base, 0, sizeof(tss_t));
     
     tss_add_stack(num_cpu);
+    tss_add_stack(num_cpu);
+
     tss_descriptors[num_cpu].rsp[0] = tss_descriptors[num_cpu].ist[0];
 
     tss_descriptors[num_cpu].io_map = sizeof(tss_t);

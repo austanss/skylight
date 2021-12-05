@@ -3,6 +3,9 @@
 
 #define TSS_MAX_CPUS 1
 
+#define TSS_IST_EXCEPTION   001
+#define TSS_IST_ROUTINE     002
+
 typedef struct tss {
     uint32_t    rsv0;
     uint64_t    rsp[3];

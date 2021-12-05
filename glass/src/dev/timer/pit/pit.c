@@ -30,7 +30,7 @@ void pit_enable() {
 
     pit_vector = idt_allocate_vector();
     apic_io_redirect_irq(0, pit_vector, false, false);
-    idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, tss_add_stack(0));
+    idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, TSS_IST_ROUTINE);
 }
 
 void pit_disable() {

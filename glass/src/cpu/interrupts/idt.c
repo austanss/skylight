@@ -1,5 +1,6 @@
-#include "idt.h"
-#include "../gdt/gdt.h"
+#include "cpu/interrupts/idt.h"
+#include "cpu/gdt/gdt.h"
+#include "cpu/tss/tss.h"
 #include "mm/paging/paging.h"
 
 static
@@ -29,7 +30,7 @@ void idt_assemble() {
     idtr.limit = (uint16_t)sizeof(idt_desc_t) * IDT_MAX_DESCRIPTORS - 1;
 
     for (uint8_t vector = 0; vector < IDT_CPU_EXCEPTION_COUNT; vector++) {
-        idt_set_descriptor(vector, isr_stub_table[vector], IDT_DESCRIPTOR_EXCEPTION, 1);
+        idt_set_descriptor(vector, isr_stub_table[vector], IDT_DESCRIPTOR_EXCEPTION, TSS_IST_EXCEPTION);
         vectors[vector] = true;
     }
 
