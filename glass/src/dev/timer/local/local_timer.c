@@ -35,3 +35,7 @@ void local_timer_calibrate() {
 
     asm ("hlt");
 }
+
+uint64_t local_timer_get_tpms() {
+    return tpms;
+}
