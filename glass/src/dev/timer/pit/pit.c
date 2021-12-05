@@ -54,3 +54,14 @@ uint64_t pit_stopwatch_stop() {
     watching = false;
     return ticks;
 }
+
+void pit_deadline_wait(uint64_t delay_ticks) {
+    ticks = 0;
+    watching = true;
+    
+    while (ticks < delay_ticks)
+        asm ("hlt");
+
+    watching = false;
+    return;
+}
