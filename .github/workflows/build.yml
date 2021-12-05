@@ -15,4 +15,7 @@ jobs:
 
       - name: Build glass
         run: git clone https://github.com/rizet/skylight.git && cd skylight && make glass
+
+      - name: Build frame
+        run: cd skylight && make frame
     
