@@ -3,6 +3,7 @@
 
 #include "dev/timer/pit/pit.h"
 #include "dev/apic/ioapic.h"
+#include "dev/apic/lapic.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
 #include "dev/io.h"
@@ -17,6 +18,9 @@ __attribute__ ((interrupt))
 void __pit_builtin_handler(void* frame) {
     if (watching)
         ticks++;
+
+    apic_local_send_eoi();
+
     return;
 }
 
