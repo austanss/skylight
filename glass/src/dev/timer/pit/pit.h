@@ -16,4 +16,4 @@ void pit_set_divisor(uint16_t divisor);
 void pit_stopwatch_start();
 uint64_t pit_stopwatch_stop();
 
-void pit_deadline_callback(uint64_t ticks, void (*callback));
+void pit_deadline_wait(uint64_t delay_ticks);
