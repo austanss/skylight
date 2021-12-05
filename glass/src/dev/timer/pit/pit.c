@@ -1,3 +1,6 @@
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "dev/timer/pit/pit.h"
 #include "dev/apic/ioapic.h"
 #include "cpu/interrupts/idt.h"
@@ -7,8 +10,13 @@
 uint8_t pit_vector = 0;
 uint16_t pit_divisor = 0;
 
+static uint64_t ticks;
+static bool watching = false;
+
 __attribute__ ((interrupt))
 void __pit_builtin_handler(void* frame) {
+    if (watching)
+        ticks++;
     return;
 }
 
@@ -31,4 +39,14 @@ void pit_set_divisor(uint16_t divisor) {
     outb(PIT_REGISTER_COMMAND_MODE, 0x34);
     outb(PIT_REGISTER_CHANNEL0_DATA, divisor & 0xFF);
     outb(PIT_REGISTER_CHANNEL0_DATA, divisor >> 8);
+}
+
+void pit_stopwatch_start() {
+    ticks = 0;
+    watching = true;
+}
+
+uint64_t pit_stopwatch_stop() {
+    watching = false;
+    return ticks;
 }

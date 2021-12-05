@@ -10,3 +10,6 @@ extern uint16_t pit_divisor;
 void pit_enable();
 void pit_disable();
 void pit_set_divisor(uint16_t divisor);
+
+void pit_stopwatch_start();
+uint64_t pit_stopwatch_stop();
