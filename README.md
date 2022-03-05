@@ -1,4 +1,5 @@
 # Skylight
+Thank you all for the incredible support!
 ## A bright opening, a clean window.
 
 ### **Etymology**
