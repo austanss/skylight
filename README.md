@@ -41,3 +41,6 @@ To test in an emulator, enter the source tree after building an image, and type 
 
 To test on real hardware, meet the requirements above, and write the image to a drive.
 Boot into it through your UEFI boot menu.
+
+### Development Cycle
+I am currently a high school student and I have many a matter pertain to, so whilst I do love this project and intend to work on it in the future, I am currently unable to do so given the lack of time and appropriate means required for working on this project.
