@@ -36,11 +36,11 @@ void* apic_io_get_base(uint64_t ioapic_id) {
 }
 
 void apic_io_mask_irq(uint8_t irq) {
-    apic_io_write(0, IOAPIC_REGISTER_REDIRECTION(irq), apic_io_read(0, IOAPIC_REGISTER_REDIRECTION(irq) | 0x10000));
+    apic_io_write(0, IOAPIC_REGISTER_REDIRECTION(irq), apic_io_read(0, IOAPIC_REGISTER_REDIRECTION(irq)) | 0x10000);
 }
 
 void apic_io_unmask_irq(uint8_t irq) {
-    apic_io_write(0, IOAPIC_REGISTER_REDIRECTION(irq), apic_io_read(0, IOAPIC_REGISTER_REDIRECTION(irq) & ~0x10000));
+    apic_io_write(0, IOAPIC_REGISTER_REDIRECTION(irq), apic_io_read(0, IOAPIC_REGISTER_REDIRECTION(irq)) & ~0x10000);
 }
 
 void apic_io_redirect_irq(uint8_t irq, uint8_t vector, bool alow, bool ltriggered) {
