@@ -29,12 +29,13 @@ void pit_enable() {
         return;
 
     pit_vector = idt_allocate_vector();
-    apic_io_redirect_irq(0, pit_vector, false, false);
+    apic_io_redirect_irq(PIT_IRQ_LINE, pit_vector, false, false);
     idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, TSS_IST_ROUTINE);
+    apic_io_unmask_irq(PIT_IRQ_LINE);
 }
 
 void pit_disable() {
-    apic_io_mask_irq(0);
+    apic_io_mask_irq(PIT_IRQ_LINE);
     idt_free_vector(pit_vector);
     pit_vector = 0;
 }

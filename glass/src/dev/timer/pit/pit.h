@@ -6,6 +6,8 @@
 
 #define PIT_FREQUENCY               1193182
 
+#define PIT_IRQ_LINE                0
+
 extern uint8_t pit_vector;
 extern uint16_t pit_divisor;
 
