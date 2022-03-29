@@ -17,7 +17,7 @@ static bool watching = false;
 __attribute__ ((interrupt))
 void __pit_builtin_handler(void* frame) {
     if (watching)
-        ticks++;
+        ticks += pit_divisor;
 
     apic_local_send_eoi();
 
@@ -30,6 +30,9 @@ void pit_enable() {
 
     pit_vector = idt_allocate_vector();
     apic_io_redirect_irq(PIT_IRQ_LINE, pit_vector, false, false);
+    
+    pit_set_divisor(8);
+    
     idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, TSS_IST_ROUTINE);
     apic_io_unmask_irq(PIT_IRQ_LINE);
 }
@@ -44,6 +47,7 @@ void pit_set_divisor(uint16_t divisor) {
     outb(PIT_REGISTER_COMMAND_MODE, 0x34);
     outb(PIT_REGISTER_CHANNEL0_DATA, divisor & 0xFF);
     outb(PIT_REGISTER_CHANNEL0_DATA, divisor >> 8);
+    pit_divisor = divisor;
 }
 
 void pit_stopwatch_start() {
