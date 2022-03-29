@@ -50,8 +50,23 @@ void apic_io_redirect_irq(uint8_t irq, uint8_t vector, bool alow, bool ltriggere
     redirect |= vector;
     redirect |= ((uint32_t)alow << 13);
     redirect |= ((uint32_t)ltriggered << 15);
-    redirect |= 0x10000;
+    redirect |= (1 << 16);
 
     apic_io_write(0, IOAPIC_REGISTER_REDIRECTION(irq) + 1, destination);
     apic_io_write(0, IOAPIC_REGISTER_REDIRECTION(irq), redirect);
+}
+
+apic_io_redirect_t apic_io_get_redirect(uint8_t irq) {
+    uint32_t entry = apic_io_read(0, IOAPIC_REGISTER_REDIRECTION(irq));
+
+    apic_io_redirect_t redirect;
+
+    redirect.irq = irq;
+    redirect.vector = entry & 0xFF;
+
+    redirect.active_low = entry & (1 << 13);
+    redirect.level_triggered = entry & (1 << 15);
+    redirect.masked = entry & (1 << 16);
+
+    return redirect;
 }

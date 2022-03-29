@@ -18,13 +18,26 @@ typedef struct _apic_io_controller_node {
     struct _apic_io_controller_node*    next;
 } apic_io_controller_node_t;
 
+typedef struct {
+    uint8_t irq;
+    uint8_t vector;
+    bool active_low;
+    bool level_triggered;
+    bool masked;
+} apic_io_redirect_t;
+
 extern apic_io_controller_node_t* ioapics;
 
-void    apic_io_register_controller(acpi_madt_record_ioapic_t controller);
-void*   apic_io_get_base(uint64_t ioapic_id);
-void    apic_io_redirect_irq(uint8_t irq, uint8_t vector, bool active_low, bool level_triggered);
-void    apic_io_mask_irq(uint8_t irq);
-void    apic_io_unmask_irq(uint8_t irq);
+void                apic_io_register_controller(acpi_madt_record_ioapic_t controller);
+void*               apic_io_get_base(uint64_t ioapic_id);
+
+void                apic_io_redirect_irq(uint8_t irq, uint8_t vector, bool active_low, bool level_triggered);
+apic_io_redirect_t  apic_io_get_redirect(uint8_t irq);
+
+void                apic_io_mask_irq(uint8_t irq);
+void                apic_io_unmask_irq(uint8_t irq);
+
+uint8_t             apic_io_get_gsi(uint8_t irq);
 
 static
 inline

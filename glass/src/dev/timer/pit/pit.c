@@ -24,21 +24,27 @@ void __pit_builtin_handler(void* frame) {
     return;
 }
 
+static uint8_t gsi = 0xFF;
+
 void pit_enable() {
-    if (pit_vector > 0)
+    if (gsi != 0xFF)
         return;
 
     pit_vector = idt_allocate_vector();
-    apic_io_redirect_irq(PIT_IRQ_LINE, pit_vector, false, false);
+    gsi = apic_io_get_gsi(PIT_IRQ_LINE);
+
+    apic_io_redirect_t existing = apic_io_get_redirect(gsi);
+
+    apic_io_redirect_irq(gsi, pit_vector, existing.active_low, existing.level_triggered);
     
     pit_set_divisor(8);
     
     idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, TSS_IST_ROUTINE);
-    apic_io_unmask_irq(PIT_IRQ_LINE);
+    apic_io_unmask_irq(gsi);
 }
 
 void pit_disable() {
-    apic_io_mask_irq(PIT_IRQ_LINE);
+    apic_io_mask_irq(gsi);
     idt_free_vector(pit_vector);
     pit_vector = 0;
 }

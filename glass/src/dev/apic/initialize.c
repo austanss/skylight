@@ -21,6 +21,12 @@ static void detect_apic() {
     }
 }
 
+// TODO: make this dynamic
+static uint8_t gsi_map[24];
+
+uint8_t apic_io_get_gsi(uint8_t irq) {
+    return gsi_map[irq];
+}
 
 static void configure_local_apic(acpi_madt_header_t* madt) {
     serial_terminal()->puts("\n\nlocal apic configuration:\n\n");
@@ -87,12 +93,14 @@ static void configure_io_apic(acpi_madt_header_t* madt) {
 
         if (madt_record->type == ACPI_MADT_RECORD_TYPE_ISO) {
             acpi_madt_record_iso_t* override = (acpi_madt_record_iso_t *)madt_record;
-            apic_io_redirect_irq(override->irq_source, 
-                                (uint8_t)override->gsi, 
+            apic_io_redirect_irq(override->gsi, 
+                                0x00, 
                                 !!(override->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_ACTIVE_LOW), 
                                 !!(override->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_LEVEL_TRIGGERED));
 
-            serial_terminal()->puts("irq: ")->putul(override->irq_source)->puts(", vec: ")->putul(override->gsi)->putc('\n');
+            gsi_map[override->irq_source] = override->gsi;
+
+            serial_terminal()->puts("irq: ")->putul(override->irq_source)->puts(", gsi: ")->putul(override->gsi)->putc('\n');
         }
     }
 }
