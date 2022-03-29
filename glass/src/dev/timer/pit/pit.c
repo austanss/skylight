@@ -11,7 +11,7 @@
 uint8_t pit_vector = 0;
 uint16_t pit_divisor = 0;
 
-static uint64_t ticks;
+static volatile uint64_t ticks;
 static bool watching = false;
 
 __attribute__ ((interrupt))
