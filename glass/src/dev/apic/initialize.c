@@ -70,6 +70,11 @@ static void configure_local_apic(acpi_madt_header_t* madt) {
     serial_terminal()->puts("lint1: ")->putul(apic_local_read(APIC_LOCAL_REGISTER_LVT_LINT1))->putc('\n');
 }
 
+static void initialize_gsi_map() {
+    for (uint8_t i = 0; i < 24; i++)
+        gsi_map[i] = i;
+}
+
 static void configure_io_apic(acpi_madt_header_t* madt) {
     for (acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));;) {
         if (((uintptr_t)madt_record - (uintptr_t)madt) >= madt->common.length)
@@ -82,6 +87,8 @@ static void configure_io_apic(acpi_madt_header_t* madt) {
             apic_io_register_controller(*ioapic);
         }
     }
+
+    initialize_gsi_map();
 
     serial_terminal()->puts("\n\nioapic overrides:\n\n");
 
