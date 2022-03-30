@@ -39,7 +39,7 @@ void pit_enable() {
     
     pit_set_divisor(8);
     
-    idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_X32_INTERRUPT, TSS_IST_ROUTINE);
+    idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_EXTERNAL, TSS_IST_ROUTINE);
     apic_io_unmask_irq(gsi);
 }
 
