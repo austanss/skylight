@@ -19,7 +19,7 @@ void __local_timer_builtin_handler(void* frame) {
 void local_timer_calibrate() {
     apic_local_write(APIC_LOCAL_REGISTER_DIVIDE_CONFIG, LOCAL_TIMER_DIVISOR_001);
 
-    uint32_t lvt_descriptor = 0x00000000 | (0x01 << 16);
+    uint32_t lvt_descriptor = 0x00000000 | (0x01 << 17);
     vector = idt_allocate_vector();
 
     lvt_descriptor |= vector;
@@ -41,7 +41,7 @@ void local_timer_calibrate() {
 
     calibrated = true;
 
-    local_timer_set_frequency(1);
+    local_timer_set_frequency(20);
 }
 
 uint64_t local_timer_get_tpms() {
@@ -49,7 +49,7 @@ uint64_t local_timer_get_tpms() {
 }
 
 void local_timer_set_handler(void (*handler)) {
-    idt_set_descriptor(vector, (uintptr_t)handler, IDT_DESCRIPTOR_X32_INTERRUPT, TSS_IST_ROUTINE);
+    idt_set_descriptor(vector, (uintptr_t)handler, IDT_DESCRIPTOR_EXTERNAL, TSS_IST_ROUTINE);
 }
 
 void local_timer_set_frequency(uint64_t hz) {
