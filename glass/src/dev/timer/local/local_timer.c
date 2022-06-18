@@ -1,10 +1,12 @@
 #include <stdint.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include "dev/timer/pit/pit.h"
 #include "dev/timer/local/local_timer.h"
 #include "dev/apic/lapic.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
+#include "sys/events/echoes.h"
 
 static uint64_t tpms;
 static bool calibrated = false;
@@ -13,6 +15,10 @@ static uint8_t vector;
 __attribute__ ((interrupt))
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
+    echoes_packet_t* packet = (echoes_packet_t *)malloc(sizeof(echoes_packet_t));
+    packet->id = SCHEDULER_TICK_EVENT_ID;
+    packet->data_length = 0;
+    echoes_broadcast_event(packet);
     return;
 }
 
@@ -36,8 +42,6 @@ void local_timer_calibrate() {
     tpms = 0xFFFFFFFF - apic_local_read(APIC_LOCAL_REGISTER_CURRENT_COUNT);
 
     pit_disable();
-
-    asm ("hlt");
 
     calibrated = true;
 

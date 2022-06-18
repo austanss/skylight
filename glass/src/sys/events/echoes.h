@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+#define SCHEDULER_TICK_EVENT_ID 0x0001
+
 typedef struct {
     uint64_t    id;
     uint64_t    data_length;
