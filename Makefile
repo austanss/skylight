@@ -17,7 +17,7 @@ $(FRAME):
 	@ cp frame/build/frame.se $(FRAME)
 
 $(IMAGE): glass frame
-	@ wget https://github.com/limine-bootloader/limine/raw/latest-binary/BOOTX64.EFI --quiet
+	@ wget https://github.com/limine-bootloader/limine/raw/v3.0-branch-binary/BOOTX64.EFI --quiet
 	@ dd if=/dev/zero of=fat.img bs=1M count=128
 	@ mformat -i fat.img -F ::
 	@ mmd -i fat.img ::/efi
