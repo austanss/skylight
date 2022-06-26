@@ -9,11 +9,9 @@ According to [dictionary.com](https://www.dictionary.com/browse/skylight#), a "s
 Skylight is an operating system that is uniquely modeled, and aims to be cleaner (like a window) and more efficient.
 
 ### **License**
-I have waived my copyrights on this entire repository, under the Creative Commons Zero license.
+As of June 18th, 2022, I have updated the license on this repository to the MIT license. However, any commits prior to commit `47912c3` still fall under the CC0 license applied at the time.
 
-In layman's terms, I have released my source code to the public domain, and you may use the contents of this repository however you see fit.
-
-See [license](LICENSE).
+More information on the terms of the MIT license, see [LICENSE](LICENSE).
 
 ### **Building**
 Skylight uses Linux software to compile, therefore any build process must take place under native Linux or Windows' subsystem for Linux.
