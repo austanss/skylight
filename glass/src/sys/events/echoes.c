@@ -130,6 +130,7 @@ void echoes_unsubscribe_event(uint64_t hook) {
     free(tbd);
 }
 
+__attribute__((no_caller_saved_registers))
 void echoes_broadcast_event(echoes_packet_t* packet) {
     echoes_broadcaster_node_t* broadcaster = NULL;
 

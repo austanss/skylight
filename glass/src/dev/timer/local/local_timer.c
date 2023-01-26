@@ -12,10 +12,12 @@ static uint64_t tpms;
 static bool calibrated = false;
 static uint8_t vector;
 
+uint8_t _packet[sizeof(echoes_packet_t)];
+
 __attribute__ ((interrupt))
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
-    echoes_packet_t* packet = (echoes_packet_t *)malloc(sizeof(echoes_packet_t));
+    echoes_packet_t* packet = (echoes_packet_t *)_packet;
     packet->id = SCHEDULER_TICK_EVENT_ID;
     packet->data_length = 0;
     echoes_broadcast_event(packet);
