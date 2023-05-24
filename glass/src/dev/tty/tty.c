@@ -40,13 +40,15 @@ void tty_enable() {
     tty_enabled = true;
 
     tty_clear();
+
+    tty_puts("Skylight v0.3: Sunrise!\n\n\n\nDon't try to do anything, it probably won't work. \nThe system is still in progress...");
 }
 
 void tty_disable() {
     if (!tty_enabled)
         return;
 
-    tty_clear();
+    //tty_clear();
     tty_enabled = false;
     free(psf_translation_table);
 }
@@ -68,22 +70,34 @@ void tty_putc(char c) {
     if (!tty_enabled)
         return;
 
-    tty_render_glyph(tty_x, tty_y, c);
-
     switch (c) {
         case '\n':
             tty_y += 16;
             tty_x = 0;
-            break;
+            if (tty_x >= fb->framebuffer_width) {
+                tty_x = 0;
+                tty_y += 16;
+            }
+            return;
 
         case '\r':
             tty_x = 0;
-            break;
+            if (tty_x >= fb->framebuffer_width) {
+                tty_x = 0;
+                tty_y += 16;
+            }
+            return;
 
         case '\t':
             tty_x = ((tty_x / 4) + 1) * 4;
-            break;
+            if (tty_x >= fb->framebuffer_width) {
+                tty_x = 0;
+                tty_y += 16;
+            }
+            return;
     }
+
+    tty_render_glyph(tty_x, tty_y, c);
 
     tty_x += 8;
     if (tty_x >= fb->framebuffer_width) {
