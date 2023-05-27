@@ -11,8 +11,6 @@ extern configure_math_extensions
 extern install_syscalls
 extern pci_conf_load_cache
 extern paging_map_page
-extern tty_enable
-extern tty_disable
 extern elf_load_program
 extern get_boot_module
 extern local_timer_calibrate
@@ -51,8 +49,6 @@ _start64:
     pop rdi
     push rdi
     call paging_reload
-
-    call tty_enable
 
     cli
     hlt
@@ -98,8 +94,6 @@ _start64:
     xor edi, edi
     xor esi, esi
     xor eax, eax
-
-    call tty_disable
 
     mov rdi, frame_id
     call get_boot_module

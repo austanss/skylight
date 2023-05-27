@@ -30,7 +30,6 @@ $(IMAGE): glass frame
 	@ mcopy -i fat.img $(GLASS) ::/sys/start/glass.sys
 	@ mcopy -i fat.img $(FRAME) ::/sys/start/frame.se
 	@ mcopy -i fat.img boot.cfg ::/boot/limine.cfg
-	@ mcopy -i fat.img TopazPlus.psf ::/sys/share/font.psf
 	@ rm BOOTX64.EFI
 	@ mv fat.img build/skylight.hdd
 
