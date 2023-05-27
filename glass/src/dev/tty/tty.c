@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "boot/stivale.h"
+#include "boot/protocol.h"
 #include "dev/tty/psf.h"
 #include "dev/tty/tty.h"
 
@@ -24,7 +24,7 @@ void tty_render_glyph(size_t x, size_t y, char c) {
 
     for (size_t yy = 15; yy < 16; yy--)
         for (size_t xx = 7; xx < 8; xx--)
-            ((uint32_t *)fb->framebuffer_addr)[(y * fb->framebuffer_width + x) + (yy * fb->framebuffer_width + (7 - xx))] = (glyph.data[yy] >> xx) & 1 ? 0xFFFFFFFF : 0x00000000;
+            ((uint32_t *)framebuffer.frame_addr)[(y * framebuffer.frame_width + x) + (yy * framebuffer.frame_width + (7 - xx))] = (glyph.data[yy] >> xx) & 1 ? 0xFFFFFFFF : 0x00000000;
 }
 
 void tty_enable() {
@@ -33,9 +33,8 @@ void tty_enable() {
         return;
     }
 
-    struct stivale2_module* font = get_module(bootctx, "font.psf");
-    psf_load((void *)font->begin, (size_t)(font->end - font->begin));
-    fb = get_tag(bootctx, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
+    boot_module_t* font = get_boot_module("font.psf");
+    psf_load((void *)font->phys, font->size);
     
     tty_enabled = true;
 
@@ -63,7 +62,7 @@ void tty_clear() {
         return;
 
     tty_set_pos(0, 0);
-    memset((void *)fb->framebuffer_addr, 0x00, fb->framebuffer_height * fb->framebuffer_width * (fb->framebuffer_bpp / 8));
+    memset((void *)framebuffer.frame_addr, 0x00, framebuffer.frame_height * framebuffer.frame_width * (framebuffer.frame_bpp / 8));
 }
 
 void tty_putc(char c) {
@@ -74,7 +73,7 @@ void tty_putc(char c) {
         case '\n':
             tty_y += 16;
             tty_x = 0;
-            if (tty_x >= fb->framebuffer_width) {
+            if (tty_x >= framebuffer.frame_width) {
                 tty_x = 0;
                 tty_y += 16;
             }
@@ -82,7 +81,7 @@ void tty_putc(char c) {
 
         case '\r':
             tty_x = 0;
-            if (tty_x >= fb->framebuffer_width) {
+            if (tty_x >= framebuffer.frame_width) {
                 tty_x = 0;
                 tty_y += 16;
             }
@@ -90,7 +89,7 @@ void tty_putc(char c) {
 
         case '\t':
             tty_x = ((tty_x / 4) + 1) * 4;
-            if (tty_x >= fb->framebuffer_width) {
+            if (tty_x >= framebuffer.frame_width) {
                 tty_x = 0;
                 tty_y += 16;
             }
@@ -100,7 +99,7 @@ void tty_putc(char c) {
     tty_render_glyph(tty_x, tty_y, c);
 
     tty_x += 8;
-    if (tty_x >= fb->framebuffer_width) {
+    if (tty_x >= framebuffer.frame_width) {
         tty_x = 0;
         tty_y += 16;
     }

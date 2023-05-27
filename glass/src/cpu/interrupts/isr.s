@@ -3,14 +3,16 @@ extern isr_exception_handler
 %macro isr_err_stub 1
 isr_stub_%+%1:
     push %1
-    jmp isr_xframe_assembler
+    lea r10, [rel isr_xframe_assembler]
+    jmp r10
 %endmacro
 
 %macro isr_no_err_stub 1
 isr_stub_%+%1:
     push 0
     push %1
-    jmp isr_xframe_assembler
+    lea r10, [rel isr_xframe_assembler]
+    jmp r10
 %endmacro
 
 %macro pushagrd 0

@@ -1,6 +1,5 @@
 extern gdt_assemble
 extern idt_assemble
-extern get_tag
 extern pmm_start
 extern paging_reload
 extern tss_install
@@ -15,14 +14,15 @@ extern paging_map_page
 extern tty_enable
 extern tty_disable
 extern elf_load_program
-extern get_module
+extern get_boot_module
 extern local_timer_calibrate
+extern stivale2_reinterpret
 
-global boot
+global _start64
 
 section .text
 
-boot:
+_start64:
     cli
     cld
     
@@ -42,26 +42,20 @@ boot:
     mov gs, ax
 
     pop rdi
-
-    lea rax, [rel bootctx]
-    mov [rax], rdi
-
     push rdi
-    
-    mov rsi, 0x2187f79e8612de07
-    call get_tag
-    mov rdi, rax
+
+    call stivale2_reinterpret
+
     call pmm_start
 
     pop rdi
     push rdi
-
-    mov rsi, 0x2187f79e8612de07
-    call get_tag
-    mov rdi, rax
     call paging_reload
 
     call tty_enable
+
+    cli
+    hlt
 
     xor edi, edi
     call tss_install
@@ -92,13 +86,6 @@ boot:
     pop rdi
     push rdi
 
-    mov rsi, 0x9e1786930a375e78
-    call get_tag
-    lea rdi, [rax + (8*2)]
-    mov rdi, [rdi]
-    call acpi_load_rsdp
-    
-    mov rdi, rax
     call apic_initialize
 
     call pci_conf_load_cache
@@ -114,10 +101,8 @@ boot:
 
     call tty_disable
 
-    lea rax, [rel bootctx]
-    mov rdi, [rax]
-    mov rsi, frame_id
-    call get_module
+    mov rdi, frame_id
+    call get_boot_module
     mov rdi, [rax]
     call elf_load_program
     mov rdx, rax
@@ -173,7 +158,3 @@ frame_id:
     db "frame.se",0
 
 section .bss
-
-global bootctx
-bootctx:
-    resq 1

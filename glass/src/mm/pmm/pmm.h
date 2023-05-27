@@ -1,10 +1,20 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
-#include "boot/stivale.h"
+#include "boot/protocol.h"
 
 extern uint64_t total_memory;
 extern uint64_t free_memory;
+
+static inline char* memtype_string(uint32_t type) {
+    switch (type) {
+        case MEMORY_MAP_FREE: return "free";
+        case MEMORY_MAP_BUSY: return "used";
+        case MEMORY_MAP_MMIO: return "mmio";
+        case MEMORY_MAP_NOUSE: return "bad";
+    }
+    return "unidentifiable";
+}
 
 void*   pmm_alloc_page(void);
 void    pmm_free_page(void* page);

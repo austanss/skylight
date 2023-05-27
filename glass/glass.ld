@@ -1,4 +1,4 @@
-ENTRY(boot)
+ENTRY(_start64)
 OUTPUT_FORMAT(elf64-x86-64)
 
 SECTIONS
