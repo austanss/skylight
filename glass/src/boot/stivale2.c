@@ -315,12 +315,16 @@ void* get_tag(struct stivale2_struct *bctx, uint64_t id) {
 boot_module_t* get_boot_module(char* name) {
     serial_terminal()->puts("Loading module \"")->puts(name)->puts("\"...\n");
 
+    serial_terminal()->puts("Boot modules at ")->putul((uint64_t)boot_modules)->putc('\n');
+
     if (strlen(name) > 128)
         return NULL;
 
-    for (uint64_t i = 0; i < boot_module_count; i++)
+    for (uint64_t i = 0; i < boot_module_count; i++) {
         if (!strcmp(name, boot_modules[i].name))
             return &boot_modules[i];
+        serial_terminal()->puts("Detected boot module: \"")->puts(boot_modules[i].name)->puts("\"\n");
+    }
 
     serial_terminal()->puts("Could not locate requested module.\n");
 
@@ -341,6 +345,8 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
     uint64_t map_pages = (map->entries * sizeof(struct stivale2_mmap_entry)) / PAGING_PAGE_SIZE;  
     if (((map->entries * sizeof(struct stivale2_mmap_entry)) % PAGING_PAGE_SIZE) != 0)
         map_pages++;
+
+    map_pages+=2; // modules stuff too
 
     struct stivale2_mmap_entry* used_entry = NULL;
     struct stivale2_mmap_entry* free_entry = NULL;
@@ -390,17 +396,17 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
     framebuffer.frame_pitch = fb->framebuffer_pitch;
     framebuffer.frame_bpp = fb->framebuffer_bpp;
 
-    // Zero guarantee that this works besides good luck, probably need to handle errors, try to find another page
-    boot_modules = (boot_module_t *)((uint64_t)candidate + (map_pages * PAGING_PAGE_SIZE));
+    // Hope modules aren't tooo many
+    boot_modules = (boot_module_t *)((uint64_t)candidate + ((map_pages - 2) * PAGING_PAGE_SIZE));
     struct stivale2_struct_tag_modules* module_tag = (struct stivale2_struct_tag_modules *)get_tag(bctx, STIVALE2_STRUCT_TAG_MODULES_ID);
     
     boot_module_count = module_tag->module_count;
 
     for (uint64_t i = 0; i < module_tag->module_count; i++) {
         boot_modules[i].name = module_tag->modules[i].string;
-        boot_modules[1].phys = module_tag->modules[i].begin;
-        boot_modules[1].virt = module_tag->modules[i].begin;
-        boot_modules[1].size = (module_tag->modules[i].end - module_tag->modules[i].begin);        
+        boot_modules[i].phys = module_tag->modules[i].begin;
+        boot_modules[i].virt = module_tag->modules[i].begin;
+        boot_modules[i].size = (module_tag->modules[i].end - module_tag->modules[i].begin);        
     }
 }
 

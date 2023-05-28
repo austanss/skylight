@@ -1,6 +1,7 @@
 #include <string.h>
 #include "paging.h"
 #include "../pmm/pmm.h"
+#include "dev/uart/serial.h"
 
 extern paging_table_t* pml4;
 paging_table_t* pml4;
@@ -22,8 +23,10 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         pde |= flags;
         pml4->entries[indexer.pml4] = pde;
         paging_map_page((void *)pdp, (void *)((uintptr_t)pdp - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
-    } else
+    } else {
         pdp = (paging_table_t *)((uintptr_t)paging_desc_get_address(&pde) + PAGING_VIRTUAL_OFFSET);
+        pml4->entries[indexer.pml4] |= flags;
+    }
     
     
     pde = pdp->entries[indexer.pml3];
@@ -37,8 +40,10 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         pde |= flags;
         pdp->entries[indexer.pml3] = pde;
         paging_map_page((void *)pd, (void *)((uintptr_t)pd - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
-    } else
+    } else {
         pd = (paging_table_t *)((uintptr_t)paging_desc_get_address(&pde) + PAGING_VIRTUAL_OFFSET);
+        pdp->entries[indexer.pml3] |= flags;
+    }
 
     pde = pd->entries[indexer.pml2];
     paging_table_t* pt;
@@ -51,8 +56,10 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         pde |= flags;
         pd->entries[indexer.pml2] = pde;
         paging_map_page((void *)pt, (void *)((uintptr_t)pt - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
-    } else
+    } else {
         pt = (paging_table_t *)((uintptr_t)paging_desc_get_address(&pde) + PAGING_VIRTUAL_OFFSET);
+        pd->entries[indexer.pml2] |= flags;
+    }
 
     pde = pt->entries[indexer.pml1];
     paging_desc_set_address(&pde, (uintptr_t)phys);
@@ -149,6 +156,8 @@ void* paging_edit_page(void* virt, uint16_t flags) {
     paging_desc_set_flags(&pt->entries[indexer.pml1], flags);
 
     paging_invlpg(virt);
+
+    serial_terminal()->puts("editing page @ ")->putul((uint64_t)virt)->puts(" with new flags ")->putul(flags)->putc('\n');
 
     return virt;
 }

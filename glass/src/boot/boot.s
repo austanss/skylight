@@ -40,18 +40,14 @@ _start64:
     mov gs, ax
 
     pop rdi
-    push rdi
 
     call stivale2_reinterpret
+    
+    xor edi, edi
 
     call pmm_start
 
-    pop rdi
-    push rdi
     call paging_reload
-
-    cli
-    hlt
 
     xor edi, edi
     call tss_install
@@ -69,18 +65,12 @@ _start64:
     call paging_edit_page
     add rbx, 0x1000
 
-    pop rdi
-    push rdi
-
     mov rsi, rdi
     mov rdx, 0xffffffff00000000
     not rdx
     and rsi, rdx
     mov rdx, (0x01 | 0x02)
     call paging_map_page
-
-    pop rdi
-    push rdi
 
     call apic_initialize
 
@@ -90,7 +80,6 @@ _start64:
 
     call local_timer_calibrate
 
-    pop rdi
     xor edi, edi
     xor esi, esi
     xor eax, eax
@@ -101,20 +90,21 @@ _start64:
     call elf_load_program
     mov rdx, rax
 
-    lea rcx, [rel userspace]
+    pop rbp         ; 0 from stivale2 return address
 
+    lea rcx, [rel userspace]    ; rel loading userspace stub
+
+    xor rax, rax
     mov ax, 0x1B
     mov ds, ax
-    mov es, ax
+    mov es, ax      ; loading userspace segments
 
-    pop rbp
-
-    push rax
-    push rbx
-    pushfq
-    push 0x23
-    push rcx
-    iretq
+    push rax    ; user data/stack segment
+    push rbx    ; stack pointer
+    pushfq      ; flags
+    push 0x23   ; user code segment
+    push rcx    ; creating false interrupt frame, return address
+    iretq       ; mystical fake iretq manuever
 
 align 4096
 userspace:
@@ -150,5 +140,3 @@ userspace:
 section .data
 frame_id:
     db "frame.se",0
-
-section .bss
