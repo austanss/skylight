@@ -43,7 +43,7 @@ clean:
 	@ make -C frame clean
 
 run:
-	@ qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -serial stdio -machine q35 $(QEMU_ARGS)
+	@ qemu-system-x86_64 -bios /usr/share/ovmf/x64/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -serial stdio -machine q35 $(QEMU_ARGS)
 
 debug:
-	@ qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -S -gdb tcp::1234 -machine q35
+	@ qemu-system-x86_64 -bios /usr/share/ovmf/x64/OVMF.fd -drive file=$(IMAGE),format=raw -net none -m 512M -S -gdb tcp::1234 -machine q35

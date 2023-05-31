@@ -19,6 +19,7 @@ CCFLAGS = \
 -I$(SOURCE) \
 -mno-red-zone \
 -mcmodel=kernel \
+-fno-stack-protector \
 -fpie \
 -gdwarf \
 -fwrapv \
