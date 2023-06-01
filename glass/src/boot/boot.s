@@ -133,8 +133,9 @@ userspace:
     mov rdi, rsp
 
     call rdx    ; call Frame boyos! rdx register is scratch/parameter and will be overriden
+    ; not that it matters anyway because its just the program's load address which it should already know
 
-    ; no safe handling?
+    ; no safe handling? indeed
     ; because if the init system reaches the `ret` here it deserves to #GP fault anyway
     ; maybe will fix when kernel panics implemented
     

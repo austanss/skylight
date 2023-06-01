@@ -389,6 +389,7 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
         serial_terminal()->puts("\nentry: ")->putul(memory_map->entries[i].base)->puts(" type: ")->putd(memory_map->entries[i].signal);
     }
 
+    // assumes 32-bit framebuffer...
     struct stivale2_struct_tag_framebuffer* fb = (struct stivale2_struct_tag_framebuffer *)get_tag(bctx, STIVALE2_STRUCT_TAG_FRAMEBUFFER_ID);
     framebuffer.frame_addr = fb->framebuffer_addr;
     framebuffer.frame_height = fb->framebuffer_height;
@@ -396,7 +397,7 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
     framebuffer.frame_pitch = fb->framebuffer_pitch;
     framebuffer.frame_bpp = fb->framebuffer_bpp;
 
-    // Hope modules aren't tooo many
+    // Hope modules aren't tooo many (although I ultimately have control over this)
     boot_modules = (boot_module_t *)((uint64_t)candidate + ((map_pages - 2) * PAGING_PAGE_SIZE));
     struct stivale2_struct_tag_modules* module_tag = (struct stivale2_struct_tag_modules *)get_tag(bctx, STIVALE2_STRUCT_TAG_MODULES_ID);
     
