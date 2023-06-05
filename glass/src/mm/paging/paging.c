@@ -28,7 +28,6 @@ void* paging_map_page(void* virt, void* phys, uint16_t flags) {
         pml4->entries[indexer.pml4] |= flags;
     }
     
-    
     pde = pdp->entries[indexer.pml3];
     paging_table_t* pd;
     if (!paging_desc_get_flag(&pde, PAGING_FLAG_PRESENT)) {

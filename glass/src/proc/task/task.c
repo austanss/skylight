@@ -51,6 +51,8 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
     for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map current kernel stack
         paging_map_page((void *)head, (void *)(head - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_USER_PAGE);
 
+    paging_load_pml4(kpml4);
+
     return task_table;
 }
 
