@@ -17,11 +17,13 @@ typedef struct tss {
 } __attribute__((packed)) tss_t;
 
 typedef struct {
-    uint64_t    tss;
-    uint64_t    pid;
-    uint64_t    rsp;
+    uint64_t    tss;    // gs:0x00
+    uint64_t    pid;    // gs:0x08
+    uint64_t    rsp;    // gs:0x10
+    uint64_t    pc;     // gs:0x18
 } gs_kernel_base_t;
 
 void    tss_install(int num_cpu);
 uint8_t tss_add_stack(int num_cpu);
 void    tss_reload(uint16_t selector);
+tss_t*  tss_get(int num_cpu);

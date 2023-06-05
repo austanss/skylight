@@ -103,3 +103,5 @@ void    paging_unmap_page(void* virt);
 void*   paging_remap_page(void* old_virt, void* new_virt);
 void*   paging_walk_page(void* virt);
 void*   paging_edit_page(void* virt, uint16_t flags);
+void    paging_load_pml4(paging_table_t* pml4);
+void*   paging_get_pml4();

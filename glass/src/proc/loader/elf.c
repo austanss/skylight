@@ -2,30 +2,39 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "proc/loader/elf.h"
 #include "mm/pmm/pmm.h"
 #include "mm/paging/paging.h"
 #include "dev/uart/serial.h"
 
-bool elf_load_segment(void* file, elf_program_header_t* header) {
-    size_t pages = header->p_memsz / 0x1000;
+bool elf_load_segment(void* file, elf_program_header_t* header, elf_load_info_t* out_info) {
+    size_t pages = header->p_memsz / PAGING_PAGE_SIZE;
 
-    if (header->p_memsz % 0x1000 > 0)
+    if (header->p_memsz % PAGING_PAGE_SIZE > 0)
         pages++;
 
     void* segment = (void *)header->p_vaddr;
 
+    void* segment_virt = pmm_alloc_pool(pages);
+
     for (size_t page = 0; page < pages; page++)
-        paging_map_page(segment + (page * 0x1000), pmm_alloc_page() - PAGING_VIRTUAL_OFFSET, PAGING_FLAGS_USER_PAGE);
+        paging_map_page(segment + (page * PAGING_PAGE_SIZE), (segment_virt + (page * PAGING_PAGE_SIZE)) - PAGING_VIRTUAL_OFFSET, PAGING_FLAGS_USER_PAGE);
 
     memset(segment, 0x00, header->p_memsz);
 
     memcpy(segment, file + header->p_offset, header->p_filesz);
 
+    out_info->segments[out_info->segment_count].loaded_at = header->p_vaddr;
+    out_info->segments[out_info->segment_count].located_at = ((uint64_t)segment_virt - PAGING_VIRTUAL_OFFSET);
+    out_info->segments[out_info->segment_count].length = pages * PAGING_PAGE_SIZE;
+
+    out_info->segment_count++;
+
     return true;
 }
 
-void* elf_load_program(void* file) {
+elf_load_info_t* elf_load_program(void* file) {
     elf_header_t* header = (elf_header_t *)file;
 
     serial_terminal()->puts("\nLoading program from file @ ")->putul((uint64_t)file)->puts("...\n\n");
@@ -52,16 +61,25 @@ void* elf_load_program(void* file) {
 
     size_t header_table_size = header->program_table_entry_size * header->program_table_entries;
 
+    elf_load_info_t* load_info = (elf_load_info_t *)malloc(sizeof(elf_load_info_t));
+    load_info->entry = header->program_entry;
+    load_info->segment_count = 0;
+    load_info->segments = (elf_load_segment_t *)pmm_alloc_page();
+
     for (elf_program_header_t* pheader = (elf_program_header_t *)(file + header->header_table);;) {
         if (((uint64_t)pheader - ((uint64_t)file + header->header_table)) >= header_table_size)
             break;
 
         if (pheader->type == ELF_SEGMENT_LOAD)
-            if (!elf_load_segment(file, pheader))
+            if (!elf_load_segment(file, pheader, load_info))
                 return NULL;
 
         pheader = (elf_program_header_t *)((void *)pheader + header->program_table_entry_size);
     }
 
-    return (void *)header->program_entry;
+    serial_terminal()->puts("\nLoaded segments:\n");
+    for (uint64_t i = 0; i < load_info->segment_count; i++)
+        serial_terminal()->puts("\tSegment ")->putul(i)->puts(" @ ")->putul(load_info->segments[i].loaded_at)->puts(" -> ")->putul(load_info->segments[i].located_at)->puts(" (")->putul(load_info->segments[i].length)->puts(" bytes)\n");
+
+    return load_info;
 }

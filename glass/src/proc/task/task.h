@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "cpu/tss/tss.h"
+#include "proc/loader/elf.h"
 
 #define TASK_STATE_EXECUTION    0
 #define TASK_STATE_WAITING      1
@@ -40,9 +42,10 @@ typedef struct {
     uint64_t state;
     uint64_t priority; // currently irrelevant
     task_context_t* ctx;
+    gs_kernel_base_t* gs_base;
 } task_t;
 
-uint64_t task_create_new(void* program_entry);
+uint64_t task_create_new(elf_load_info_t* load_info);
 
 void task_sleep(uint64_t task_id);
 void task_schedule(uint64_t task_id);

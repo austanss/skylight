@@ -33,3 +33,7 @@ void tss_install(int num_cpu) {
 
     tss_reload(gdt_install_tss(tss_base));
 }
+
+tss_t* tss_get(int num_cpu) {
+    return &tss_descriptors[num_cpu];
+}

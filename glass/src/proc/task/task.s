@@ -12,35 +12,35 @@ _load_task_general_registers:
     mov r13, [rdi + 0x58]
     mov r14, [rdi + 0x60]
     mov rdi, [rdi + 0x20]
-    jmp r15
+    ret
 
 global _load_task_page_tables
 _load_task_page_tables:
     push rbp
     mov rbp, rsp
-    mov rax, rdi
+    extern paging_walk_page
+    call paging_walk_page ; rdi is virt; rax returns phys
     mov cr3, rax
     pop rbp
     ret
 
 global _finalize_task_switch
 _finalize_task_switch:
+    cli
     push rbp
     mov rbp, rsp
-    mov rax, rdi
     pop rbp     ; break c compliance for nitty gritty task switch
     ; make sure user stack is clean upon entry if we use it
 
-    mov rsp, [rax + 0x70]
-    mov rbp, [rax + 0x78]
-    mov r15, [rax + 0x80]
-    lea rax, [rel _load_task_general_registers]
-    jmp rax                
-
-align 4096
-_user_go:
-    swapgs
-    jmp r15
-    ; issues are that missing userspace transition
-    ; and preserving registers
-    
+    mov rsp, [rdi + 0x70]
+    mov rbp, [rdi + 0x78]
+    mov r15, [rdi + 0x80]
+    push rsp            ; push user stack
+    sti
+    pushfq              ; push flags
+    cli
+    push 0x23           ; user code segment
+    push r15            ; push user instruction pointer
+    call $+(_load_task_general_registers-$)
+    .end:
+    iretq

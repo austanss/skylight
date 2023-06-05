@@ -43,8 +43,6 @@ void* pmm_alloc_page() {
 
     pmm_lock_page(page);
 
-    fast_index++;
-
     return page;
 }
 

@@ -92,10 +92,9 @@ _start64:
     extern elf_load_program
     lea r15, [rel elf_load_program]
     call r15       ; exec is module in memory, this function loads the elf segments properly and ready for execution
-    mov rdx, rax                ; save the return address as this is the entry point (in rdx cuz no more c functions)
 
     extern task_create_new
-    mov rdi, rdx                ; create the new task with the entry point
+    mov rdi, rax                ; create the new task with the entry point
     lea r15, [rel task_create_new]
     call r15
 

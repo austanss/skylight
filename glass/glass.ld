@@ -11,19 +11,19 @@ SECTIONS
         KEEP(*(.stivalehdr))
     }
 
-	.text : ALIGN(0x40) {
+	.text : ALIGN(0x1000) {
 		*(.text*)
 	}
 
-	.data : ALIGN(0x40) {
+	.data : ALIGN(0x1000) {
 		*(.data*)
 	}
 
-	.rodata : ALIGN(0x40) {
+	.rodata : ALIGN(0x1000) {
 		*(.rodata*)
 	}
 
-	.bss : ALIGN(0x40) {
+	.bss : ALIGN(0x1000) {
 		*(COMMON)
 		*(.bss*)
 	}

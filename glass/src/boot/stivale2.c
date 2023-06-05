@@ -270,7 +270,6 @@ struct stivale2_struct_vmap {
 memory_map_t* memory_map;
 boot_module_t* boot_modules;
 
-static
 PAGING_PAGE_ALIGNED
 uint8_t stack[PAGING_PAGE_SIZE * 16];
 

@@ -62,4 +62,16 @@ typedef struct {
     uint64_t    alignment;
 } __attribute__((packed)) elf_program_header_t;
 
-void* elf_load_program(void* file);
+typedef struct {
+    uint64_t    loaded_at; // where segment should be according to exec
+    uint64_t    located_at; // where segment physically is in memory (phys)
+    uint64_t    length;
+} elf_load_segment_t;
+
+typedef struct {
+    uint64_t    entry;
+    uint64_t    segment_count;
+    elf_load_segment_t* segments;
+} elf_load_info_t;
+
+elf_load_info_t* elf_load_program(void* file);

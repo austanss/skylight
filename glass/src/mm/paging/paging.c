@@ -199,3 +199,11 @@ void* paging_remap_page(void* old, void* new) {
 
     return new;
 }
+
+void paging_load_pml4(paging_table_t* _pml4) {
+    pml4 = _pml4;
+}
+
+void* paging_get_pml4() {
+    return pml4;
+}
