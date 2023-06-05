@@ -105,7 +105,11 @@ void* pmm_alloc_pool(size_t page_count) {
 
     bool found = false;
     uint64_t index;
-    for (index = 0; index < map_size; index++) {
+
+    if (pmm_map_get(fast_index))
+        pmm_reindex();
+
+    for (index = fast_index; index < map_size; index++) {
         if (!pmm_map_get(index)) {
             uint64_t seek;
             for (seek = index; seek < map_size; seek++)
@@ -136,6 +140,8 @@ void* pmm_alloc_pool(size_t page_count) {
     void* start = (void *)((index * PAGING_PAGE_SIZE) + PAGING_VIRTUAL_OFFSET);
 
     pmm_lock_pages(start, page_count);
+
+    fast_index += page_count;
 
     return start;
 }
