@@ -51,6 +51,8 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
     for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map current kernel stack
         paging_map_page((void *)head, (void *)(head - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_USER_PAGE);
 
+    paging_map_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000), paging_walk_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000)), PAGING_FLAGS_KERNEL_PAGE);
+
     paging_load_pml4(kpml4);
 
     return task_table;
@@ -84,6 +86,7 @@ uint64_t task_create_new(elf_load_info_t* load_info) {
     new_task->gs_base->pid = new_task->id;
     new_task->gs_base->rsp = tss_get(0)->rsp[0];
     new_task->gs_base->pc = (uint64_t)load_info->entry;
+    new_task->gs_base->ctx = (void*)new_task->ctx;
 
     serial_terminal()->puts("\tCreating new task context...\n");
     new_task->ctx = (task_context_t *)malloc(sizeof(task_context_t));
@@ -188,12 +191,10 @@ void task_select(uint64_t task_id) {
         thread = thread->next; 
     }
 
-    wrmsr(IA32_KERNEL_GS_BASE, (uint64_t)thread->task->gs_base);
-    wrmsr(IA32_GS_BASE, 0);
-
     __asm__ volatile ("cli");
 
-    _load_task_page_tables((void *)thread->task->ctx->cr3);
+    wrmsr(IA32_KERNEL_GS_BASE, (uint64_t)thread->task->gs_base);
+    wrmsr(IA32_GS_BASE, 0);
 
     _finalize_task_switch(thread->task->ctx);
 }

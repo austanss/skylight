@@ -19,7 +19,7 @@ _load_task_page_tables:
     push rbp
     mov rbp, rsp
     extern paging_walk_page
-    call paging_walk_page ; rdi is virt; rax returns phys
+    call $+(paging_walk_page-$) ; rdi is virt; rax returns phys
     mov cr3, rax
     pop rbp
     ret
@@ -29,18 +29,20 @@ _finalize_task_switch:
     cli
     push rbp
     mov rbp, rsp
-    pop rbp     ; break c compliance for nitty gritty task switch
-    ; make sure user stack is clean upon entry if we use it
-
-    mov rsp, [rdi + 0x70]
-    mov rbp, [rdi + 0x78]
-    mov r15, [rdi + 0x80]
+    mov r15, rdi
+    mov rdi, [r15 + 0x88] ; task->ctx->cr3
+    mov rsp, [r15 + 0x70]
+    mov rbp, [r15 + 0x78]
+    mov r14, [r15 + 0x80]
+    call $+(_load_task_page_tables-$)
+    pop rbp
     push rsp            ; push user stack
     sti
     pushfq              ; push flags
     cli
     push 0x23           ; user code segment
-    push r15            ; push user instruction pointer
+    push r14            ; push user instruction pointer
+    mov rdi, r15
     call $+(_load_task_general_registers-$)
     .end:
     iretq

@@ -50,20 +50,6 @@ _start64:
     lea r15, [rel tss_install]
     call r15    ; instalar la tss bonita
 
-    xor edi, edi
-    xor esi, esi
-    extern pmm_alloc_page
-    lea r15, [rel pmm_alloc_page]
-    call r15
-    mov rbx, rax
-    mov rdi, rbx
-    mov r12, rbx                        ; move the value to a calling convention preserved register
-    mov rsi, (0x001 | 0x002 | 0x004)    ; allocate a comically small userspace stack, (TODO dynamically extended)
-    extern paging_edit_page
-    lea r15, [rel paging_edit_page]
-    call r15
-    add rbx, 0x1000                     ; this is a preserved register so dont worry
-
     extern apic_initialize
     lea r15, [rel apic_initialize]
     call r15                ; initialize the Local APIC and IOAPIC
@@ -84,7 +70,7 @@ _start64:
     xor esi, esi                ; cleanup scratch registers
     xor eax, eax
 
-    mov rdi, frame_id           
+    mov rdi, $+(frame_id-$)           
     extern get_boot_module
     lea r15, [rel get_boot_module]  
     call r15        ; get the Frame executable

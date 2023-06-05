@@ -21,6 +21,7 @@ typedef struct {
     uint64_t    pid;    // gs:0x08
     uint64_t    rsp;    // gs:0x10
     uint64_t    pc;     // gs:0x18
+    void*       ctx;    // gs:0x20
 } gs_kernel_base_t;
 
 void    tss_install(int num_cpu);
