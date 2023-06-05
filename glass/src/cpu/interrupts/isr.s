@@ -1,4 +1,3 @@
-extern isr_exception_handler
 
 %macro isr_err_stub 1
 isr_stub_%+%1:
@@ -69,7 +68,9 @@ isr_xframe_assembler:
     mov ss, ax
 
     lea rdi, [rsp + 0x10]
-    call isr_exception_handler
+    extern isr_exception_handler
+    lea r15, [rel isr_exception_handler]
+    call r15
 
     pop rax
     pop rax

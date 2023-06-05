@@ -1,8 +1,7 @@
-extern syscall_dispatch
-extern tss_descriptors
 
 global install_syscalls
 install_syscalls:
+    extern syscall_dispatch
     lea rax, [rel syscall_dispatch]
     mov rdx, rax
     shr rdx, 0x20
@@ -22,6 +21,7 @@ install_syscalls:
     wrmsr
 
     xor eax, eax
+    extern tss_descriptors
     lea rax, [rel tss_descriptors]
     lea rsi, [rax + 0x04]
     mov rax, [rsi]

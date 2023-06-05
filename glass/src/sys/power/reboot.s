@@ -7,7 +7,7 @@ reboot:
     in al, dx
     and al, ah
     test al, al
-    jnz .waiting
+    jnz $+(.waiting-$)
     .reset:
     mov ah, 0xFE
     out dx, al

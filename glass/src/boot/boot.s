@@ -1,39 +1,29 @@
-extern gdt_assemble
-extern idt_assemble
-extern pmm_start
-extern paging_reload
-extern tss_install
-extern paging_edit_page
-extern pmm_alloc_page
-extern acpi_load_rsdp
-extern apic_initialize
-extern configure_math_extensions
-extern install_syscalls
-extern pci_conf_load_cache
-extern paging_map_page
-extern elf_load_program
-extern get_boot_module
-extern local_timer_calibrate
-extern stivale2_reinterpret
-
 global _start64
 
 section .text
+default rel
 
 _start64:
     cli                 ; avoid exceptions or interruptions because idt is undefined
     cld                 ; standard c calling convention requirements
     
     xor ebp, ebp        ; shitty (needs fixing) attempt at a stack frame
-
+    push rbp
+    mov rbp, rsp
     push rdi            ; stack the stivale2 pointer as rdi is never preserved
 
-    call gdt_assemble   ; assemble the bonito gdt
+    extern gdt_assemble
+    lea r15, [rel gdt_assemble]
+    call r15   ; assemble the bonito gdt
 
-    call idt_assemble   ; assemble the bonito idt
+    extern idt_assemble
+    lea r15, [rel idt_assemble]
+    call r15   ; assemble the bonito idt
     sti                 ; yay, interrupts work now!
 
-    call configure_math_extensions  ; floating points, sse, all those goodies
+    extern configure_math_extensions
+    lea r15, [rel configure_math_extensions]
+    call r15  ; floating points, sse, all those goodies
 
     xor eax, eax                    
     mov fs, ax                  ; zeroing (currently irrelevant) segment registers
@@ -41,103 +31,87 @@ _start64:
 
     pop rdi             ; retrieve stivale2 pointer
 
-    call stivale2_reinterpret   ; reinterpret stivale2 information to match internal protocol (boot protocol abstraction)
+    extern stivale2_reinterpret
+    lea r15, [rel stivale2_reinterpret]
+    call r15   ; reinterpret stivale2 information to match internal protocol (boot protocol abstraction)
     
     xor edi, edi        ; we don't need that mf no more
 
-    call pmm_start      ; start the beautiful pmm
+    extern pmm_start
+    lea r15, [rel pmm_start]
+    call r15      ; start the beautiful pmm
 
-    call paging_reload  ; hope no page faults >>>>:((((((
+    extern paging_reload_kernel_map
+    lea r15, [rel paging_reload_kernel_map]
+    call r15   ; hope no page faults >>>>:((((((
 
     xor edi, edi        ; we're not passing anything
-    call tss_install    ; instalar la tss bonita
-
-    lea rdi, [rel userspace]
-    mov rsi, (0x001 | 0x002 | 0x004)    ; mapping the kernel userspace stub page with user permissions
-    call paging_edit_page
+    extern tss_install
+    lea r15, [rel tss_install]
+    call r15    ; instalar la tss bonita
 
     xor edi, edi
     xor esi, esi
-    call pmm_alloc_page
+    extern pmm_alloc_page
+    lea r15, [rel pmm_alloc_page]
+    call r15
     mov rbx, rax
     mov rdi, rbx
     mov r12, rbx                        ; move the value to a calling convention preserved register
     mov rsi, (0x001 | 0x002 | 0x004)    ; allocate a comically small userspace stack, (TODO dynamically extended)
-    call paging_edit_page
+    extern paging_edit_page
+    lea r15, [rel paging_edit_page]
+    call r15
     add rbx, 0x1000                     ; this is a preserved register so dont worry
 
-    call apic_initialize                ; initialize the Local APIC and IOAPIC
+    extern apic_initialize
+    lea r15, [rel apic_initialize]
+    call r15                ; initialize the Local APIC and IOAPIC
 
-    call pci_conf_load_cache            ; load pci devices
+    extern pci_conf_load_cache
+    lea r15, [rel pci_conf_load_cache]
+    call r15            ; load pci devices
 
-    call install_syscalls               ; install (los tontos) system calls
+    extern install_syscalls
+    lea r15, [rel install_syscalls]
+    call r15               ; install (los tontos) system calls
 
-    call local_timer_calibrate          ; calibrate the local APIC timer (using PIT)
+    extern local_timer_calibrate
+    lea r15, [rel local_timer_calibrate]
+    call r15          ; calibrate the local APIC timer (using PIT)
 
     xor edi, edi
     xor esi, esi                ; cleanup scratch registers
     xor eax, eax
 
     mov rdi, frame_id           
-    call get_boot_module        ; get the Frame executable
-    mov rdi, [rax]              ; accessing first field of the returned structure
-    call elf_load_program       ; exec is module in memory, this function loads the elf segments properly and ready for execution
+    extern get_boot_module
+    lea r15, [rel get_boot_module]  
+    call r15        ; get the Frame executable
+    mov rdi, [rax]              ; accessing first field of the returned structure (virt)
+    extern elf_load_program
+    lea r15, [rel elf_load_program]
+    call r15       ; exec is module in memory, this function loads the elf segments properly and ready for execution
     mov rdx, rax                ; save the return address as this is the entry point (in rdx cuz no more c functions)
 
-    pop rbp         ; 0 from stivale2 return address, cleaning off the kernel stack
-    ; did the stack frame ever matter? no
+    extern task_create_new
+    mov rdi, rdx                ; create the new task with the entry point
+    lea r15, [rel task_create_new]
+    call r15
 
-    lea rcx, [rel userspace]    ; rel loading userspace stub
+    extern task_select          ; select the task to run
+    mov rdi, rax
 
-    xor rax, rax
-    mov ax, 0x1B
-    mov ds, ax
-    mov es, ax      ; loading userspace segments
+    pop rbp
+    pop rbp
 
-    push rax    ; user data/stack segment
-    push rbx    ; stack pointer
-    pushfq      ; flags
-    push 0x23   ; user code segment
-    push rcx    ; creating false interrupt frame, return address
-    iretq       ; mystical fake iretq manuever
+    lea r15, [rel task_select]
+    call r15            ; select the task to run
 
-align 4096
-userspace:
-    xor rbp, rbp
-    push rbp
-    mov rbp, rsp
-    ; this is a proper stack frame
-
-    push rdx ; save this register, muy importante entry address
-
-    xor rax, rax
-    xor rbx, rbx
-    xor rcx, rcx
-    xor rdx, rdx
-
-    xor rdi, rdi
-    xor rsi, rsi
-    ; no register data from the kernel should be preserved in any register
-    ; that would lowkey be a security vulnerability
-    xor r8, r8
-    xor r9, r9
-    xor r10, r10
-    xor r11, r11
-    xor r12, r12
-    xor r13, r13
-    xor r14, r14
-    xor r15, r15
-
-    pop rdx
-
-    mov rdi, rsp
-
-    call rdx    ; call Frame boyos! rdx register is scratch/parameter and will be overriden
-    ; not that it matters anyway because its just the program's load address which it should already know
-
-    ; no safe handling? indeed
-    ; because if the init system reaches the `ret` here it deserves to #GP fault anyway
-    ; maybe will fix when kernel panics implemented
+    extern reboot
+    lea r15, [rel reboot]
+    jmp r15                      ; reboot the system if the task_select function returns (which it shouldn't)
+    
     
 section .data
 frame_id:

@@ -9,8 +9,8 @@ extern uint8_t __load_base;
 extern uint8_t __load_max;
 
 extern memory_map_t* memory_map;
-void paging_reload();
-void paging_reload() {
+void paging_reload_kernel_map();
+void paging_reload_kernel_map() {
     pml4 = (paging_table_t *)pmm_alloc_page();
 
     memset(pml4, 0x00, PAGING_PAGE_SIZE);
