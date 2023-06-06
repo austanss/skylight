@@ -202,6 +202,9 @@ void pmm_start() {
 
     pfa_allowing_allocations = true;
 
+    __print_pmm_section_headers();
     // Lock the pmm data pages
-    //pmm_lock_pages(pmm_sections, (pmm_data_size / PAGING_PAGE_SIZE) + ((pmm_data_size % PAGING_PAGE_SIZE != 0) ? 1 : 0));
+    pmm_lock_pages(pmm_sections, (pmm_data_size / PAGING_PAGE_SIZE) + ((pmm_data_size % PAGING_PAGE_SIZE != 0) ? 1 : 0));
+
+    __print_pmm_section_headers();
 }

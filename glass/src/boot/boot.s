@@ -41,9 +41,6 @@ _start64:
     lea r15, [rel pmm_start]
     call r15      ; start the beautiful pmm
 
-    cli
-    hlt
-
     extern paging_reload_kernel_map
     lea r15, [rel paging_reload_kernel_map]
     call r15   ; hope no page faults >>>>:((((((
