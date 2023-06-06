@@ -39,3 +39,6 @@ boot_module_t* get_boot_module(char* name);
 #define MEMORY_MAP_BUSY     0x01
 #define MEMORY_MAP_MMIO     0x02
 #define MEMORY_MAP_NOUSE    0x03
+
+#define MEMORY_AMD_IOMMU_BLOCK_START    0xFD00000000
+#define MEMORY_AMD_IOMMU_BLOCK_END      0xFFFFFFFFFF

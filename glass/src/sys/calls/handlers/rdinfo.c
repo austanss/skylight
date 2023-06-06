@@ -4,12 +4,8 @@
 #include "mm/pmm/pmm.h"
 #include "boot/protocol.h"
 
-uint64_t total_ram() {
-    return total_memory;
-}
-
 uint64_t free_ram() {
-    return free_memory;
+    return pmm_get_free_memory();
 }
 
 uint64_t display_width() {
@@ -25,7 +21,6 @@ uint64_t display_bpp() {
 }
 
 uint64_t (*retriever[])() = {
-    total_ram,
     free_ram,
     display_width,
     display_height,

@@ -61,7 +61,7 @@ void header_combine_backward(heap_seg_header_t* segment) {
 }
 
 bool heap_initialized = false;
-
+// Absolutely must not use any pool allocation
 void heap_initialize(void* address, size_t pages){
     void* pos = address;
 

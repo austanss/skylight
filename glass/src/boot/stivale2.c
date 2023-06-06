@@ -330,6 +330,8 @@ boot_module_t* get_boot_module(char* name) {
     return NULL;
 }
 
+#define IOMMU_IGNORED
+
 void stivale2_reinterpret(struct stivale2_struct* bctx);
 void stivale2_reinterpret(struct stivale2_struct* bctx) {
     struct stivale2_struct_tag_rsdp* rsdp_tag = (struct stivale2_struct_tag_rsdp *)get_tag(bctx, STIVALE2_STRUCT_TAG_RSDP_ID);
@@ -350,6 +352,18 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
     struct stivale2_mmap_entry* used_entry = NULL;
     struct stivale2_mmap_entry* free_entry = NULL;
 
+    // pre-parse, check for the massive iommu entry
+    serial_terminal()->puts("stivale2 memory map:\n");
+    for (uint64_t i = 0; i < map->entries; i++) {
+        serial_terminal()->puts("\tMemory from ")->putul(map->memmap[i].base)->puts(" for ")->putd(map->memmap[i].length / PAGING_PAGE_SIZE)->puts(" pages is ")->putd(map->memmap[i].type)->puts("\n");
+    #ifdef IOMMU_IGNORED
+        if (map->memmap[i].base >= MEMORY_AMD_IOMMU_BLOCK_START && map->memmap[i].base <= MEMORY_AMD_IOMMU_BLOCK_END) {
+            serial_terminal()->puts("\t\tIgnoring IOMMU block...\n");
+            map->memmap[i].type = STIVALE2_MMAP_BAD_MEMORY;
+        }
+    #endif
+    }
+
     for (uint64_t i = 0; i < map->entries; i++) {
         if (map->memmap[i+1].type == STIVALE2_MMAP_USABLE 
                 && (stivale2_mmap_type_convert(map->memmap[i].type) == MEMORY_MAP_BUSY)
@@ -369,9 +383,7 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
 
     void* candidate = (void *)free_entry->base;
     used_entry->length += (map_pages * PAGING_PAGE_SIZE);
-    serial_terminal()->puts("\nbefore: ")->putul(free_entry->base);
     free_entry->base += (map_pages * PAGING_PAGE_SIZE);
-    serial_terminal()->puts("\after: ")->putul(free_entry->base);
     free_entry->length -= (map_pages * PAGING_PAGE_SIZE);
     // I'm imagining a possible scenario where the memory map is protected under an ACPI NVS region...
 
@@ -384,8 +396,24 @@ void stivale2_reinterpret(struct stivale2_struct* bctx) {
         memory_map->entries[i].base = map->memmap[i].base;
         memory_map->entries[i].length = map->memmap[i].length;
         memory_map->entries[i].signal = stivale2_mmap_type_convert(map->memmap[i].type);
+    }
 
-        serial_terminal()->puts("\nentry: ")->putul(memory_map->entries[i].base)->puts(" type: ")->putd(memory_map->entries[i].signal);
+    // Make first megabyte unusable
+    memory_map->entries[0].base = 0x0000000000000000;
+    memory_map->entries[0].length = 0x0000000000100000;
+    memory_map->entries[0].signal = MEMORY_MAP_NOUSE;
+    for (uint64_t i = 1; i < memory_map->entry_count; i++) {
+        if (memory_map->entries[i].base < 0x0000000000100000) {
+            if (memory_map->entries[i].base + memory_map->entries[i].length < 0x0000000000100000) {
+                memory_map->entries[i].length = 0;
+                memory_map->entries[i].signal = MEMORY_MAP_NOUSE;
+            }
+            else {
+                memory_map->entries[i].length -= (0x0000000000100000 - memory_map->entries[i].base);
+                memory_map->entries[i].base = 0x0000000000100000;
+            }
+        }
+        else break;
     }
 
     // assumes 32-bit framebuffer...
