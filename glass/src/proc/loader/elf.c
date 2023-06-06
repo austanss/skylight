@@ -19,14 +19,14 @@ bool elf_load_segment(void* file, elf_program_header_t* header, elf_load_info_t*
     void* segment_virt = pmm_alloc_pool(pages);
 
     for (size_t page = 0; page < pages; page++)
-        paging_map_page(segment + (page * PAGING_PAGE_SIZE), (segment_virt + (page * PAGING_PAGE_SIZE)) - PAGING_VIRTUAL_OFFSET, PAGING_FLAGS_USER_PAGE);
+        paging_map_page(segment + (page * PAGING_PAGE_SIZE), (segment_virt + (page * PAGING_PAGE_SIZE)), PAGING_FLAGS_USER_PAGE);
 
     memset(segment, 0x00, header->p_memsz);
 
     memcpy(segment, file + header->p_offset, header->p_filesz);
 
     out_info->segments[out_info->segment_count].loaded_at = header->p_vaddr;
-    out_info->segments[out_info->segment_count].located_at = ((uint64_t)segment_virt - PAGING_VIRTUAL_OFFSET);
+    out_info->segments[out_info->segment_count].located_at = ((uint64_t)segment_virt);
     out_info->segments[out_info->segment_count].length = pages * PAGING_PAGE_SIZE;
 
     out_info->segment_count++;

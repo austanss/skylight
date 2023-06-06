@@ -49,7 +49,7 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
         paging_map_page((void *)head, (void *)(head - PAGING_KERNEL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
         
     for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map current kernel stack
-        paging_map_page((void *)head, (void *)(head - PAGING_VIRTUAL_OFFSET), PAGING_FLAGS_USER_PAGE);
+        paging_map_page((void *)head, (void *)(head), PAGING_FLAGS_USER_PAGE);
 
     paging_map_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000), paging_walk_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000)), PAGING_FLAGS_KERNEL_PAGE);
 

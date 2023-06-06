@@ -10,7 +10,7 @@ void punmap(void* virt) {
 
     void* phys = paging_walk_page(virt);
     paging_unmap_page(virt);
-    paging_map_page(phys + PAGING_VIRTUAL_OFFSET, phys, PAGING_FLAGS_KERNEL_PAGE);
+    paging_map_page(phys, phys, PAGING_FLAGS_KERNEL_PAGE);
 
     return;
 }

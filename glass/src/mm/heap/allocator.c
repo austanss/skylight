@@ -66,7 +66,7 @@ void heap_initialize(void* address, size_t pages){
     void* pos = address;
 
     for (size_t i = 0; i < pages; i++) {
-        paging_map_page(pos, pmm_alloc_page() - PAGING_VIRTUAL_OFFSET, PAGING_FLAGS_KERNEL_PAGE);
+        paging_map_page(pos, pmm_alloc_page(), PAGING_FLAGS_KERNEL_PAGE);
         pos = (void*)((size_t)pos + 0x1000);
     }
 
@@ -94,7 +94,7 @@ void heap_expand(size_t length) {
     heap_seg_header_t* new_segment = (heap_seg_header_t*)heap_end;
 
     for (size_t i = 0; i < pages; i++) {
-        paging_map_page(heap_end, pmm_alloc_page() - PAGING_VIRTUAL_OFFSET, PAGING_FLAGS_KERNEL_PAGE);
+        paging_map_page(heap_end, pmm_alloc_page(), PAGING_FLAGS_KERNEL_PAGE);
         heap_end = (void*)((size_t)heap_end + 0x1000);
     }
 

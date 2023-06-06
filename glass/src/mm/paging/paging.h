@@ -21,7 +21,7 @@
 #define PAGING_PAGE_ALIGNED         __attribute__((aligned(PAGING_PAGE_SIZE)))
 
 #define PAGING_KERNEL_OFFSET        0xffffffff80000000
-#define PAGING_VIRTUAL_OFFSET       0x0//0xffff800000000000
+#define PAGING_VIRTUAL_OFFSET       0xffff800000000000
 
 #define nullvptr                     - PAGING_VIRTUAL_OFFSET == NULL
 

@@ -7,10 +7,10 @@
 #define PMAP_VIRT_DEFAULT   0x0000
 
 uint64_t pmap(void* virt) {
-    void* phys = pmm_alloc_page() - PAGING_VIRTUAL_OFFSET;
+    void* phys = pmm_alloc_page();
 
     if (virt == PMAP_VIRT_DEFAULT)
-        virt = phys + PAGING_VIRTUAL_OFFSET;
+        virt = phys;
 
     return (uint64_t)paging_map_page(virt, phys, PAGING_FLAGS_USER_PAGE);
 }

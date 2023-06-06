@@ -66,6 +66,14 @@ void* pmm_alloc_page() {
 
     pmm_section_t* selected;
     for (selected = pmm_sections; selected != NULL; selected = selected->next) {
+        if (selected->pages == 0) {
+            selected->next->prev = selected->prev;
+            selected->prev->next = selected->next;
+            pmm_section_t* old = selected;
+            selected = selected->prev;  // manuever cuz iteration
+            pmm_delete_section(old);
+            continue;
+        }
         if (selected->free == PMM_SECTION_FREE) {
             base = selected->start;
             if (selected->prev->free == PMM_SECTION_USED) { // if previous section is a used one 
@@ -145,6 +153,7 @@ void pmm_free_page(void* page) {
             }
         }
     }
+    free_memory += PAGING_PAGE_SIZE;
 }
 
 void pmm_lock_page(void* page) {
@@ -220,7 +229,6 @@ void pmm_lock_pages(void* page, size_t count) {
     for (size_t i = 0; i < count; i++) {
         pmm_lock_page((void *)((uint64_t)page + (i * PAGING_PAGE_SIZE)));
     }
-    pmm_recombine();
 }
 
 void pmm_unlock_pages(void* page, size_t count) {
@@ -228,7 +236,6 @@ void pmm_unlock_pages(void* page, size_t count) {
     for (size_t i = 0; i < count; i++) {
         pmm_free_page((void *)((uint64_t)page + (i * PAGING_PAGE_SIZE)));
     }
-    pmm_recombine();
 }
 
 extern pmm_pool_t* pmm_pools; // NULL

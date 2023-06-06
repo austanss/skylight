@@ -36,6 +36,11 @@ void pmm_section_manager_reindex() {
 }
 
 pmm_section_t* pmm_new_section() {
+    if (_pmm_section_head * sizeof(pmm_section_t) >= pmm_data_size) {
+        serial_terminal()->puts("PMM section manager failed to find a free section\n");
+        return NULL;
+    }
+
     pmm_section_t* new_section = &pmm_sections[_pmm_section_head];
     if (new_section->prev != NULL || new_section->next != NULL) {
         pmm_section_manager_reindex();
