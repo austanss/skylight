@@ -36,8 +36,7 @@ syscall_dispatch:
     .generate_ud:
     xor eax, eax    ; clear rax
     mov [rcx], rax  ; set null invalid opcode at return address to generate #UD
-    lea r15, [rel .sysret]
-    jmp r15     ; like destroys the executing program, but it's fine it shouldn't have made a bad syscall
+    jmp $+(.sysret-$)     ; like destroys the executing program, but it's fine it shouldn't have made a bad syscall
 
 section .data
 

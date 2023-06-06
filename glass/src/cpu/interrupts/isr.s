@@ -2,16 +2,14 @@
 %macro isr_err_stub 1
 isr_stub_%+%1:
     push %1
-    lea r10, [rel isr_xframe_assembler]
-    jmp r10
+    jmp $+(isr_xframe_assembler-$)
 %endmacro
 
 %macro isr_no_err_stub 1
 isr_stub_%+%1:
     push 0
     push %1
-    lea r10, [rel isr_xframe_assembler]
-    jmp r10
+    jmp $+(isr_xframe_assembler-$)
 %endmacro
 
 %macro pushagrd 0
@@ -69,8 +67,7 @@ isr_xframe_assembler:
 
     lea rdi, [rsp + 0x10]
     extern isr_exception_handler
-    lea r15, [rel isr_exception_handler]
-    call r15
+    call $+(isr_exception_handler-$)
 
     pop rax
     pop rax

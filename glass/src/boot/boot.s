@@ -13,17 +13,14 @@ _start64:
     push rdi            ; stack the stivale2 pointer as rdi is never preserved
 
     extern gdt_assemble
-    lea r15, [rel gdt_assemble]
-    call r15   ; assemble the bonito gdt
+    call $+(gdt_assemble-$)   ; assemble the bonito gdt
 
     extern idt_assemble
-    lea r15, [rel idt_assemble]
-    call r15   ; assemble the bonito idt
+    call $+(idt_assemble-$)   ; assemble the bonito idt
     sti                 ; yay, interrupts work now!
 
     extern configure_math_extensions
-    lea r15, [rel configure_math_extensions]
-    call r15  ; floating points, sse, all those goodies
+    call $+(configure_math_extensions-$)  ; floating points, sse, all those goodies
 
     xor eax, eax                    
     mov fs, ax                  ; zeroing (currently irrelevant) segment registers
@@ -32,39 +29,31 @@ _start64:
     pop rdi             ; retrieve stivale2 pointer
 
     extern stivale2_reinterpret
-    lea r15, [rel stivale2_reinterpret]
-    call r15   ; reinterpret stivale2 information to match internal protocol (boot protocol abstraction)
+    call $+(stivale2_reinterpret-$)   ; reinterpret stivale2 information to match internal protocol (boot protocol abstraction)
     
     xor edi, edi        ; we don't need that mf no more
 
     extern pmm_start
-    lea r15, [rel pmm_start]
-    call r15      ; start the beautiful pmm
+    call $+(pmm_start-$)      ; start the beautiful pmm
 
     extern paging_reload_kernel_map
-    lea r15, [rel paging_reload_kernel_map]
-    call r15   ; hope no page faults >>>>:((((((
+    call $+(paging_reload_kernel_map-$)   ; hope no page faults >>>>:((((((
 
     xor edi, edi        ; we're not passing anything
     extern tss_install
-    lea r15, [rel tss_install]
-    call r15    ; instalar la tss bonita
+    call $+(tss_install-$)    ; instalar la tss bonita
 
     extern apic_initialize
-    lea r15, [rel apic_initialize]
-    call r15                ; initialize the Local APIC and IOAPIC
+    call $+(apic_initialize-$)                ; initialize the Local APIC and IOAPIC
 
     extern pci_conf_load_cache
-    lea r15, [rel pci_conf_load_cache]
-    call r15            ; load pci devices
+    call $+(pci_conf_load_cache-$)            ; load pci devices
 
     extern install_syscalls
-    lea r15, [rel install_syscalls]
-    call r15               ; install (los tontos) system calls
+    call $+(install_syscalls-$)               ; install (los tontos) system calls
 
     extern local_timer_calibrate
-    lea r15, [rel local_timer_calibrate]
-    call r15          ; calibrate the local APIC timer (using PIT)
+    call $+(local_timer_calibrate-$)          ; calibrate the local APIC timer (using PIT)
 
     xor edi, edi
     xor esi, esi                ; cleanup scratch registers
@@ -72,17 +61,14 @@ _start64:
 
     mov rdi, $+(frame_id-$)           
     extern get_boot_module
-    lea r15, [rel get_boot_module]  
-    call r15        ; get the Frame executable
+    call $+(get_boot_module-$)        ; get the Frame executable
     mov rdi, [rax]              ; accessing first field of the returned structure (virt)
     extern elf_load_program
-    lea r15, [rel elf_load_program]
-    call r15       ; exec is module in memory, this function loads the elf segments properly and ready for execution
+    call $+(elf_load_program-$)       ; exec is module in memory, this function loads the elf segments properly and ready for execution
 
     extern task_create_new
     mov rdi, rax                ; create the new task with the entry point
-    lea r15, [rel task_create_new]
-    call r15
+    call $+(task_create_new-$)      ; this function returns the task id
 
     extern task_select          ; select the task to run
     mov rdi, rax
@@ -90,12 +76,10 @@ _start64:
     pop rbp
     pop rbp
 
-    lea r15, [rel task_select]
-    call r15            ; select the task to run
+    call $+(task_select-$)            ; select the task to run
 
     extern reboot
-    lea r15, [rel reboot]
-    jmp r15                      ; reboot the system if the task_select function returns (which it shouldn't)
+    jmp $+(reboot-$)                      ; reboot the system if the task_select function returns (which it shouldn't)
     
     
 section .data
