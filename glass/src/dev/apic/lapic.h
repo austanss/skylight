@@ -55,7 +55,6 @@ inline uint32_t apic_local_read(apic_local_register_t local_register) {
 	return *destination;
 }
 
-__attribute__((no_caller_saved_registers))
 void	apic_local_send_eoi(void);
 
 void	apic_local_send_ipi(uint8_t lapic_id, uint8_t vector);

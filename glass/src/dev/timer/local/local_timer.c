@@ -8,6 +8,7 @@
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
 #include "sys/events/echoes.h"
+#include "proc/task/task.h"
 
 static uint64_t tpms;
 static bool calibrated = false;
@@ -20,7 +21,7 @@ uint64_t iii = 0;
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
     echoes_packet_t* packet = (echoes_packet_t *)_packet;
-    serial_terminal()->puts("tick ")->putd(iii++)->putc('\n');
+    serial_terminal()->puts("selecting next task ")->putd(task_select_next())->putc('\n');
     packet->id = SCHEDULER_TICK_EVENT_ID;
     packet->data_length = 0;
     echoes_broadcast_event(packet);

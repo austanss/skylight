@@ -51,3 +51,6 @@ void task_sleep(uint64_t task_id);
 void task_schedule(uint64_t task_id);
 void task_kill(uint64_t task_id);
 void task_select(uint64_t task_id);
+// Sets current Id to next task, returns id, and modifies gs_base. must be run during interrupt
+uint64_t task_select_next();
+void task_swap_suspended(task_t* new_task);

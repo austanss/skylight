@@ -14,7 +14,6 @@ uint16_t pit_divisor = 0;
 static volatile uint64_t ticks;
 static bool watching = false;
 
-__attribute__ ((interrupt))
 void __pit_builtin_handler(void* frame) {
     if (watching)
         ticks += pit_divisor;
@@ -39,7 +38,7 @@ void pit_enable() {
     
     pit_set_divisor(8);
     
-    idt_set_descriptor(pit_vector, (uintptr_t)&__pit_builtin_handler, IDT_DESCRIPTOR_EXTERNAL, TSS_IST_ROUTINE);
+    idt_install_irq_handler(pit_vector, (void *)&__pit_builtin_handler);
     apic_io_unmask_irq(gsi);
 }
 

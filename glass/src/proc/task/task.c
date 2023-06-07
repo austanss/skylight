@@ -212,3 +212,41 @@ void task_select(uint64_t task_id) {
     _finalize_task_switch(thread->task->ctx);
 }
 
+uint64_t task_select_next() {
+    linked_task_t* thread = tasks;
+
+    while (thread != NULL) {
+        if (thread->task->id == current_task_id)
+            break;
+        thread = thread->next;
+    }
+
+    if (thread == NULL || tasks == NULL) {
+        serial_terminal()->puts("Serious scheduler error: broken scenario!\n");
+        return -1;
+    }
+
+    thread->task->state = TASK_STATE_WAITING;
+
+    if (thread->next == NULL)
+        thread = tasks;    
+
+    thread->task->state = TASK_STATE_EXECUTION;
+    current_task_id = thread->task->id;
+
+    uint64_t gs_base = rdmsr(IA32_GS_BASE);
+    uint64_t kgs_base = rdmsr(IA32_KERNEL_GS_BASE);
+    gs_base = (uint64_t)thread->task->gs_base;
+    kgs_base = 0;
+    wrmsr(IA32_GS_BASE, gs_base);
+    wrmsr(IA32_KERNEL_GS_BASE, kgs_base);
+
+    gs_kernel_base_t* _gs_base = (gs_kernel_base_t *)gs_base;
+    _gs_base->tss = 0;
+    _gs_base->ctx = thread->task->ctx;
+    _gs_base->pid = thread->task->id;
+    _gs_base->rsp = tss_get(_gs_base->tss)->rsp[0];
+    _gs_base->pc = thread->task->ctx->rip;
+
+    return current_task_id;
+}
