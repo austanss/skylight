@@ -4,9 +4,31 @@ isr_save_task_context:
     push rbp
     mov rbp, rsp
     ; TODO proper full context switch
+    push rbx
+    push rax
     mov rax, cr3
     mov rbx, [gs:0x20]
     mov [rbx+0x88], rax ; save task cr3
+
+    pop rax
+    mov [rbx+0x00], rax
+    mov rax, rbx            ; save rax and rbx
+    pop rbx
+    mov [rax+0x08], rbx
+
+    mov [rax+0x10], rcx    ; save other gp registers
+    mov [rax+0x18], rdx
+    mov [rax+0x20], rdi
+    mov [rax+0x28], rsi
+    mov [rax+0x30], r8
+    mov [rax+0x38], r9
+    mov [rax+0x40], r10
+    mov [rax+0x48], r11
+    mov [rax+0x50], r12
+    mov [rax+0x58], r13
+    mov [rax+0x60], r14
+    mov [rax+0x68], r15
+
     extern paging_sync_cr3
     lea rax, [rel paging_sync_cr3]
     call rax
@@ -22,6 +44,23 @@ isr_restore_task_context:
     mov rax, [gs:0x20]
     mov rax, [rax+0x88] ; load task cr3
     mov cr3, rax
+
+    mov rax, [gs:0x20]
+    mov rbx, [rax+0x08]
+    mov rcx, [rax+0x10]
+    mov rdx, [rax+0x18]
+    mov rdi, [rax+0x20]
+    mov rsi, [rax+0x28]
+    mov r8,  [rax+0x30]
+    mov r9,  [rax+0x38]
+    mov r10, [rax+0x40]
+    mov r11, [rax+0x48]
+    mov r12, [rax+0x50]
+    mov r13, [rax+0x58]
+    mov r14, [rax+0x60]
+    mov r15, [rax+0x68]
+    mov rax, [rax+0x00] ; load general purpose registers
+
     pop rbp
     ret
 
@@ -43,26 +82,26 @@ extern __routine_handlers
 %macro irq_stub 1
 irq_stub_%+%1:
     swapgs
+    push rbp
     push r15
     mov r15, [gs:0x20]
     cmp r15, 0x00
     ; todo
     
     .yes_task:
+    pop r15
     call isr_save_task_context
     mov [gs:0x20], rax  ; save task context returned in rax
     lea r15, [rel __routine_handlers]
     mov r15, [r15 + %1 * 8]
     call r15
-    pop r15
     call isr_restore_task_context
+    pop rbp
     swapgs
     iretq
     
     .no_task:   ; interrupting kernel
     pop r15
-    mov rbp, rsp
-    push rbp
     lea r15, [rel __routine_handlers]
     mov r15, [r15 + %1 * 8]
     call r15

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "dev/timer/pit/pit.h"
 #include "dev/timer/local/local_timer.h"
+#include "dev/uart/serial.h"
 #include "dev/apic/lapic.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
@@ -14,15 +15,19 @@ static uint8_t vector;
 
 uint8_t _packet[sizeof(echoes_packet_t)];
 
+uint64_t iii = 0;
+
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
     echoes_packet_t* packet = (echoes_packet_t *)_packet;
+    serial_terminal()->puts("tick ")->putd(iii++)->putc('\n');
     packet->id = SCHEDULER_TICK_EVENT_ID;
     packet->data_length = 0;
     echoes_broadcast_event(packet);
     return;
 }
 
+// called by boot.s during boot
 void local_timer_calibrate() {
     apic_local_write(APIC_LOCAL_REGISTER_DIVIDE_CONFIG, LOCAL_TIMER_DIVISOR_001);
 
@@ -46,7 +51,7 @@ void local_timer_calibrate() {
 
     calibrated = true;
 
-    local_timer_set_frequency(20);
+    local_timer_set_frequency(50);
 }
 
 uint64_t local_timer_get_tpms() {
