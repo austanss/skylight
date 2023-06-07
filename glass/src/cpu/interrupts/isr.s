@@ -10,6 +10,7 @@ isr_save_task_context:
     extern paging_sync_cr3
     lea rax, [rel paging_sync_cr3]
     call rax
+    mov rax, [gs:0x20]
     pop rbp
     ret
 
@@ -45,18 +46,18 @@ irq_stub_%+%1:
     push r15
     mov r15, [gs:0x20]
     cmp r15, 0x00
-    je .no_task
+    ; todo
     
     .yes_task:
-    pop r15
     call isr_save_task_context
     mov [gs:0x20], rax  ; save task context returned in rax
     lea r15, [rel __routine_handlers]
     mov r15, [r15 + %1 * 8]
     call r15
+    pop r15
     call isr_restore_task_context
+    swapgs
     iretq
-
     
     .no_task:   ; interrupting kernel
     pop r15

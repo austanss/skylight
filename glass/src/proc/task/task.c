@@ -48,6 +48,7 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
             paging_map_page((void *)(load_info->segments[i].loaded_at + j), (void *)(load_info->segments[i].located_at + j), PAGING_FLAGS_USER_PAGE);
     }
 
+
     for (uint64_t head = (uint64_t)&stack; head < (uint64_t)&stack + (16 * PAGING_PAGE_SIZE); head+=PAGING_PAGE_SIZE)     // map current kernel stack
         paging_map_page((void *)head, (void *)(head - PAGING_KERNEL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
         
@@ -63,6 +64,7 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
 
     paging_map_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000), paging_walk_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000)), PAGING_FLAGS_KERNEL_PAGE);
     paging_map_page((void *)task_table, (void *)task_table, PAGING_FLAGS_KERNEL_PAGE);
+    paging_map_page((void *)task->gs_base, paging_walk_page((void *)task->gs_base), PAGING_FLAGS_KERNEL_PAGE);
 
     paging_load_pml4(kpml4);
 
@@ -91,14 +93,6 @@ uint64_t task_create_new(elf_load_info_t* load_info) {
     new_task->priority = 0;
     new_task->state = TASK_STATE_SLEEPING;  // create it sleeping, start it later
 
-    serial_terminal()->puts("\tCreating GS base structure...\n");
-    new_task->gs_base = task_new_gs_base();
-    new_task->gs_base->tss = 0;
-    new_task->gs_base->pid = new_task->id;
-    new_task->gs_base->rsp = tss_get(0)->rsp[0];
-    new_task->gs_base->pc = (uint64_t)load_info->entry;
-    new_task->gs_base->ctx = (void*)new_task->ctx;
-
     serial_terminal()->puts("\tCreating new task context...\n");
     new_task->ctx = (task_context_t *)malloc(sizeof(task_context_t));
     new_task->ctx->registers.rdi = 0;
@@ -115,6 +109,14 @@ uint64_t task_create_new(elf_load_info_t* load_info) {
     new_task->ctx->registers.r13 = 0;
     new_task->ctx->registers.r14 = 0;
     new_task->ctx->registers.r15 = 0;
+
+    serial_terminal()->puts("\tCreating GS base structure...\n");
+    new_task->gs_base = task_new_gs_base();
+    new_task->gs_base->tss = 0;
+    new_task->gs_base->pid = new_task->id;
+    new_task->gs_base->rsp = tss_get(0)->rsp[0];
+    new_task->gs_base->pc = (uint64_t)load_info->entry;
+    new_task->gs_base->ctx = (void*)new_task->ctx;
 
     serial_terminal()->puts("\tAllocating new stack...\n");
     new_task->ctx->stack.rsp = task_new_stack();
