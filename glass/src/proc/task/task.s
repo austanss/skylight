@@ -27,7 +27,6 @@ _load_task_page_tables:
 global _finalize_task_switch
 _finalize_task_switch:
     cli
-    push rbp
     mov rbp, rsp
     mov r15, rdi
     mov rdi, [r15 + 0x88] ; task->ctx->cr3
@@ -35,7 +34,11 @@ _finalize_task_switch:
     mov rbp, [r15 + 0x78]
     mov r14, [r15 + 0x80]
     call $+(_load_task_page_tables-$)
-    pop rbp
+    xor eax, eax
+    mov ax, 0x1B        ; user data segment
+    mov ds, ax
+    mov es, ax
+    push rax            ; push user data segment
     push rsp            ; push user stack
     sti
     pushfq              ; push flags

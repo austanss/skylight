@@ -3,18 +3,24 @@
 #include "cpu/tss/tss.h"
 #include "mm/paging/paging.h"
 
-static
 PAGING_PAGE_ALIGNED
-idt_desc_t idt[IDT_MAX_DESCRIPTORS];
+idt_desc_t __idt[IDT_MAX_DESCRIPTORS];
 
 static idtr_t idtr;
 
 static bool vectors[IDT_MAX_DESCRIPTORS];
 
+uint64_t __routine_handlers[IDT_MAX_DESCRIPTORS];
+
 extern uint64_t isr_stub_table[];
 
+void idt_install_irq_handler(uint8_t irq, void* handler) {
+    __routine_handlers[irq] = (uint64_t)handler;
+    idt_set_descriptor(irq, isr_stub_table[irq], IDT_DESCRIPTOR_EXTERNAL, TSS_IST_ROUTINE);
+}
+
 void idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags, uint8_t ist) {
-    idt_desc_t* descriptor = &idt[vector];
+    idt_desc_t* descriptor = &__idt[vector];
 
     descriptor->base_low       = isr & 0xFFFF;
     descriptor->cs             = GDT_OFFSET_KERNEL_CODE;
@@ -26,7 +32,7 @@ void idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags, uint8_t is
 }
 
 void idt_assemble() {
-    idtr.base = (uintptr_t)&idt[0];
+    idtr.base = (uintptr_t)&__idt[0];
     idtr.limit = (uint16_t)sizeof(idt_desc_t) * IDT_MAX_DESCRIPTORS - 1;
 
     for (uint8_t vector = 0; vector < IDT_CPU_EXCEPTION_COUNT; vector++) {

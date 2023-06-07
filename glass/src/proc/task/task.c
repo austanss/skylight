@@ -29,6 +29,9 @@ extern uint8_t* stack;
 
 #define MEGABYTE 1024*1024
 
+extern void* __gdt;
+extern void* __idt;
+
 // Creates a new page table for a tasks context
 paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
     paging_table_t* task_table = (paging_table_t *)pmm_alloc_page();
@@ -45,13 +48,21 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
             paging_map_page((void *)(load_info->segments[i].loaded_at + j), (void *)(load_info->segments[i].located_at + j), PAGING_FLAGS_USER_PAGE);
     }
 
-    for (uint64_t head = (uint64_t)stack; head < (uint64_t)stack + (16 * PAGING_PAGE_SIZE); head+=PAGING_PAGE_SIZE)     // map current kernel stack
+    for (uint64_t head = (uint64_t)&stack; head < (uint64_t)&stack + (16 * PAGING_PAGE_SIZE); head+=PAGING_PAGE_SIZE)     // map current kernel stack
         paging_map_page((void *)head, (void *)(head - PAGING_KERNEL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
         
-    for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map current kernel stack
+    for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map user stack
         paging_map_page((void *)head, (void *)(head), PAGING_FLAGS_USER_PAGE);
 
+    for (uint64_t ist = 0; ist < 7; ist++) {
+        uint64_t ist_addr = (uint64_t)tss_get(0)->ist[ist];
+        if (ist_addr == (uint64_t)NULL) break;
+        for (uint64_t offset = 0; offset <= (PAGING_PAGE_SIZE * IST_STACK_PAGES); offset+=PAGING_PAGE_SIZE)
+            paging_map_page((void *)(ist_addr - offset), (void *)(ist_addr - offset), PAGING_FLAGS_KERNEL_PAGE);
+    }
+
     paging_map_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000), paging_walk_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000)), PAGING_FLAGS_KERNEL_PAGE);
+    paging_map_page((void *)task_table, (void *)task_table, PAGING_FLAGS_KERNEL_PAGE);
 
     paging_load_pml4(kpml4);
 

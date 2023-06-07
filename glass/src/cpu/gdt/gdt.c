@@ -2,9 +2,8 @@
 #include "mm/paging/paging.h"
 #include <stddef.h>
 
-static
 PAGING_PAGE_ALIGNED
-gdt_desc_t gdt[GDT_MAX_DESCRIPTORS];
+gdt_desc_t __gdt[GDT_MAX_DESCRIPTORS];
 
 static gdtr_t gdtr;
 
@@ -12,7 +11,7 @@ static uint16_t gindex;
 
 void gdt_assemble() {
     gdtr.limit = (sizeof(gdt_desc_t) * GDT_MAX_DESCRIPTORS) - 1;
-    gdtr.base = (uintptr_t)&gdt[0];
+    gdtr.base = (uintptr_t)&__gdt[0];
 
     gdt_add_descriptor(0, 0, 0, 0);
     gdt_add_descriptor(0, 0, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY);
@@ -28,14 +27,14 @@ void gdt_add_descriptor(uint64_t base, uint16_t limit, uint8_t access, uint8_t g
     if (gindex >= GDT_MAX_DESCRIPTORS) 
         return;
 
-    gdt[gindex].base_low = base & 0xFFFF;
-    gdt[gindex].base_mid = (base >> 16) & 0xFF;
-    gdt[gindex].base_high = (base >> 24) & 0xFF;
+    __gdt[gindex].base_low = base & 0xFFFF;
+    __gdt[gindex].base_mid = (base >> 16) & 0xFF;
+    __gdt[gindex].base_high = (base >> 24) & 0xFF;
 
-    gdt[gindex].limit = limit;
+    __gdt[gindex].limit = limit;
 
-    gdt[gindex].flags = access;
-    gdt[gindex].granularity = granularity;
+    __gdt[gindex].flags = access;
+    __gdt[gindex].granularity = granularity;
 
     gindex++;
 }
@@ -45,7 +44,7 @@ void gdt_add_descriptor(uint64_t base, uint16_t limit, uint8_t access, uint8_t g
 uint16_t gdt_install_tss(uint64_t tss) {
     uint8_t tss_type = GDT_DESCRIPTOR_ACCESS | GDT_DESCRIPTOR_EXECUTABLE | GDT_DESCRIPTOR_PRESENT;
 
-    gdt_tss_desc_t* tss_desc = (gdt_tss_desc_t *)&gdt[gindex];
+    gdt_tss_desc_t* tss_desc = (gdt_tss_desc_t *)&__gdt[gindex];
 
     if (gindex >= GDT_MAX_DESCRIPTORS)
         return 0;

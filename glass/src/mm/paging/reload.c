@@ -29,3 +29,7 @@ void paging_reload_kernel_map() {
 
     __asm__ volatile ("mov %0, %%cr3" : : "a"(paging_walk_page(pml4)));
 }
+
+void paging_sync_cr3() {
+    __asm__ volatile ("mov %0, %%cr3" : : "a"(pml4));
+}

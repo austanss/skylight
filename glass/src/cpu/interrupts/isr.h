@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include "proc/task/task.h"
 
 typedef struct {
     struct {
@@ -29,3 +30,6 @@ typedef struct {
         uint64_t    dss;
     } base_frame;
 } isr_xframe_t;
+
+task_context_t* isr_save_task_context();
+void isr_restore_task_context();

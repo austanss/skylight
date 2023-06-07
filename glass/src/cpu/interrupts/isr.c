@@ -1,5 +1,6 @@
 #include "isr.h"
 #include "dev/uart/serial.h"
+#include "proc/task/task.h"
 
 void isr_exception_handler(isr_xframe_t* frame);
 void isr_exception_handler(isr_xframe_t* frame) {
@@ -15,3 +16,4 @@ void isr_exception_handler(isr_xframe_t* frame) {
 
     __asm__ volatile ("cli; hlt");
 }
+

@@ -13,9 +13,9 @@ uint8_t tss_add_stack(int num_cpu) {
     if (ist_index >= 7)
         return 1;
 
-    void* stack = pmm_alloc_page();
+    void* stack = pmm_alloc_pool(IST_STACK_PAGES);
 
-    tss_descriptors[num_cpu].ist[ist_index] = (uint64_t)stack + PAGING_PAGE_SIZE;
+    tss_descriptors[num_cpu].ist[ist_index] = (uint64_t)stack + (PAGING_PAGE_SIZE * IST_STACK_PAGES);
     ist_index++;
     return ist_index;
 }
@@ -24,6 +24,7 @@ void tss_install(int num_cpu) {
     uint64_t tss_base = (uint64_t)&tss_descriptors[num_cpu];
     memset((void *)tss_base, 0, sizeof(tss_t));
     
+    tss_add_stack(num_cpu);
     tss_add_stack(num_cpu);
     tss_add_stack(num_cpu);
 

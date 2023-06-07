@@ -6,6 +6,8 @@
 #define TSS_IST_EXCEPTION   001
 #define TSS_IST_ROUTINE     002
 
+#define IST_STACK_PAGES     32
+
 typedef struct tss {
     uint32_t    rsv0;
     uint64_t    rsp[3];

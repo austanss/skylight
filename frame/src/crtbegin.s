@@ -4,7 +4,6 @@ extern main
 default rel
 
 _start:
-    mov rsp, rdi
     xor rbp, rbp
     push rbp
     mov rbp, rsp

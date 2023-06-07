@@ -14,7 +14,6 @@ static uint8_t vector;
 
 uint8_t _packet[sizeof(echoes_packet_t)];
 
-__attribute__ ((interrupt))
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
     echoes_packet_t* packet = (echoes_packet_t *)_packet;
@@ -55,7 +54,7 @@ uint64_t local_timer_get_tpms() {
 }
 
 void local_timer_set_handler(void (*handler)) {
-    idt_set_descriptor(vector, (uintptr_t)handler, IDT_DESCRIPTOR_EXTERNAL, TSS_IST_ROUTINE);
+    idt_install_irq_handler(vector, (void *)handler);
 }
 
 void local_timer_set_frequency(uint64_t hz) {
