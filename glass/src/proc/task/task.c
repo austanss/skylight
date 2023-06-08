@@ -25,8 +25,6 @@ void scheduler_preconfigure()
 extern uint8_t __load_base;
 extern uint8_t __load_max;
 
-extern uint8_t* stack;
-
 #define MEGABYTE 1024*1024
 
 extern void* __gdt;
@@ -47,10 +45,6 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
         for (uint64_t j = 0; j < load_info->segments[i].length; j+=PAGING_PAGE_SIZE)
             paging_map_page((void *)(load_info->segments[i].loaded_at + j), (void *)(load_info->segments[i].located_at + j), PAGING_FLAGS_USER_PAGE);
     }
-
-
-    for (uint64_t head = (uint64_t)&stack; head < (uint64_t)&stack + (16 * PAGING_PAGE_SIZE); head+=PAGING_PAGE_SIZE)     // map current kernel stack
-        paging_map_page((void *)head, (void *)(head - PAGING_KERNEL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
         
     for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map user stack
         paging_map_page((void *)head, (void *)(head), PAGING_FLAGS_USER_PAGE);

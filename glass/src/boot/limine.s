@@ -1,16 +1,15 @@
-global _start64
+global _start_limine64
 
 section .text
 default rel
 
-_start64:
+_start_limine64:
     cli                 ; avoid exceptions or interruptions because idt is undefined
     cld                 ; standard c calling convention requirements
     
     xor ebp, ebp        ; shitty (needs fixing) attempt at a stack frame
     push rbp
     mov rbp, rsp
-    push rdi            ; stack the stivale2 pointer as rdi is never preserved
 
     extern gdt_assemble
     call $+(gdt_assemble-$)   ; assemble the bonito gdt
@@ -26,12 +25,8 @@ _start64:
     mov fs, ax                  ; zeroing (currently irrelevant) segment registers
     mov gs, ax
 
-    pop rdi             ; retrieve stivale2 pointer
-
-    extern stivale2_reinterpret
-    call $+(stivale2_reinterpret-$)   ; reinterpret stivale2 information to match internal protocol (boot protocol abstraction)
-    
-    xor edi, edi        ; we don't need that mf no more
+    extern limine_reinterpret
+    call $+(limine_reinterpret-$)   ; reinterpret stivale2 information to match internal protocol (boot protocol abstraction)
 
     extern pmm_start
     call $+(pmm_start-$)      ; start the beautiful pmm
@@ -48,9 +43,6 @@ _start64:
 
     extern local_timer_calibrate
     call $+(local_timer_calibrate-$)          ; calibrate the local APIC timer (using PIT)
-
-    cli
-    hlt
 
     extern pci_conf_load_cache
     call $+(pci_conf_load_cache-$)            ; load pci devices

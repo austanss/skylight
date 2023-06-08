@@ -3,6 +3,8 @@ GLASS	= $(OUTPUT)/glass.sys
 FRAME	= $(OUTPUT)/frame.se
 IMAGE	= $(OUTPUT)/skylight.hdd
 
+LIMINE-EFI		= https://github.com/limine-bootloader/limine/raw/v4.x-branch-binary/BOOTX64.EFI
+
 .DEFAULT-GOAL	= image
 .PHONY			= clean
 
@@ -17,7 +19,7 @@ $(FRAME):
 	@ cp frame/build/frame.se $(FRAME)
 
 $(IMAGE): glass frame
-	@ wget https://github.com/limine-bootloader/limine/raw/v3.0-branch-binary/BOOTX64.EFI --quiet
+	@ wget $(LIMINE-EFI) --quiet
 	@ dd if=/dev/zero of=fat.img bs=1M count=128
 	@ mformat -i fat.img -F ::
 	@ mmd -i fat.img ::/efi
@@ -56,4 +58,4 @@ run:
 	@ qemu-system-x86_64 $(QEMU_ARGS) $(ADD_QEMU_ARGS)
 
 debug:
-	@ qemu-system-x86_64 $(QEMU_ARGS) -S -gdb tcp::1234 $(ADD_QEMU_ARGS)
+	@ qemu-system-x86_64 $(QEMU_ARGS) -S -gdb tcp::1234 -no-shutdown -no-reboot $(ADD_QEMU_ARGS)

@@ -88,15 +88,24 @@ void pmm_recombine() {
     for (uint64_t iteration = 0; !(detected == 0 && iteration > 0); iteration++) {
         detected = 0;
         for (current = pmm_sections; current != NULL; current = current->next) {
+            if (current->next == NULL) {
+                break;       // if next is null then break
+            }
             if (current->free != current->next->free) {
                 continue;       // if types don't match then continue to next iteration
             }
             detected = 1;            
             // since current->free == current->next->free
             current->pages += current->next->pages;
-            current->next = current->next->next;
-            pmm_delete_section(current->next->prev);
-            current->next->prev = current;
+            if (current->next->next != NULL) {
+                current->next = current->next->next;
+                pmm_delete_section(current->next->prev);
+                current->next->prev = current;
+            }
+            else {
+                pmm_delete_section(current->next);
+                current->next = NULL;
+            }
         }
     }
 }
@@ -152,6 +161,7 @@ void pmm_start() {
     if (free_memory % (ROUND_OFF * MEGABYTE) != 0) estimated_total_memory++;
     estimated_total_memory *= (ROUND_OFF * MEGABYTE);
     pmm_data_size = estimated_total_memory / MAX_PMM_HEADER_PROPORTION;
+    
 
     // Now find place to store pmm data
     for (uint64_t i = 0; i < memory_map->entry_count; i++) {

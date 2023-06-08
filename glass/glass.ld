@@ -1,4 +1,4 @@
-ENTRY(_start64)
+ENTRY(_start_limine64)
 OUTPUT_FORMAT(elf64-x86-64)
 
 SECTIONS
@@ -7,8 +7,8 @@ SECTIONS
 
 	__load_base = .;
 
-	.stivalehdr : {
-        KEEP(*(.stivalehdr))
+	.limine_reqs : {
+        KEEP(*(.limine_reqs))
     }
 
 	.text : ALIGN(0x1000) {
