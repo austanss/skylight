@@ -105,7 +105,6 @@ irq_stub_%+%1:
     mov ax, 0x1B    ; load user data segment
     mov ds, ax
     mov es, ax
-    mov ss, ax
 
     call isr_restore_task_context
     pop rbp
@@ -193,7 +192,6 @@ isr_xframe_assembler:
     pop rax
     mov ds, ax
     mov es, ax
-    mov ss, ax
     popacrd
     popagrd
     pop rbp

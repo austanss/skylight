@@ -56,5 +56,6 @@ uint8_t idt_allocate_vector() {
 
 void idt_free_vector(uint8_t vector) {
     idt_set_descriptor(vector, 0, 0, 0);
+    __routine_handlers[vector] = 0;
     vectors[vector] = false;
 }

@@ -7,6 +7,7 @@
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
 #include "dev/io.h"
+#include "dev/uart/serial.h"
 
 uint8_t pit_vector = 0;
 uint16_t pit_divisor = 0;
@@ -43,6 +44,8 @@ void pit_enable() {
 }
 
 void pit_disable() {
+    gsi = apic_io_get_gsi(PIT_IRQ_LINE);
+    apic_io_redirect_irq(gsi, 0, false, false);
     apic_io_mask_irq(gsi);
     idt_free_vector(pit_vector);
     pit_vector = 0;
@@ -69,8 +72,10 @@ void pit_deadline_wait(uint64_t delay_ticks) {
     ticks = 0;
     watching = true;
     
-    while (ticks < delay_ticks)
+    while (ticks < delay_ticks) {
         asm ("hlt");
+        continue;
+    }
 
     watching = false;
     return;

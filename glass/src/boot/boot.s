@@ -46,14 +46,17 @@ _start64:
     extern apic_initialize
     call $+(apic_initialize-$)                ; initialize the Local APIC and IOAPIC
 
+    extern local_timer_calibrate
+    call $+(local_timer_calibrate-$)          ; calibrate the local APIC timer (using PIT)
+
+    cli
+    hlt
+
     extern pci_conf_load_cache
     call $+(pci_conf_load_cache-$)            ; load pci devices
 
     extern install_syscalls
     call $+(install_syscalls-$)               ; install (los tontos) system calls
-
-    extern local_timer_calibrate
-    call $+(local_timer_calibrate-$)          ; calibrate the local APIC timer (using PIT)
 
     xor edi, edi
     xor esi, esi                ; cleanup scratch registers
