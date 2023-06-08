@@ -21,7 +21,9 @@ uint64_t iii = 0;
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
     echoes_packet_t* packet = (echoes_packet_t *)_packet;
-    serial_terminal()->puts("selecting next task ")->putd(task_select_next())->putc('\n');
+    if (rdmsr(IA32_GS_BASE) != 0x00 && rdmsr(IA32_KERNEL_GS_BASE) == 0x00) {
+        serial_terminal()->puts("selecting next task ")->putd(task_select_next())->putc('\n');
+    }
     packet->id = SCHEDULER_TICK_EVENT_ID;
     packet->data_length = 0;
     echoes_broadcast_event(packet);

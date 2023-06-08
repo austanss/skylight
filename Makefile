@@ -58,4 +58,4 @@ run:
 	@ qemu-system-x86_64 $(QEMU_ARGS) $(ADD_QEMU_ARGS)
 
 debug:
-	@ qemu-system-x86_64 $(QEMU_ARGS) -S -gdb tcp::1234 -no-shutdown -no-reboot $(ADD_QEMU_ARGS)
+	@ qemu-system-x86_64 $(QEMU_ARGS) -S -gdb tcp::1234 -d int -no-shutdown -no-reboot $(ADD_QEMU_ARGS)

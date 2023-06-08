@@ -38,8 +38,9 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
     paging_table_t* kpml4 = paging_get_pml4();
     paging_load_pml4(task_table);
 
-    for (uint64_t t = (uint64_t)&__load_base; t < (uint64_t)&__load_max; t+=PAGING_PAGE_SIZE)
-        paging_map_page((void *)t, (void *)(t - PAGING_KERNEL_OFFSET), PAGING_FLAGS_KERNEL_PAGE);
+    uint64_t kernel_phys = (uint64_t)get_kernel_load_physical();
+    for (uint64_t t = 0; t < ((uint64_t)&__load_max - (kernel_phys + get_kernel_virtual_offset())); t+=PAGING_PAGE_SIZE)
+        paging_map_page((void *)((kernel_phys + get_kernel_virtual_offset()) + t), (void *)(kernel_phys + t), PAGING_FLAGS_KERNEL_PAGE);
 
     for (uint64_t i = 0; i < load_info->segment_count; i++) {
         for (uint64_t j = 0; j < load_info->segments[i].length; j+=PAGING_PAGE_SIZE)
@@ -182,8 +183,6 @@ extern void _load_task_page_tables(void* cr3);
 
 extern void _finalize_task_switch(task_context_t* ctx);
 
-#define IA32_KERNEL_GS_BASE 0xC0000102
-#define IA32_GS_BASE        0xC0000101
 
 void task_select(uint64_t task_id) {
     current_task_id = task_id;

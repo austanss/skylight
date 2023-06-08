@@ -11,7 +11,7 @@ pci_function_t* pci_function_cache = NULL;
 static bool cached = false;
 
 void pci_conf_load_cache() {
-    acpi_mcfg_header_t* mcfg = ACPI_MCFG_GET();
+    acpi_mcfg_header_t* mcfg = (acpi_mcfg_header_t *)acpi_get_table("MCFG", 0);
 
     if (!mcfg)
         return;

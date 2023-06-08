@@ -549,8 +549,13 @@ __attribute__((section(".limine_reqs")))
 void* __final_req = NULL;
 
 static uint64_t _kernel_physical_load;
+static uint64_t _kernel_virtual_load;
+
 void* get_kernel_load_physical() {
     return (void *)_kernel_physical_load;
+}
+uint64_t get_kernel_virtual_offset() {
+    return _kernel_virtual_load - _kernel_physical_load;
 }
 
 // End Limine requests
@@ -614,6 +619,7 @@ void limine_reinterpret() {
     uint64_t limine_map_entries = l_memory_map_req.response->entry_count;
 
     _kernel_physical_load = l_address_req.response->physical_base;
+    _kernel_virtual_load = l_address_req.response->virtual_base;
     serial_terminal()->puts("Kernel physical load: ")->putul(_kernel_physical_load)->puts("\n");
 
     uint64_t map_pages = (limine_map_entries * sizeof(struct limine_memmap_entry)) / PAGING_PAGE_SIZE;  

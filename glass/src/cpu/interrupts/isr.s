@@ -81,15 +81,17 @@ extern __routine_handlers
 
 %macro irq_stub 1
 irq_stub_%+%1:
-    swapgs
     push rbp
     push r15
+    push rax
     xor eax, eax
     mov ax, ds
     cmp ax, 0x10    ;; if ds == 0x10, we are in kernel mode
+    pop rax
     je .no_task
     
     .yes_task:
+    swapgs
     mov ax, 0x10    ; load kernel data segment
     mov ds, ax
     mov es, ax
@@ -113,11 +115,12 @@ irq_stub_%+%1:
     
     .no_task:   ; interrupting kernel
     pop r15
+    pushagrd
     lea r15, [rel __routine_handlers]
     mov r15, [r15 + %1 * 8]
     call r15
+    popagrd
     pop rbp
-    swapgs
     iretq
 
 %endmacro
@@ -170,21 +173,25 @@ isr_xframe_assembler:
     mov ax, ds
     push rax
     push qword 0
-    mov ax, 0x10
+
+    push rax
+    xor eax, eax
+    mov ax, ds
+    cmp ax, 0x10    ;; if ds == 0x10, we are in kernel mode
+    pop rax
+    je .no_task
+    
+    .yes_task:
+    swapgs
+    call isr_save_task_context
+    mov ax, 0x10 ; load kernel data segment
     mov ds, ax
     mov es, ax
     mov ss, ax
-    swapgs
-
-    call isr_save_task_context
 
     lea rdi, [rsp + 0x10]
     extern isr_exception_handler
     call $+(isr_exception_handler-$)
-
-    mov rdi, [gs:0x20]
-    mov rax, [rdi + 0x88] ; task cr3
-    mov cr3, rax
 
     call isr_restore_task_context
 
@@ -197,6 +204,22 @@ isr_xframe_assembler:
     pop rbp
     add rsp, 0x10
     swapgs
+    iretq
+
+
+    .no_task:
+    lea rdi, [rsp + 0x10]
+    extern isr_exception_handler
+    call $+(isr_exception_handler-$)
+    
+    pop rax
+    pop rax
+    mov ds, ax
+    mov es, ax
+    popacrd
+    popagrd
+    pop rbp
+    add rsp, 0x10
     iretq
 
 isr_no_err_stub 0

@@ -25,9 +25,8 @@ void paging_reload_kernel_map() {
     }
 
     uint64_t kernel_phys = (uint64_t)get_kernel_load_physical();
-    for (uint64_t t = 0; t < ((uint64_t)&__load_max - (uint64_t)&__load_base); t+=PAGING_PAGE_SIZE)
-        paging_map_page((void *)((uint64_t)(&__load_base - PAGING_PAGE_SIZE) + t), (void *)(kernel_phys + t), PAGING_FLAGS_KERNEL_PAGE);
-        // virtual offset negative one page to fix limine oddities
+    for (uint64_t t = 0; t < ((uint64_t)&__load_max - (kernel_phys + get_kernel_virtual_offset())); t+=PAGING_PAGE_SIZE)
+        paging_map_page((void *)((kernel_phys + get_kernel_virtual_offset()) + t), (void *)(kernel_phys + t), PAGING_FLAGS_KERNEL_PAGE);
         
     __asm__ volatile ("mov %0, %%cr3" : : "a"(paging_walk_page(pml4)));
 }

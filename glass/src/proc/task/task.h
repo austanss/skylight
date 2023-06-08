@@ -10,6 +10,9 @@
 #define TASK_STATE_SLEEPING     2
 #define TASK_STATE_DEAD         3
 
+#define IA32_KERNEL_GS_BASE 0xC0000102
+#define IA32_GS_BASE        0xC0000101
+
 typedef struct {
     struct {
         uint64_t    rax; // +0x00
