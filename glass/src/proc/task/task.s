@@ -38,6 +38,7 @@ _finalize_task_switch:
     mov ax, 0x1B        ; user data segment
     mov ds, ax
     mov es, ax
+    mov ss, ax
     push rax            ; push user data segment
     push rsp            ; push user stack
     sti

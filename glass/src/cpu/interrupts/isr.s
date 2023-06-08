@@ -84,17 +84,29 @@ irq_stub_%+%1:
     swapgs
     push rbp
     push r15
-    mov r15, [gs:0x20]
-    cmp r15, 0x00
-    ; todo
+    xor eax, eax
+    mov ax, ds
+    cmp ax, 0x10    ;; if ds == 0x10, we are in kernel mode
+    je .no_task
     
     .yes_task:
+    mov ax, 0x10    ; load kernel data segment
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+
     pop r15
     call isr_save_task_context
     mov [gs:0x20], rax  ; save task context returned in rax
     lea r15, [rel __routine_handlers]
     mov r15, [r15 + %1 * 8]
     call r15
+
+    mov ax, 0x1B    ; load user data segment
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+
     call isr_restore_task_context
     pop rbp
     swapgs
@@ -181,6 +193,7 @@ isr_xframe_assembler:
     pop rax
     mov ds, ax
     mov es, ax
+    mov ss, ax
     popacrd
     popagrd
     pop rbp
