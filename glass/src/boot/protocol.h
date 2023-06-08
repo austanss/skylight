@@ -35,6 +35,8 @@ extern framebuffer_info_t framebuffer;
 
 boot_module_t* get_boot_module(char* name);
 
+void* get_kernel_load_physical();
+
 #define MEMORY_MAP_FREE     0x00
 #define MEMORY_MAP_BUSY     0x01
 #define MEMORY_MAP_MMIO     0x02

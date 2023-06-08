@@ -16,7 +16,7 @@ _start_limine64:
 
     extern idt_assemble
     call $+(idt_assemble-$)   ; assemble the bonito idt
-    sti                 ; yay, interrupts work now!
+    sti                 ; yay, interrupts work** now!
 
     extern configure_math_extensions
     call $+(configure_math_extensions-$)  ; floating points, sse, all those goodies

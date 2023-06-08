@@ -537,8 +537,21 @@ struct limine_entry_point_request l_entry_req = {
 __attribute__((section(".limine_reqs")))
 void* __entry_req = (void *)&l_entry_req;
 
+struct limine_kernel_address_request l_address_req = {
+    .id = LIMINE_KERNEL_ADDRESS_REQUEST,
+    .revision = 0,
+    .response = NULL
+};
+__attribute__((section(".limine_reqs")))
+void* __address_req = (void *)&l_address_req;
+
 __attribute__((section(".limine_reqs")))
 void* __final_req = NULL;
+
+static uint64_t _kernel_physical_load;
+void* get_kernel_load_physical() {
+    return (void *)_kernel_physical_load;
+}
 
 // End Limine requests
 
@@ -599,6 +612,9 @@ void limine_reinterpret() {
     // pointer to array of pointers to entries
     struct limine_memmap_entry** limine_map = l_memory_map_req.response->entries;
     uint64_t limine_map_entries = l_memory_map_req.response->entry_count;
+
+    _kernel_physical_load = l_address_req.response->physical_base;
+    serial_terminal()->puts("Kernel physical load: ")->putul(_kernel_physical_load)->puts("\n");
 
     uint64_t map_pages = (limine_map_entries * sizeof(struct limine_memmap_entry)) / PAGING_PAGE_SIZE;  
     if (((limine_map_entries * sizeof(struct limine_memmap_entry)) % PAGING_PAGE_SIZE) != 0)
