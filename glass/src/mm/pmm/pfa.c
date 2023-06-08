@@ -183,7 +183,7 @@ void pmm_lock_page(void* page) {
         }
         if (selected->start == (uint64_t)page) { // if at beginning of chunk
             if (selected->free == PMM_SECTION_USED) return; // if used return
-            if (selected->prev == PMM_SECTION_USED) {
+            if (selected->prev->free == PMM_SECTION_USED) {
                 selected->prev->pages += 1;
                 selected->pages -= 1;
                 selected->start += PAGING_PAGE_SIZE;

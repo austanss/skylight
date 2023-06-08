@@ -3,3 +3,4 @@ build/
 glass/build/
 compile_commands.json
 nohup.out
+logs/**
