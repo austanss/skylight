@@ -31,3 +31,5 @@ void    tss_install(int num_cpu);
 uint8_t tss_add_stack(int num_cpu);
 void    tss_reload(uint16_t selector);
 tss_t*  tss_get(int num_cpu);
+uint8_t tss_get_num_stacks(int num_cpu);
+void*   tss_get_stack(int num_cpu, uint8_t ist);

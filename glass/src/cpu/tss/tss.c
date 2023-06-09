@@ -20,6 +20,10 @@ uint8_t tss_add_stack(int num_cpu) {
     return ist_index;
 }
 
+uint8_t tss_get_num_stacks(int num_cpu) {
+    return ist_index - 1;
+}
+
 void tss_install(int num_cpu) {
     uint64_t tss_base = (uint64_t)&tss_descriptors[num_cpu];
     memset((void *)tss_base, 0, sizeof(tss_t));
@@ -38,3 +42,8 @@ void tss_install(int num_cpu) {
 tss_t* tss_get(int num_cpu) {
     return &tss_descriptors[num_cpu];
 }
+
+void* tss_get_stack(int num_cpu, uint8_t stack) {
+    return (void*)tss_descriptors[num_cpu].ist[stack];
+}
+
