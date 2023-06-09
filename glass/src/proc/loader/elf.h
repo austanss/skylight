@@ -5,6 +5,7 @@
 #define ELF_SEGMENT_LOAD        0x01
 #define ELF_SEGMENT_DYNAMIC     0x02
 #define ELF_SEGMENT_INTERP      0x03
+#define ELF_SEGMENT_NOTE        0x04
 
 #define ELF_HEADER_MAGIC        "\177ELF"
 
@@ -66,12 +67,12 @@ typedef struct {
     uint64_t    loaded_at; // where segment should be according to exec
     uint64_t    located_at; // where segment physically is in memory (phys)
     uint64_t    length;
-} elf_load_segment_t;
+} elf_loaded_page_t;
 
 typedef struct {
     uint64_t    entry;
     uint64_t    segment_count;
-    elf_load_segment_t* segments;
+    elf_loaded_page_t* segments;
 } elf_load_info_t;
 
 elf_load_info_t* elf_load_program(void* file);

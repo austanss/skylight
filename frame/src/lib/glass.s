@@ -15,3 +15,15 @@ punmap:
     mov eax, 0x0002
     syscall
     ret
+
+global fb_req:
+fb_req:
+    mov eax, 0x0003
+    syscall
+    ret
+
+global fb_kill:
+fb_kill:
+    mov eax, 0x0004
+    syscall
+    ret

@@ -44,7 +44,7 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
 
     for (uint64_t i = 0; i < load_info->segment_count; i++) {
         for (uint64_t j = 0; j < load_info->segments[i].length; j+=PAGING_PAGE_SIZE)
-            paging_map_page((void *)(load_info->segments[i].loaded_at + j), (void *)(load_info->segments[i].located_at + j), PAGING_FLAGS_USER_PAGE);
+            paging_map_page((void *)((load_info->segments[i].loaded_at & ~0xfff) + j), (void *)(load_info->segments[i].located_at + j), PAGING_FLAGS_USER_PAGE);
     }
         
     for (uint64_t head = task->ctx->stack.rsp - MEGABYTE; head < task->ctx->stack.rsp; head+=PAGING_PAGE_SIZE)     // map user stack
@@ -59,7 +59,7 @@ paging_table_t* task_new_page_table(elf_load_info_t* load_info, task_t* task) {
 
     paging_map_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000), paging_walk_page((void *)((uint64_t)task->ctx & 0xfffffffffffff000)), PAGING_FLAGS_KERNEL_PAGE);
     paging_map_page((void *)task_table, (void *)task_table, PAGING_FLAGS_KERNEL_PAGE);
-    paging_map_page((void *)task->gs_base, paging_walk_page((void *)task->gs_base), PAGING_FLAGS_KERNEL_PAGE);
+    paging_map_page((void *)task->gs_base, (void *)task->gs_base, PAGING_FLAGS_KERNEL_PAGE);
 
     paging_load_pml4(kpml4);
 

@@ -78,9 +78,6 @@ _start_limine64:
     mov rsp, rax
     mov rbp, rax
 
-    cli
-    hlt
-
     call $+(task_select-$)            ; select the task to run
 
     extern reboot

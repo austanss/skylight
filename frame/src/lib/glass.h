@@ -1,11 +1,10 @@
 #pragma once
 #include <stdint.h>
 
-#define FIELD_TOTAL_RAM         000
-#define FIELD_FREE_RAM          001
-#define FIELD_DISPLAY_WIDTH     002
-#define FIELD_DISPLAY_HEIGHT    003
-#define FIELD_DISPLAY_BPP       004
+#define FIELD_FREE_RAM          000
+#define FIELD_DISPLAY_WIDTH     001
+#define FIELD_DISPLAY_HEIGHT    002
+#define FIELD_DISPLAY_BPP       003
 
 uint64_t rdinfo(uint64_t field);
 
@@ -13,3 +12,5 @@ uint64_t rdinfo(uint64_t field);
 
 void* pmap(void* virt);
 void punmap(void* virt);
+void* fb_req();
+void fb_kill();

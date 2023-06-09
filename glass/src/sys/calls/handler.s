@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 3
+%define nsyscalls 5
 
 syscall_switch_kernel:
     push rbp
@@ -8,6 +8,11 @@ syscall_switch_kernel:
 
     mov rax, [gs:0x20]
     mov [rax+0x00], rax ; get address of ctx and save rax
+    
+    xor eax, eax
+    mov ax, 0x10     ; kernel data segment
+    mov ds, ax
+    mov es, ax
 
     mov rax, [gs:0x20]
     mov [rax+0x08], rbx
@@ -24,12 +29,46 @@ syscall_switch_kernel:
     mov [rax+0x60], r14
     mov [rax+0x68], r15
 
+    extern paging_sync_cr3
+    call paging_sync_cr3
+
     pop rbp
     ret
 
 syscall_switch_user:
     push rbp
     mov rbp, rsp
+
+    push rax    ; save rax (return register)
+    push rdx    ; save rdx too (other return register)
+
+    mov rax, [gs:0x20]
+    mov rax, [rax+0x88] ; get cr3
+    mov cr3, rax
+
+    xor eax, eax
+    mov ax, 0x1B    ; user data segment
+    mov ds, ax
+    mov es, ax
+
+    mov rax, [gs:0x20]
+    mov rbx, [rax+0x08]
+    mov rcx, [rax+0x10]
+    mov rdx, [rax+0x18]
+    mov rdi, [rax+0x20] 
+    mov rsi, [rax+0x28]
+    mov r8, [rax+0x30]
+    mov r9, [rax+0x38]
+    mov r10, [rax+0x40]
+    mov r11, [rax+0x48]
+    mov r12, [rax+0x50]
+    mov r13, [rax+0x58]
+    mov r14, [rax+0x60]
+    mov r15, [rax+0x68]
+    mov rax, [rax+0x00] ; get rax
+
+    pop rdx     ; restore rdx
+    pop rax     ; restore rax
 
     pop rbp
     ret
@@ -39,9 +78,14 @@ syscall_dispatch:
     mov [gs:0x28], rsp ; save rsp
     mov rsp, [gs:0x10] ; load rsp
     push rbp        ; save rbp
+    mov rbp, rsp
 
     cmp rax, nsyscalls  ; check if syscall number is valid
     jge $+(.generate_ud-$)    ; if not, generate #UD
+
+    push rax
+    call syscall_switch_kernel
+    pop rax
 
     lea r10, [rel syscall_table]; relative address of syscall table
     lea r10, [r10 + (rax * 8)]  ; relative address of syscall
@@ -53,6 +97,7 @@ syscall_dispatch:
     call rax        ; call the syscall
 
     .sysret:
+    call syscall_switch_user
     pop rbp         ; restore rbp
     mov rsp, [gs:0x28]  ; restore rsp
     swapgs
@@ -68,9 +113,13 @@ section .data
 extern rdinfo
 extern pmap
 extern punmap
+extern fb_req
+extern fb_kill
 
 syscall_table:
     dq rdinfo   ; read system information
     dq pmap     ; map a page
     dq punmap   ; unmap a page
+    dq fb_req   ; framebuffer request
+    dq fb_kill  ; framebuffer kill
     dq 0x0000000000000000   ; null syscall

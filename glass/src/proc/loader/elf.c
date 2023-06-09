@@ -8,28 +8,51 @@
 #include "mm/paging/paging.h"
 #include "dev/uart/serial.h"
 
+bool elf_is_page_mapped(elf_load_info_t* info, uint64_t p_vaddr) {
+    for (uint64_t i = 0; i < info->segment_count; i++)
+        if ((info->segments[i].loaded_at <= p_vaddr && info->segments[i].loaded_at + info->segments[i].length > p_vaddr))
+            return true;
+
+    return false;
+}
+
 bool elf_load_segment(void* file, elf_program_header_t* header, elf_load_info_t* out_info) {
-    size_t pages = header->p_memsz / PAGING_PAGE_SIZE;
+    if (header->p_memsz == 0)
+        return true;
 
-    if (header->p_memsz % PAGING_PAGE_SIZE > 0)
-        pages++;
+    elf_program_header_t header_copy = *header;
 
-    void* segment = (void *)header->p_vaddr;
+    // copy data into already mapped pages
+    while (elf_is_page_mapped(out_info, header_copy.p_vaddr)) {
+        uint64_t page_offset = header_copy.p_vaddr % PAGING_PAGE_SIZE;
+        uint64_t next_page_offset = PAGING_PAGE_SIZE - page_offset;
+        if (next_page_offset > header_copy.p_filesz)
+            next_page_offset = header_copy.p_filesz;
 
-    void* segment_virt = pmm_alloc_pool(pages);
+        memcpy((void *)header_copy.p_vaddr, (void *)((uint64_t)file + header_copy.p_offset), next_page_offset);
+        header_copy.p_vaddr += next_page_offset;
+        header_copy.p_offset += next_page_offset;
+        header_copy.p_filesz -= next_page_offset;
+        header_copy.p_memsz -= next_page_offset;
 
-    for (size_t page = 0; page < pages; page++)
-        paging_map_page(segment + (page * PAGING_PAGE_SIZE), (segment_virt + (page * PAGING_PAGE_SIZE)), PAGING_FLAGS_USER_PAGE);
+        if (header_copy.p_memsz == 0)
+            return true;
+    }
+    // now all data in mapped pages is handled, p_vaddr IS in an unmapped page
+    uint64_t required_pages = (header_copy.p_memsz / PAGING_PAGE_SIZE) + (header_copy.p_memsz % PAGING_PAGE_SIZE == 0 ? 0 : 1);
+    if (header_copy.p_vaddr % PAGING_PAGE_SIZE != 0) required_pages++;
+    void* real_location = pmm_alloc_pool(required_pages);
 
-    memset(segment, 0x00, header->p_memsz);
+    uint64_t page_offset = header_copy.p_vaddr & 0xfff;
 
-    memcpy(segment, file + header->p_offset, header->p_filesz);
-
-    out_info->segments[out_info->segment_count].loaded_at = header->p_vaddr;
-    out_info->segments[out_info->segment_count].located_at = ((uint64_t)segment_virt);
-    out_info->segments[out_info->segment_count].length = pages * PAGING_PAGE_SIZE;
-
+    out_info->segments[out_info->segment_count].loaded_at = header_copy.p_vaddr;
+    out_info->segments[out_info->segment_count].located_at = (uint64_t)real_location;
+    out_info->segments[out_info->segment_count].length = required_pages * PAGING_PAGE_SIZE;
     out_info->segment_count++;
+
+    // do the actual data copy
+    memset((void *)((uint64_t)real_location + page_offset), 0, header_copy.p_memsz);
+    memcpy((void *)((uint64_t)real_location + page_offset), (void *)((uint64_t)file + header_copy.p_offset), header_copy.p_filesz);
 
     return true;
 }
@@ -64,7 +87,7 @@ elf_load_info_t* elf_load_program(void* file) {
     elf_load_info_t* load_info = (elf_load_info_t *)malloc(sizeof(elf_load_info_t));
     load_info->entry = header->program_entry;
     load_info->segment_count = 0;
-    load_info->segments = (elf_load_segment_t *)pmm_alloc_page();
+    load_info->segments = (elf_loaded_page_t *)pmm_alloc_page();
 
     for (elf_program_header_t* pheader = (elf_program_header_t *)(file + header->header_table);;) {
         if (((uint64_t)pheader - ((uint64_t)file + header->header_table)) >= header_table_size)
