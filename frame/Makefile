@@ -14,6 +14,7 @@ AS 	= nasm
 
 CCFLAGS = \
 -ffreestanding \
+-fno-stack-protector \
 -I$(SOURCE) \
 -mno-red-zone \
 -fpic \

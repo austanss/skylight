@@ -20,6 +20,8 @@ static uint64_t tty_width, tty_height;
 static uint64_t tty_x, tty_y;
 static uint64_t buffer_pages;
 
+static uint8_t tty_selected_color;
+
 typedef uint64_t tty_glyph_t;
 extern tty_glyph_t __kernel_font[];
 
@@ -65,6 +67,15 @@ void tty_clear() {
     for (uint64_t i = 0; i < fb_width * fb_height; i++) {
         fb_data[i] = TTY_BACKGROUND_COLOR;
     }
+	for (uint64_t i = 0; i < tty_width * tty_height; i++) {
+		tty_data[i].character = 0x00;
+		tty_data[i].color_code = 0x00;
+	}
+	tty_set_cursor(0, 0);
+}
+
+void tty_set_color(uint8_t color_code) {
+	tty_selected_color = color_code;
 }
 
 void tty_start() {
@@ -78,6 +89,7 @@ void tty_start() {
     fb_height = rdinfo(FIELD_DISPLAY_HEIGHT);
     tty_calculate_dimensions();
     tty_data = (tty_text_entry_t *)tty_create_buffer();
+	tty_set_color(TTY_COLOR_WHITE);
     tty_clear();
 }
 
@@ -92,6 +104,121 @@ void tty_kill() {
     tty_destroy_buffer(tty_data);
     tty_data = NULL;
     fb_data = NULL;
+}
+
+void tty_place_character(uint64_t x, uint64_t y, uint8_t character, uint8_t color_code) {
+	if (x >= tty_width || y >= tty_height)
+		return;
+	tty_data[(y * tty_width) + x].character = character;
+	tty_data[(y * tty_width) + x].color_code = color_code;
+}
+
+uint32_t tty_translate_color_code(uint8_t color_code) {
+	switch (color_code) 
+	{
+		case TTY_COLOR_BLACK:
+			return TTY_BACKGROUND_COLOR;
+		case TTY_COLOR_WHITE:
+			return 0xFFFFFF;
+		case TTY_COLOR_RED:
+			return 0xFF0000;
+		case TTY_COLOR_BLUE:
+			return 0x2222FF;
+		case TTY_COLOR_GREEN:
+			return 0x22FF22;
+		case TTY_COLOR_CYAN:
+			return 0x11FFFF;
+		case TTY_COLOR_MAGENTA:
+			return 0xFF01AA;
+		case TTY_COLOR_BROWN:
+			return 0xFFEBCD;
+		case TTY_COLOR_LIGHT_GREY:
+			return 0xDDDDDD;
+		case TTY_COLOR_DARK_GREY:
+			return 0x555555;
+		case TTY_COLOR_LIGHT_BLUE:
+			return 0x01AAFF;
+		case TTY_COLOR_LIGHT_GREEN:
+			return 0x01FF01;
+		case TTY_COLOR_LIGHT_CYAN:
+			return 0x01DDFF;
+		case TTY_COLOR_LIGHT_RED:
+			return 0xFF2222;
+		case TTY_COLOR_LIGHT_MAGENTA:
+			return 0xFF0077;
+		case TTY_COLOR_LIGHT_BROWN:
+			return 0x8B4513;
+	}
+
+	return TTY_BACKGROUND_COLOR;
+}
+
+void tty_render_character(uint64_t x, uint64_t y) {
+	tty_text_entry_t entry = tty_data[(y * tty_width) + x];
+	uint64_t fb_x = x * TTY_GLYPH_WIDTH;
+	uint64_t fb_y = y * TTY_GLYPH_HEIGHT;
+	uint64_t glyph = __kernel_font[entry.character];
+	uint32_t color = tty_translate_color_code(entry.color_code);
+	for (uint64_t i = 0; i < TTY_GLYPH_HEIGHT; i++) {
+		for (uint64_t j = 0; j < TTY_GLYPH_WIDTH; j++) {
+			uint64_t fb_index = ((fb_y + i) * fb_width) + (fb_x + j);
+			uint64_t glyph_index = (i * TTY_GLYPH_WIDTH) + j;
+			if ((glyph >> glyph_index) & 0x01) {
+				fb_data[fb_index] = color;
+			}
+		}
+	}
+}
+
+void tty_scroll(uint64_t lines) {
+	for (uint64_t i = 0; i < tty_width * (tty_height - lines); i++) {
+		tty_data[i].character = tty_data[i + (tty_width * lines)].character;
+		tty_data[i].color_code = tty_data[i + (tty_width * lines)].color_code;
+	}
+	for (uint64_t i = tty_width * (tty_height - lines); i < tty_width * tty_height; i++) {
+		tty_data[i].character = 0x00;
+		tty_data[i].color_code = 0x00;
+	}
+}
+
+void tty_putc(char c, uint8_t color_code) {
+	if (!fb_data || !tty_data)
+		return;
+	if (c == '\n') {
+		tty_y++;
+		tty_x = 0;
+		if (tty_y >= tty_height) {
+			tty_scroll(1);
+			tty_y = tty_height - 1;
+		}
+		return;
+	}
+	if (c == '\r') {
+		tty_x = 0;
+		return;
+	}
+	if (c == '\t') {
+		tty_x += 4 - (tty_x % 4);
+		return;
+	}
+	tty_place_character(tty_x, tty_y, c, color_code);
+	tty_render_character(tty_x, tty_y);
+	if (++tty_x >= tty_width) {
+		tty_x = 0;
+		tty_y++;
+		if (tty_y >= tty_height) {
+			tty_scroll(1);
+			tty_y = tty_height - 1;
+		}
+	}
+}
+
+void tty_write(const char* s) {
+	if (!fb_data || !tty_data)
+		return;
+	while (*s) {
+		tty_putc(*s++, tty_selected_color);
+	}
 }
 
 
