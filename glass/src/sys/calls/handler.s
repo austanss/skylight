@@ -2,21 +2,45 @@ global syscall_dispatch
 
 %define nsyscalls 3
 
-syscall_dispatch:
-    push rcx        ; save rcx
-    mov rcx, 0xC0000102 ; identifier of MSR
-    mov r15, rax
-    rdmsr           ; read the IA32_KERNEL_GS_BASE MSR
-    pop rcx         ; restore rcx
-    shr rdx, 0x20   ; read msr values
-    or rax, rdx     ; combine the two registers
-    mov r10, rsp    ; save rsp
-    mov rsp, rax    ; set rsp to the kernel stack
-    mov rbp, rsp    ; create stack frame
-    push rbp        ; create stack frame
-    push r10        ; save rsp
+syscall_switch_kernel:
+    push rbp
+    mov rbp, rsp
 
-    cmp r15, nsyscalls  ; check if syscall number is valid
+    mov rax, [gs:0x20]
+    mov [rax+0x00], rax ; get address of ctx and save rax
+
+    mov rax, [gs:0x20]
+    mov [rax+0x08], rbx
+    mov [rax+0x10], rcx
+    mov [rax+0x18], rdx
+    mov [rax+0x20], rdi 
+    mov [rax+0x28], rsi
+    mov [rax+0x30], r8
+    mov [rax+0x38], r9
+    mov [rax+0x40], r10
+    mov [rax+0x48], r11
+    mov [rax+0x50], r12
+    mov [rax+0x58], r13
+    mov [rax+0x60], r14
+    mov [rax+0x68], r15
+
+    pop rbp
+    ret
+
+syscall_switch_user:
+    push rbp
+    mov rbp, rsp
+
+    pop rbp
+    ret
+
+syscall_dispatch:
+    swapgs          ; always coming from user always swapgs
+    mov [gs:0x28], rsp ; save rsp
+    mov rsp, [gs:0x10] ; load rsp
+    push rbp        ; save rbp
+
+    cmp rax, nsyscalls  ; check if syscall number is valid
     jge $+(.generate_ud-$)    ; if not, generate #UD
 
     lea r10, [rel syscall_table]; relative address of syscall table
@@ -29,8 +53,9 @@ syscall_dispatch:
     call rax        ; call the syscall
 
     .sysret:
-    pop rsp         ; restore rsp
     pop rbp         ; restore rbp
+    mov rsp, [gs:0x28]  ; restore rsp
+    swapgs
     o64 sysret      ; return to user mode
 
     .generate_ud:
