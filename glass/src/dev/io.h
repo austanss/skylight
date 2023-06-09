@@ -79,7 +79,7 @@ __attribute__((always_inline))
 uint64_t rdmsr(uint64_t msr) {
     uint32_t eax, edx;
 
-    __asm__ volatile ("wrmsr" : "=a"(eax), "=d"(edx) : "c"(msr));
+    __asm__ volatile ("rdmsr" : "=a"(eax), "=d"(edx) : "c"(msr));
 
     uint64_t value = (uint64_t)eax;
     value |= ((uint64_t)edx << 0x20);

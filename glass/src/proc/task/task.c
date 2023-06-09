@@ -219,16 +219,16 @@ uint64_t task_select_next() {
         return -1;
     }
 
+    uint64_t gs_base = rdmsr(IA32_GS_BASE);
+    uint64_t kgs_base = rdmsr(IA32_KERNEL_GS_BASE);
     thread->task->state = TASK_STATE_WAITING;
+    thread->task->gs_base = (gs_kernel_base_t *)gs_base;
 
     if (thread->next == NULL)
         thread = tasks;    
 
     thread->task->state = TASK_STATE_EXECUTION;
     current_task_id = thread->task->id;
-
-    uint64_t gs_base = rdmsr(IA32_GS_BASE);
-    uint64_t kgs_base = rdmsr(IA32_KERNEL_GS_BASE);
     gs_base = (uint64_t)thread->task->gs_base;
     kgs_base = 0;
     wrmsr(IA32_GS_BASE, gs_base);
