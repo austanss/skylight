@@ -65,6 +65,12 @@ _start_limine64:
     mov rdi, rax                ; create the new task with the entry point
     call $+(task_create_new-$)      ; this function returns the task id
 
+    push rax
+    extern hid_enable_keyboard_interrupts
+    lea rax, [rel hid_enable_keyboard_interrupts]
+    call rax
+    pop rax
+
     extern task_select          ; select the task to run
     mov rdi, rax
 
