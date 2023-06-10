@@ -1,7 +1,6 @@
 #include <string.h>
 #include "paging.h"
 #include "../pmm/pmm.h"
-#include "dev/uart/serial.h"
 
 extern paging_table_t* pml4;
 paging_table_t* pml4;
@@ -155,9 +154,6 @@ void* paging_edit_page(void* virt, uint16_t flags) {
     paging_desc_set_flags(&pt->entries[indexer.pml1], flags);
 
     paging_invlpg(virt);
-
-    serial_terminal()->puts("editing page @ ")->putul((uint64_t)virt)->puts(" with new flags ")->putul(flags)->putc('\n');
-
     return virt;
 }
 

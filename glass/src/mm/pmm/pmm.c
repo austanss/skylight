@@ -1,6 +1,5 @@
 #include "pmm.h"
 #include "../paging/paging.h"
-#include "dev/uart/serial.h"
 #include <stdbool.h>
 #include "boot/protocol.h"
 #include <string.h>
@@ -37,7 +36,6 @@ void pmm_section_manager_reindex() {
 
 pmm_section_t* pmm_new_section() {
     if (_pmm_section_head * sizeof(pmm_section_t) >= pmm_data_size) {
-        serial_terminal()->puts("PMM section manager failed to find a free section\n");
         return NULL;
     }
 
@@ -46,7 +44,6 @@ pmm_section_t* pmm_new_section() {
         pmm_section_manager_reindex();
         new_section = &pmm_sections[_pmm_section_head];
         if (new_section->prev != NULL || new_section->next != NULL) {
-            serial_terminal()->puts("PMM section manager failed to find a free section\n");
             return NULL;
         }
     }
@@ -125,19 +122,6 @@ static uint64_t estimated_total_memory;
 #define MEGABYTE (1024*1024)
 #define ROUND_OFF 64
 
-static uint64_t __section_report_no = 0;
-void __print_pmm_section_headers() {
-    serial_terminal()->puts("\nPMM section headers:\n");
-    for (pmm_section_t* current = pmm_sections; current != NULL; current = current->next) {
-        serial_terminal()->puts("\tsection: ")->putul((uint64_t)current)->puts(", state ")->puts(current->free == 0 ? "used" : (current->free == 1 ? "free" : (current->free == 2 ? "bad" : "ERROR")));
-        serial_terminal()->puts("\n\t\tstart: ")->putul(current->start);
-        serial_terminal()->puts("\n\t\tpages: ")->putul(current->pages);
-        serial_terminal()->puts("\n\t\tprev: ")->putul((uint64_t)current->prev);
-        serial_terminal()->puts("\n\t\tnext: ")->putul((uint64_t)current->next)->putc('\n');
-    }
-    serial_terminal()->puts("-end of report ")->putd(__section_report_no++)->putc('\n');
-}
-
 extern memory_map_t* memory_map;
 void pmm_start();
 void pmm_start() {
@@ -149,9 +133,7 @@ void pmm_start() {
     free_memory = 0;
 
     // First document the size of memory and required pmm memory, "explore" memory map
-    serial_terminal()->puts("Translated memory map:\n");
     for (uint64_t i = 0; i < memory_map->entry_count; i++) {
-        serial_terminal()->puts("\tMemory from ")->putul(memory_map->entries[i].base)->puts(" for ")->putd(memory_map->entries[i].length / PAGING_PAGE_SIZE)->puts(" pages is ")->puts(memtype_string(memory_map->entries[i].signal))->puts("\n");
         if (memory_map->entries[i].signal == MEMORY_MAP_FREE) {
             free_memory += memory_map->entries[i].length;
         }
@@ -216,10 +198,7 @@ void pmm_start() {
     pmm_recalculate_free_memory();
 
     pfa_allowing_allocations = true;
-
-    __print_pmm_section_headers();
+    
     // Lock the pmm data pages
     pmm_lock_pages(pmm_sections, (pmm_data_size / PAGING_PAGE_SIZE) + ((pmm_data_size % PAGING_PAGE_SIZE != 0) ? 1 : 0));
-
-    __print_pmm_section_headers();
 }

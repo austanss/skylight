@@ -7,26 +7,17 @@
 #include "dev/apic/lapic.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
-#include "sys/events/echoes.h"
 #include "proc/task/task.h"
 
 static uint64_t tpms;
 static bool calibrated = false;
 static uint8_t vector;
 
-uint8_t _packet[sizeof(echoes_packet_t)];
-
-uint64_t iii = 0;
-
 void __local_timer_builtin_handler(void* frame) {
     apic_local_send_eoi();
-    echoes_packet_t* packet = (echoes_packet_t *)_packet;
     if (rdmsr(IA32_GS_BASE) != 0x00 && rdmsr(IA32_KERNEL_GS_BASE) == 0x00) {
-        serial_terminal()->putd(task_select_next());
+        task_select_next();
     }
-    packet->id = SCHEDULER_TICK_EVENT_ID;
-    packet->data_length = 0;
-    echoes_broadcast_event(packet);
     return;
 }
 

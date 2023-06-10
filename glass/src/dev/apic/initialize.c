@@ -1,6 +1,5 @@
 #include "../acpi/tables/madt.h"
 #include "../8259/pic.h"
-#include "../uart/serial.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
 #include "debug.h"
@@ -16,7 +15,6 @@ static void detect_apic() {
     bool apic = (erdx >> 9) & 1;
 
     if (!apic) {
-        serial_terminal()->puts("ERROR: Hardware unsupported (cpuid.01h.edx.9): APIC missing; get a new computer");
         __asm__ volatile ("cli; hlt");
     }
 }
@@ -29,15 +27,11 @@ uint8_t apic_io_get_gsi(uint8_t irq) {
 }
 
 static void configure_local_apic(acpi_madt_header_t* madt) {
-    serial_terminal()->puts("\n\nlocal apic configuration:\n\n");
     apic_local_set_base((void *)(uintptr_t)madt->lapic_address);
-    serial_terminal()->puts("base: ")->putul(madt->lapic_address)->putc('\n');
 
     apic_local_write(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR, 0x100 | apic_local_read(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR));
-    serial_terminal()->puts("spiv: ")->putul(apic_local_read(APIC_LOCAL_REGISTER_SPURIOUS_INT_VECTOR))->putc('\n');
 
     uint32_t lapic_id = apic_local_read(APIC_LOCAL_REGISTER_ID);
-    serial_terminal()->puts("id: ")->putul(lapic_id)->putc('\n');
 
     const uint8_t nmi = 0x04 & 0x07;
 
@@ -66,8 +60,6 @@ static void configure_local_apic(acpi_madt_header_t* madt) {
             apic_local_write(lvt, entry);
         }
     }
-    serial_terminal()->puts("lint0: ")->putul(apic_local_read(APIC_LOCAL_REGISTER_LVT_LINT0))->putc('\n');
-    serial_terminal()->puts("lint1: ")->putul(apic_local_read(APIC_LOCAL_REGISTER_LVT_LINT1))->putc('\n');
 }
 
 static void initialize_gsi_map() {
@@ -90,8 +82,6 @@ static void configure_io_apic(acpi_madt_header_t* madt) {
 
     initialize_gsi_map();
 
-    serial_terminal()->puts("\n\nioapic overrides:\n\n");
-
     for (acpi_madt_record_t* madt_record = (acpi_madt_record_t *)((uintptr_t)madt + sizeof(acpi_madt_header_t));;) {
         if (((uintptr_t)madt_record - (uintptr_t)madt) >= madt->common.length)
             break;
@@ -106,8 +96,6 @@ static void configure_io_apic(acpi_madt_header_t* madt) {
                                 !!(override->flags & ACPI_MADT_RECORD_ISO_NMI_FLAG_LEVEL_TRIGGERED));
 
             gsi_map[override->irq_source] = override->gsi;
-
-            serial_terminal()->puts("irq: ")->putul(override->irq_source)->puts(", gsi: ")->putul(override->gsi)->putc('\n');
         }
     }
 }

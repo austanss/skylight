@@ -5,7 +5,6 @@
 #include "cpu/tss/tss.h"
 #include "mm/pmm/pmm.h"
 #include "dev/io.h"
-#include "dev/uart/serial.h"
 
 typedef struct _linked_task {
     task_t* task;
@@ -81,14 +80,10 @@ gs_kernel_base_t* task_new_gs_base() {
 uint64_t task_create_new(elf_load_info_t* load_info) {
     task_t* new_task = (task_t *)malloc(sizeof(task_t));
 
-    serial_terminal()->puts("\n\nCreating new task from ")->putul((uint64_t)load_info->entry)->puts("...\n");
-    
-    serial_terminal()->puts("\tSetting metadata...\n");
     new_task->id = task_count;
     new_task->priority = 0;
     new_task->state = TASK_STATE_SLEEPING;  // create it sleeping, start it later
 
-    serial_terminal()->puts("\tCreating new task context...\n");
     new_task->ctx = (task_context_t *)malloc(sizeof(task_context_t));
     new_task->ctx->registers.rdi = 0;
     new_task->ctx->registers.rsi = 0;
@@ -105,7 +100,6 @@ uint64_t task_create_new(elf_load_info_t* load_info) {
     new_task->ctx->registers.r14 = 0;
     new_task->ctx->registers.r15 = 0;
 
-    serial_terminal()->puts("\tCreating GS base structure...\n");
     new_task->gs_base = task_new_gs_base();
     new_task->gs_base->tss = 0;
     new_task->gs_base->pid = new_task->id;
@@ -113,17 +107,14 @@ uint64_t task_create_new(elf_load_info_t* load_info) {
     new_task->gs_base->pc = (uint64_t)load_info->entry;
     new_task->gs_base->ctx = (void*)new_task->ctx;
 
-    serial_terminal()->puts("\tAllocating new stack...\n");
     new_task->ctx->stack.rsp = task_new_stack();
     new_task->ctx->stack.rbp = new_task->ctx->stack.rsp;
     
-    serial_terminal()->puts("\tCreating page tables...\n");
     new_task->ctx->rip = (uint64_t)load_info->entry;
     new_task->ctx->cr3 = (uint64_t)task_new_page_table(load_info, new_task);
     
     // add task to linked list
 
-    serial_terminal()->puts("Registering task... ");
     linked_task_t* new_link = (linked_task_t *)tasks;
 
     if (tasks == NULL) {
@@ -140,8 +131,6 @@ uint64_t task_create_new(elf_load_info_t* load_info) {
     }
     
     task_count++;
-
-    serial_terminal()->puts("done.\n");
 
     return new_task->id;
 }
@@ -187,8 +176,6 @@ extern void _finalize_task_switch(task_context_t* ctx);
 void task_select(uint64_t task_id) {
     current_task_id = task_id;
 
-    serial_terminal()->puts("Selecting task ")->putd(task_id)->puts("...\n");
-
     linked_task_t* thread = tasks;
 
     while (thread != NULL) {
@@ -215,7 +202,7 @@ uint64_t task_select_next() {
     }
 
     if (thread == NULL || tasks == NULL) {
-        serial_terminal()->puts("Serious scheduler error: broken scenario!\n");
+        // panic
         return -1;
     }
 

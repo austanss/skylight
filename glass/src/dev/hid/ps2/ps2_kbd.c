@@ -6,7 +6,6 @@
 #include "cpu/interrupts/idt.h"
 #include "dev/apic/ioapic.h"
 #include "dev/apic/lapic.h"
-#include "dev/uart/serial.h"
 
 #define SCANCODE_SET_1 0x01 // old and compatible scan code set
 #define SCANCODE_SET_2 0x02 // default and universal scan code set
@@ -130,7 +129,6 @@ void ps2_kbd_handle_scancode(uint8_t* scancode, size_t bytes) {
         scancode_rendered <<= 8;
         scancode_rendered |= scancode[i];
     }
-    serial_terminal()->puts("scancode: ")->putul(scancode_rendered)->putc('\n');
 }
 
 void __kbd_ps2_irq_handler() {

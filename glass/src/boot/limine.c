@@ -1,6 +1,5 @@
 #include <string.h>
 #include "protocol.h"
-#include "dev/uart/serial.h"
 #include "dev/acpi/tables/tables.h"
 #include "mm/paging/paging.h"
 #include "mm/pmm/pmm.h"
@@ -561,20 +560,13 @@ uint64_t get_kernel_virtual_offset() {
 // End Limine requests
 
 boot_module_t* get_boot_module(char* name) {
-    serial_terminal()->puts("Loading module \"")->puts(name)->puts("\"...\n");
-
-    serial_terminal()->puts("Boot modules at ")->putul((uint64_t)boot_modules)->putc('\n');
-
     if (strlen(name) > 128)
         return NULL;
 
     for (uint64_t i = 0; i < boot_module_count; i++) {
         if (!strcmp(name, boot_modules[i].name))
             return &boot_modules[i];
-        serial_terminal()->puts("Detected boot module: \"")->puts(boot_modules[i].name)->puts("\"\n");
     }
-
-    serial_terminal()->puts("Could not locate requested module.\n");
 
     return NULL;
 }
@@ -620,7 +612,6 @@ void limine_reinterpret() {
 
     _kernel_physical_load = l_address_req.response->physical_base;
     _kernel_virtual_load = l_address_req.response->virtual_base;
-    serial_terminal()->puts("Kernel physical load: ")->putul(_kernel_physical_load)->puts("\n");
 
     uint64_t map_pages = (limine_map_entries * sizeof(struct limine_memmap_entry)) / PAGING_PAGE_SIZE;  
     if (((limine_map_entries * sizeof(struct limine_memmap_entry)) % PAGING_PAGE_SIZE) != 0)
@@ -631,17 +622,15 @@ void limine_reinterpret() {
     struct limine_memmap_entry* used_entry = NULL;
     struct limine_memmap_entry* free_entry = NULL;
 
-    // pre-parse, check for the massive iommu entry
-    serial_terminal()->puts("limine memory map:\n");
-    for (uint64_t i = 0; i < limine_map_entries; i++) {
-        serial_terminal()->puts("\tMemory from ")->putul(limine_map[i]->base)->puts(" for ")->putd(limine_map[i]->length / PAGING_PAGE_SIZE)->puts(" pages is ")->putd(limine_map[i]->type)->puts("\n");
+    
     #ifdef IOMMU_IGNORED
+    // pre-parse, check for the massive iommu entry
+    for (uint64_t i = 0; i < limine_map_entries; i++) {
         if (limine_map[i]->base >= MEMORY_AMD_IOMMU_BLOCK_START && limine_map[i]->base <= MEMORY_AMD_IOMMU_BLOCK_END) {
-            serial_terminal()->puts("\t\tIgnoring IOMMU block...\n");
             limine_map[i]->type = LIMINE_MEMMAP_BAD_MEMORY;
         }
-    #endif
     }
+    #endif
 
     for (uint64_t i = 0; i < limine_map_entries; i++) {
         if (limine_map[i+1]->type == LIMINE_MEMMAP_USABLE 
@@ -655,7 +644,6 @@ void limine_reinterpret() {
     }
 
     if (!used_entry || !free_entry) {
-        serial_terminal()->puts("\nThe worst memory map edge case has came true. System failing.\n");
         __asm__ volatile ("cli");
         __asm__ volatile ("hlt");
     }
@@ -701,9 +689,7 @@ void limine_reinterpret() {
     framebuffer.frame_width = l_framebuffer_req.response->framebuffers[0]->width;
     framebuffer.frame_pitch = l_framebuffer_req.response->framebuffers[0]->pitch;
     framebuffer.frame_bpp = l_framebuffer_req.response->framebuffers[0]->bpp;
-
-    serial_terminal()->puts("\nhhdm offset: ")->putul(l_hhdm_req.response->offset)->puts("\n");
-
+    
     // Hope modules aren't tooo many (although I ultimately have control over this)
     boot_modules = (boot_module_t *)((uint64_t)candidate + ((map_pages - 2) * PAGING_PAGE_SIZE));
     boot_module_count = l_module_req.response->module_count;
