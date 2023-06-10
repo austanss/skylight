@@ -51,10 +51,6 @@ void* tty_create_buffer() {
     for (uint64_t i = 1; i < buffer_pages; i++) {
         pmap((void *)(buffer_start + (i * 0x1000)));
     }
-    for (uint64_t i = 0; i < tty_width * tty_height; i++) {
-        tty_data[i].character = 0x00;
-        tty_data[i].color_code = 0x00;
-    }
     return (void *)buffer_start;
 };
 
@@ -76,7 +72,7 @@ void tty_clear() {
 
 void tty_set_color(uint8_t color_code) {
 	tty_selected_color = color_code;
-}
+} 
 
 void tty_start() {
     fb_data = NULL;
@@ -166,6 +162,18 @@ void tty_render_character(uint64_t x, uint64_t y) {
 			if ((glyph >> glyph_index) & 0x01) {
 				fb_data[fb_index] = color;
 			}
+			else {
+				fb_data[fb_index] = TTY_BACKGROUND_COLOR;
+			}
+		}
+	}
+}
+
+void tty_rerender() {
+	tty_clear();
+	for (uint64_t i = 0; i < tty_width; i++) {
+		for (uint64_t j = 0; j < tty_height; j++) {
+			tty_render_character(i, j);
 		}
 	}
 }
@@ -179,6 +187,7 @@ void tty_scroll(uint64_t lines) {
 		tty_data[i].character = 0x00;
 		tty_data[i].color_code = 0x00;
 	}
+	tty_rerender();
 }
 
 void tty_putc(char c, uint8_t color_code) {

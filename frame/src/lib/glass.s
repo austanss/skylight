@@ -27,3 +27,8 @@ fb_kill:
     mov eax, 0x0004
     syscall
     ret
+
+global pid:
+    mov eax, 0x0005
+    syscall
+    ret

@@ -10,5 +10,6 @@ _start:
     xor edi, edi
     mov bx, 0x0101
     call $+(main-$)
+    pop rbp
     ret
     

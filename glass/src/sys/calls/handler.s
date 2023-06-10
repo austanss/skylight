@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 5
+%define nsyscalls 6
 
 syscall_switch_kernel:
     push rbp
@@ -115,6 +115,7 @@ extern pmap
 extern punmap
 extern fb_req
 extern fb_kill
+extern pid
 
 syscall_table:
     dq rdinfo   ; read system information
@@ -122,4 +123,5 @@ syscall_table:
     dq punmap   ; unmap a page
     dq fb_req   ; framebuffer request
     dq fb_kill  ; framebuffer kill
+    dq pid      ; get pid
     dq 0x0000000000000000   ; null syscall

@@ -14,3 +14,4 @@ void* pmap(void* virt);
 void punmap(void* virt);
 void* fb_req();
 void fb_kill();
+uint64_t pid();
