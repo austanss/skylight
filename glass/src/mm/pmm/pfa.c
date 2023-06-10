@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "dev/uart/serial.h"
 
 extern bool     pfa_allowing_allocations;
 

@@ -20,6 +20,10 @@ _start_limine64:
 
     extern configure_math_extensions
     call $+(configure_math_extensions-$)  ; floating points, sse, all those goodies
+    
+    extern serial_console_enable
+    lea rax, [rel serial_console_enable]
+    call rax
 
     xor eax, eax                    
     mov fs, ax                  ; zeroing (currently irrelevant) segment registers

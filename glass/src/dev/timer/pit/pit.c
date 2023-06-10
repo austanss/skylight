@@ -7,7 +7,6 @@
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
 #include "dev/io.h"
-#include "dev/uart/serial.h"
 
 uint8_t pit_vector = 0;
 uint16_t pit_divisor = 0;

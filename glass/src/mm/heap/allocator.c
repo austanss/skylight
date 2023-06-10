@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include "mm/paging/paging.h"
 #include "mm/pmm/pmm.h"
-#include "dev/uart/serial.h"
 
 typedef struct _heap_seg_hdr heap_seg_header_t;
 

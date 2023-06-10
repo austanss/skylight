@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "dev/timer/pit/pit.h"
 #include "dev/timer/local/local_timer.h"
-#include "dev/uart/serial.h"
+#include "dev/uart/uartsh.h"
 #include "dev/apic/lapic.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"

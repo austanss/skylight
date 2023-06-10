@@ -1,5 +1,4 @@
 #include "tables.h"
-#include "dev/uart/serial.h"
 #include "mm/paging/paging.h"
 #include <stdint.h>
 #include <stddef.h>

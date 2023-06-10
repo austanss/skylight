@@ -2,7 +2,6 @@
 #include "../8259/pic.h"
 #include "cpu/interrupts/idt.h"
 #include "cpu/tss/tss.h"
-#include "debug.h"
 #include "lapic.h"
 #include "ioapic.h"
 #include <cpuid.h>
