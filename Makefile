@@ -44,14 +44,13 @@ clean:
 	@ make -C glass clean
 	@ make -C frame clean
 
-QEMU_MEM	= 512M
+QEMU_MEM	= 1G
 SERIAL_OUT	= stdio
 
 QEMU_ARGS = -bios /usr/share/ovmf/x64/OVMF.fd \
 -drive file=$(IMAGE),format=raw \
 -net none \
 -m $(QEMU_MEM) \
--serial $(SERIAL_OUT) \
 -machine q35
 
 run:
