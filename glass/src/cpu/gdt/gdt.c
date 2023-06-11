@@ -17,10 +17,10 @@ void gdt_assemble() {
     gdtr.base = (uintptr_t)&__gdt[0];
 
     gdt_add_descriptor(0, 0, 0, 0); // null descriptor for segment registers to have offsets
-    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY); // kernel code
-    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR, GDT_BASIC_GRANULARITY); // kernel data
-    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL, GDT_BASIC_GRANULARITY); // user data
-    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY); // user code
+    gdt_add_descriptor(0, 0xFFFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY); // kernel code
+    gdt_add_descriptor(0, 0xFFFF, GDT_BASIC_DESCRIPTOR, GDT_BASIC_GRANULARITY); // kernel data
+    gdt_add_descriptor(0, 0xFFFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL, GDT_BASIC_GRANULARITY); // user data
+    gdt_add_descriptor(0, 0xFFFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY); // user code
     gdt_add_descriptor(0, 0, 0, 0); // null descriptor delimiting the TSS
 
     gdt_reload(&gdtr, GDT_OFFSET_KERNEL_CODE, GDT_OFFSET_KERNEL_DATA);

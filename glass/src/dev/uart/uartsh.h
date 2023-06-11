@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include "misc/conv.h"
 
 #define SERIAL_COM1_PORT 0x3F8
 #define SERIAL_COM2_PORT 0x2F8

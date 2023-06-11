@@ -64,8 +64,11 @@ static void __shell_command_dump_idt();
 static void __shell_command_dump_gdt();
 static void __shell_command_dump_tss();
 static void __shell_command_dump_proc();
+static void __shell_command_mem_map();
+static void __shell_command_uart_info();
+static void __shell_command_pci_info();
 
-#define NUMBER_OF_COMMANDS 6
+#define NUMBER_OF_COMMANDS 9
 
 void(*__shell_command_handlers[NUMBER_OF_COMMANDS])() = {
     __shell_command_help,
@@ -73,7 +76,10 @@ void(*__shell_command_handlers[NUMBER_OF_COMMANDS])() = {
     __shell_command_dump_idt,
     __shell_command_dump_gdt,
     __shell_command_dump_tss,
-    __shell_command_dump_proc
+    __shell_command_dump_proc,
+    __shell_command_mem_map,
+    __shell_command_uart_info,
+    __shell_command_pci_info
 };
 
 const char* __uart_shell_commands[NUMBER_OF_COMMANDS] = {
@@ -82,7 +88,9 @@ const char* __uart_shell_commands[NUMBER_OF_COMMANDS] = {
     "idt",
     "gdt",
     "tss",
-    "lsp"
+    "lsp",
+    "mem",
+    "uart"
 };
 
 static void uart_shell_command_execute(uint16_t command_no) {
@@ -157,6 +165,9 @@ static void __shell_command_help() {
     __uart_internal_write("gdt: print dump of gdt structure\n", output_port);
     __uart_internal_write("tss: print dump of tss structure\n", output_port);
     __uart_internal_write("lsp: print dump of current processes\n", output_port);
+    __uart_internal_write("mem: print info on memory state\n", output_port);
+    __uart_internal_write("uart: print info on uart (serial) state\n", output_port);
+    __uart_internal_write("pci: print list of pci functions\n", output_port);
 }
 
 static void __shell_command_ping() {
@@ -181,4 +192,19 @@ static void __shell_command_dump_tss() {
 extern void __proc_dump();
 static void __shell_command_dump_proc() {
     __proc_dump();
+}
+
+extern void __pmm_dump();
+static void __shell_command_mem_map() {
+    __pmm_dump();
+}
+
+extern void __uart_dump();
+static void __shell_command_uart_info() {
+    __uart_dump();
+}
+
+extern void __pci_dump();
+static void __shell_command_pci_info() {
+    __pci_dump();
 }

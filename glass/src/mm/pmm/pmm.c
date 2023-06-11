@@ -1,6 +1,7 @@
 #include "pmm.h"
 #include "../paging/paging.h"
 #include <stdbool.h>
+#include "dev/uart/uartsh.h"
 #include "boot/protocol.h"
 #include <string.h>
 #include <stdlib.h>
@@ -201,4 +202,40 @@ void pmm_start() {
     
     // Lock the pmm data pages
     pmm_lock_pages(pmm_sections, (pmm_data_size / PAGING_PAGE_SIZE) + ((pmm_data_size % PAGING_PAGE_SIZE != 0) ? 1 : 0));
+}
+
+static char* __memstate_string(uint64_t state) {
+    switch (state) {
+        case PMM_SECTION_FREE:
+            return "FREE";
+        case PMM_SECTION_USED:
+            return "USED";
+        case PMM_SECTION_BAD:
+            return "BAD.";
+        default:
+            return "ERR!";
+    }
+}
+
+void __pmm_dump() {
+    pmm_recalculate_free_memory();
+    serial_print_quiet("\nmemory state:\n\n");
+    char itoa_buffer[67];
+    memset(itoa_buffer, 0, 67);
+    serial_print_quiet("free memory: ");
+    serial_print_quiet(utoa(free_memory / MEGABYTE, itoa_buffer, 10));
+    serial_print_quiet(" megabytes\ntotal memory: ");
+    serial_print_quiet(utoa(estimated_total_memory / MEGABYTE, itoa_buffer, 10));
+    serial_print_quiet(" megabytes\nallocations:\n");
+    for (pmm_section_t* current = pmm_sections; current != NULL; current = current->next) {
+        serial_print_quiet("\t");
+        serial_print_quiet(utoa(current->start, itoa_buffer, 16));
+        serial_print_quiet("h => ");
+        serial_print_quiet(utoa((current->pages * PAGING_PAGE_SIZE) / 1024, itoa_buffer, 10));
+        serial_print_quiet("kB/");
+        serial_print_quiet(utoa((current->pages * PAGING_PAGE_SIZE) / MEGABYTE, itoa_buffer, 10));
+        serial_print_quiet("mB ");
+        serial_print_quiet(__memstate_string(current->free));
+        serial_print_quiet("\n");
+    }
 }
