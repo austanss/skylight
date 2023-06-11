@@ -12,6 +12,9 @@ CC 	= clang
 LD 	= clang
 AS 	= nasm
 
+SYMGEN	= ./symbol_gen.sh
+SYMS	= __symbols.c
+
 CCFLAGS = \
 -ffreestanding \
 -fno-stack-protector \
@@ -43,8 +46,15 @@ $(OUTPUT)/%.s.o: $(SOURCE)/%.s
 	@ $(AS) $(ASFLAGS) $^ -o $@
 
 $(FRAME): $(OBJECTS)
-	@ echo "	link $@"
+	@ echo "	link $@ (1/2)"
 	@ $(LD) $(LDFLAGS) $(OBJECTS) -o $(FRAME)
+	@ echo "	generate symbols..."
+	@ $(SYMGEN) $(FRAME)
+	@ echo "	compile symbols..."
+	@ $(CC) $(CCFLAGS) -c $(SYMS) -o $(OUTPUT)/$(SYMS:.c=.o)
+	@ echo "	link $@ (2/2)"
+	@ $(LD) $(LDFLAGS) $(OBJECTS) $(OUTPUT)/$(SYMS:.c=.o) -o $(FRAME)
+	@ rm $(SYMS)
 
 clean:
 	@ rm -rf build

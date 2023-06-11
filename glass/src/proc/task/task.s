@@ -1,4 +1,6 @@
 _load_task_general_registers:
+    push rbp
+    mov rbp, rsp
     mov rax, [rdi + 0x00]
     mov rbx, [rdi + 0x08]
     mov rcx, [rdi + 0x10]
@@ -12,6 +14,7 @@ _load_task_general_registers:
     mov r13, [rdi + 0x58]
     mov r14, [rdi + 0x60]
     mov rdi, [rdi + 0x20]
+    pop rbp
     ret
 
 global _load_task_page_tables
@@ -28,9 +31,14 @@ global _finalize_task_switch
 _finalize_task_switch:
     cli
     mov rbp, rsp
+    push rbp
     mov r15, rdi
     mov rdi, [r15 + 0x88] ; task->ctx->cr3
+    pop rbp
     mov rsp, [r15 + 0x70]
+    xor ebp, ebp
+    push rbp
+    mov rbp, rsp
     mov rbp, [r15 + 0x78]
     mov r14, [r15 + 0x80]
     call $+(_load_task_page_tables-$)
@@ -38,6 +46,7 @@ _finalize_task_switch:
     mov ax, 0x1B        ; user data segment
     mov ds, ax
     mov es, ax
+    pop rbp
     push rax            ; push user data segment
     push rsp            ; push user stack
     sti

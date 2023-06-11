@@ -14,6 +14,9 @@ CC 	= clang
 LD 	= clang
 AS 	= nasm
 
+SYMGEN	= ./symbol_gen.sh
+SYMS	= __symbols.c
+
 CCFLAGS = \
 -ffreestanding \
 -I$(SOURCE) \
@@ -51,8 +54,15 @@ $(OUTPUT)/%.s.o: $(SOURCE)/%.s
 	@ $(AS) $(ASFLAGS) $^ -o $@
 
 $(GLASS): $(OBJECTS)
-	@ echo "	link $@"
+	@ echo "	link $@ (1/2)"
 	@ $(LD) $(LDFLAGS) $(OBJECTS) -o $(GLASS)
+	@ echo "	generate symbols..."
+	@ $(SYMGEN) $(GLASS)
+	@ echo "	compile symbols..."
+	@ $(CC) $(CCFLAGS) -c $(SYMS) -o $(OUTPUT)/$(SYMS:.c=.o)
+	@ echo "	link $@ (2/2)"
+	@ $(LD) $(LDFLAGS) $(OBJECTS) $(OUTPUT)/$(SYMS:.c=.o) -o $(GLASS)
+	@ rm $(SYMS)
 
 clean:
 	@ rm -rf build

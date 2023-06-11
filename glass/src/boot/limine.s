@@ -7,7 +7,7 @@ _start_limine64:
     cli                 ; avoid exceptions or interruptions because idt is undefined
     cld                 ; standard c calling convention requirements
     
-    xor ebp, ebp        ; shitty (needs fixing) attempt at a stack frame
+    xor ebp, ebp        
     push rbp
     mov rbp, rsp
 
@@ -78,17 +78,21 @@ _start_limine64:
     extern task_select          ; select the task to run
     mov rdi, rax
 
-    pop rbp
-    pop rbp
-
     mov rdi, 0x0000             ; num of cpu
     mov rsi, 0x0000            ; num of ist0/rsp0
     extern tss_get_stack
     call tss_get_stack          ; load the rsp0/ist0 stack and swap away the limine stack
+    
+    pop rbp
+    pop rbp
     mov rsp, rax
-    mov rbp, rax
+    xor ebp, ebp            ; swap stacks
+    push rbp
+    mov rbp, rsp
 
     call $+(task_select-$)            ; select the task to run
+
+    pop rbp
 
     extern reboot
     jmp $+(reboot-$)                      ; reboot the system if the task_select function returns (which it shouldn't)
