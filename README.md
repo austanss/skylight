@@ -42,4 +42,7 @@ To test on real hardware, meet the requirements above, and write the image to a 
 Boot into it through your UEFI boot menu.
 
 ### Development Cycle
-I am currently a high school student and I have many a matter to pertain to, so whilst I do love this project and intend to work on it in the future, I am currently unable to do so consistently given the lack of time and appropriate means required for working on this project.
+OS development is... time consuming. I have other things to dedicate my time to, so I can't always work on Skylight. I will try to push at least one commit every week, but I can't guarantee that I will be able to do so. In summer months you can expect a high volume of commits and enhanced productivity. December is also a rather popular month for me. I have been working on this operating system project since mid-2021, and I don't intend on abandoning it. Just some times, it's a literal pain to work on. Other times, it's not the time to do it.
+
+### Contributing
+I largely do not take contributions. I do take suggestions and feedback, but most of the source code should be written by me. If the project plateaus and the work is no longer worth my dedication I may open it up to contributions to keep it alive, but for now, it's my brainchild.
