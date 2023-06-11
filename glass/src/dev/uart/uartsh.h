@@ -28,4 +28,5 @@
 
 void serial_console_enable();
 void serial_print_error(const char* error);
+void serial_print_quiet(const char* s);
 void serial_set_input_masked(bool masked);
