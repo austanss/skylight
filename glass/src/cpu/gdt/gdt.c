@@ -1,6 +1,9 @@
 #include "gdt.h"
 #include "mm/paging/paging.h"
+#include "dev/uart/uartsh.h"
+#include "misc/conv.h"
 #include <stddef.h>
+#include <string.h>
 
 PAGING_PAGE_ALIGNED
 gdt_desc_t __gdt[GDT_MAX_DESCRIPTORS];
@@ -13,12 +16,12 @@ void gdt_assemble() {
     gdtr.limit = (sizeof(gdt_desc_t) * GDT_MAX_DESCRIPTORS) - 1;
     gdtr.base = (uintptr_t)&__gdt[0];
 
-    gdt_add_descriptor(0, 0, 0, 0);
-    gdt_add_descriptor(0, 0, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY);
-    gdt_add_descriptor(0, 0, GDT_BASIC_DESCRIPTOR, GDT_BASIC_GRANULARITY);
-    gdt_add_descriptor(0, 0, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL, GDT_BASIC_GRANULARITY);
-    gdt_add_descriptor(0, 0, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY);
-    gdt_add_descriptor(0, 0, 0, 0);
+    gdt_add_descriptor(0, 0, 0, 0); // null descriptor for segment registers to have offsets
+    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY); // kernel code
+    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR, GDT_BASIC_GRANULARITY); // kernel data
+    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL, GDT_BASIC_GRANULARITY); // user data
+    gdt_add_descriptor(0, 0xFF, GDT_BASIC_DESCRIPTOR | GDT_DESCRIPTOR_DPL | GDT_DESCRIPTOR_EXECUTABLE, GDT_BASIC_GRANULARITY); // user code
+    gdt_add_descriptor(0, 0, 0, 0); // null descriptor delimiting the TSS
 
     gdt_reload(&gdtr, GDT_OFFSET_KERNEL_CODE, GDT_OFFSET_KERNEL_DATA);
 }
@@ -60,4 +63,25 @@ uint16_t gdt_install_tss(uint64_t tss) {
 
     gindex += 2;
     return (gindex - 2) * GDT_DESCRIPTOR_SIZE;
+}
+
+void __gdt_dump() {
+    serial_print_quiet("\nGDT dump:\n");
+    for (uint16_t i = 0; i < gindex; i++) {
+        gdt_desc_t* descriptor = &__gdt[i];
+        uint64_t base = (uint64_t)descriptor->base_low | ((uint64_t)descriptor->base_mid << 16) | ((uint64_t)descriptor->base_high << 32);
+        char itoa_buffer[67];
+        memset(itoa_buffer, '\0', 67);
+        serial_print_quiet((i<2)?"\t0":"\t");
+        serial_print_quiet(utoa(i * GDT_DESCRIPTOR_SIZE, itoa_buffer, 16));
+        serial_print_quiet(" => lo: ");
+        serial_print_quiet(utoa(base, itoa_buffer, 16));
+        serial_print_quiet(", hi: ");
+        serial_print_quiet(utoa(descriptor->limit, itoa_buffer, 16));
+        serial_print_quiet(", access: ");
+        serial_print_quiet(utoa(descriptor->flags, itoa_buffer, 16));
+        serial_print_quiet(", gran: ");
+        serial_print_quiet(utoa(descriptor->granularity, itoa_buffer, 16));
+        serial_print_quiet("\n");
+    }
 }

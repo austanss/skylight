@@ -2,6 +2,8 @@
 #include "../gdt/gdt.h"
 #include "mm/paging/paging.h"
 #include "mm/pmm/pmm.h"
+#include "misc/conv.h"
+#include "dev/uart/uartsh.h"
 #include <string.h>
 
 extern tss_t tss_descriptors[];
@@ -47,3 +49,47 @@ void* tss_get_stack(int num_cpu, uint8_t stack) {
     return (void*)tss_descriptors[num_cpu].ist[stack];
 }
 
+void __tss_dump() {
+    serial_print_quiet("\nTSS dump:\n");
+    for (int cpu = 0; cpu < TSS_MAX_CPUS; ++cpu) {
+        tss_t* tss = tss_get(cpu);
+        char itoa_buffer[67];
+        memset(itoa_buffer, 0, 67);
+        serial_print_quiet("\tTSS for CPU ");
+        serial_print_quiet(utoa(cpu, itoa_buffer, 10));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tRSP0: ");
+        serial_print_quiet(utoa(tss->rsp[0], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tRSP1: ");
+        serial_print_quiet(utoa(tss->rsp[1], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tRSP2: ");
+        serial_print_quiet(utoa(tss->rsp[2], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST1: ");
+        serial_print_quiet(utoa(tss->ist[0], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST2: ");
+        serial_print_quiet(utoa(tss->ist[1], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST3: ");
+        serial_print_quiet(utoa(tss->ist[2], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST4: ");
+        serial_print_quiet(utoa(tss->ist[3], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST5: ");
+        serial_print_quiet(utoa(tss->ist[4], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST6: ");
+        serial_print_quiet(utoa(tss->ist[5], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIST7: ");
+        serial_print_quiet(utoa(tss->ist[6], itoa_buffer, 16));
+        serial_print_quiet("\n");
+        serial_print_quiet("\t\tIO Map: ");
+        serial_print_quiet(utoa(tss->io_map, itoa_buffer, 16));
+        serial_print_quiet("\n");
+    }
+}

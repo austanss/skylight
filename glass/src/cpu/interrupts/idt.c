@@ -75,6 +75,7 @@ void __idt_dump() {
             uint16_t cs = descriptor->cs;
             char itoa_buffer[67];
             memset(itoa_buffer, '\0', 67);
+            serial_print_quiet("\t(");
             serial_print_quiet(utoa(vector, itoa_buffer, 10));
             serial_print_quiet(") isr:");
             if (vector < 32)

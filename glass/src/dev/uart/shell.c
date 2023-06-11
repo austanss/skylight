@@ -61,23 +61,34 @@ static void uart_shell_write(const char* s) {
 static void __shell_command_help();
 static void __shell_command_ping();
 static void __shell_command_dump_idt();
+static void __shell_command_dump_gdt();
+static void __shell_command_dump_tss();
+static void __shell_command_dump_proc();
 
-void(*__shell_command_handlers[3])() = {
+#define NUMBER_OF_COMMANDS 6
+
+void(*__shell_command_handlers[NUMBER_OF_COMMANDS])() = {
     __shell_command_help,
     __shell_command_ping,
-    __shell_command_dump_idt
+    __shell_command_dump_idt,
+    __shell_command_dump_gdt,
+    __shell_command_dump_tss,
+    __shell_command_dump_proc
 };
 
-static void uart_shell_command_execute(uint16_t command_no) {
-    __shell_command_handlers[command_no]();
-}
-
-#define NUMBER_OF_COMMANDS 3
 const char* __uart_shell_commands[NUMBER_OF_COMMANDS] = {
     "help",
     "ping",
-    "idt"
+    "idt",
+    "gdt",
+    "tss",
+    "lsp"
 };
+
+static void uart_shell_command_execute(uint16_t command_no) {
+    if (command_no >= NUMBER_OF_COMMANDS) return;
+    __shell_command_handlers[command_no]();
+}
 
 static void uart_shell_clear_buffer() {
     memset((void *)command_buffer, 0, PAGING_PAGE_SIZE);
@@ -132,9 +143,13 @@ void serial_print_quiet(const char* s) {
 }
 
 static void __shell_command_help() {
-    __uart_internal_write("help: receive this message\n", output_port);
-    __uart_internal_write("ping: receive \"pong\"\n", output_port);
-    __uart_internal_write("idt: receive idt dump\n", output_port);
+    __uart_internal_write("You are using the \"glass\" kernel debug shell through the serial port. Available commands:\n\n", output_port);
+    __uart_internal_write("help: print this message\n", output_port);
+    __uart_internal_write("ping: print \"pong\"\n", output_port);
+    __uart_internal_write("idt: print dump of idt structure\n", output_port);
+    __uart_internal_write("gdt: print dump of gdt structure\n", output_port);
+    __uart_internal_write("tss: print dump of tss structure\n", output_port);
+    __uart_internal_write("lsp: print dump of current processes\n", output_port);
 }
 
 static void __shell_command_ping() {
@@ -144,4 +159,19 @@ static void __shell_command_ping() {
 extern void __idt_dump();
 static void __shell_command_dump_idt() {
     __idt_dump();
+}
+
+extern void __gdt_dump();
+static void __shell_command_dump_gdt() {
+    __gdt_dump();
+}
+
+extern void __tss_dump();
+static void __shell_command_dump_tss() {
+    __tss_dump();
+}
+
+extern void __proc_dump();
+static void __shell_command_dump_proc() {
+    __proc_dump();
 }

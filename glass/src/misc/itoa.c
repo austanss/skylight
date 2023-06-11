@@ -33,7 +33,11 @@ char* itoa(int64_t value, char* str, uint8_t base) {
     }
     uint8_t base_max_digits = BASE_MAX_DIGIT_MAP[base];
     memset(str, 0, base_max_digits+1);
-    memset(str, '0', base_max_digits);
+
+    if (value == 0) {
+        str[0] = '0';
+        return str;
+    }
 
     uint8_t i = base_max_digits;
 
@@ -86,6 +90,11 @@ char* utoa(uint64_t value, char* str, uint8_t base) {
     }
     uint8_t base_max_digits = BASE_MAX_DIGIT_MAP[base];
     memset(str, 0, base_max_digits+1);
+
+    if (value == 0) {
+        str[0] = '0';
+        return str;
+    }
 
     uint8_t i = base_max_digits;
 
