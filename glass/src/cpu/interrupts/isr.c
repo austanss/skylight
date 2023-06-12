@@ -26,7 +26,9 @@ void __print_interrupt_stacktrace(isr_xframe_t* ctx) {
             }
         }
         if (symbol == NULL) {
-            serial_print_quiet("\t<unknown>\n");
+            serial_print_quiet("\t");
+            serial_print_quiet(utoa((uint64_t)rip, itoa_buffer, 16));
+            serial_print_quiet(" <unknown>\n");
         }
         if ((uint64_t)rip != ctx->base_frame.rip)
             rbp = *(uint64_t*)rbp;
