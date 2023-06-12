@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "cpu/interrupts/idt.h"
 #include "cpu/gdt/gdt.h"
@@ -65,7 +66,7 @@ void idt_free_vector(uint8_t vector) {
 }
 
 void __idt_dump() {
-    serial_print_quiet("\nIDT dump:\n");
+    printf("\nIDT dump:\n");
     for (uint16_t vector = 0; vector < IDT_MAX_DESCRIPTORS; vector++) {
         if (vectors[vector]) {
             idt_desc_t* descriptor = &__idt[vector];
@@ -73,20 +74,7 @@ void __idt_dump() {
             uint8_t flags = descriptor->attributes;
             uint8_t ist = descriptor->ist;
             uint16_t cs = descriptor->cs;
-            char itoa_buffer[67];
-            memset(itoa_buffer, '\0', 67);
-            serial_print_quiet("\t(");
-            serial_print_quiet(utoa(vector, itoa_buffer, 10));
-            serial_print_quiet(") isr:");
-            if (vector < 32)
-                serial_print_quiet(utoa(isr, itoa_buffer, 16));
-            else if (vector >= 32)
-                serial_print_quiet(utoa(__routine_handlers[vector], itoa_buffer, 16));
-            serial_print_quiet(", flags: ");
-            serial_print_quiet(utoa(flags, itoa_buffer, 16));
-            serial_print_quiet(", cs: ");
-            serial_print_quiet(utoa(cs, itoa_buffer, 16));
-            serial_print_quiet(" ... \n");
+            printf("\t (%d) isr: %x, flags: %x, ist: %d, cs: %x\n", vector, vector < 32 ? isr : __routine_handlers[vector], flags, ist, cs);
         }
     }
 }

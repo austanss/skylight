@@ -90,7 +90,8 @@ const char* __uart_shell_commands[NUMBER_OF_COMMANDS] = {
     "tss",
     "lsp",
     "mem",
-    "uart"
+    "uart",
+    "pci"
 };
 
 static void uart_shell_command_execute(uint16_t command_no) {

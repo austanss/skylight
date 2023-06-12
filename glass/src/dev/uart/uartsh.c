@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include "dev/uart/uartsh.h"
@@ -162,23 +163,14 @@ void serial_print_error(const char* error) {
 }
 
 void __uart_dump() {
-    serial_write("\nUART info:\n\nCOM port statuses:");
+    printf("\nUART info:\n\nCOM port statuses:");
     for (uint8_t i = 0; i < 8; i++) {
         if (available_com_ports[i])
-            serial_write(" y");
+            printf(" y");
         else
-            serial_write(" n");
+            printf(" n");
     }
-    char itoa_buffer[67];
-    memset(itoa_buffer, 0, 67);
-    serial_write("\nInput port: ");
-    serial_write(utoa(input_port, itoa_buffer, 10));
-    serial_write("\nOutput port: ");
-    serial_write(utoa(output_port, itoa_buffer, 10));
-    serial_write("\nInput GSI/vector: ");
-    serial_write(utoa(input_com_gsi, itoa_buffer, 10));
-    serial_write("/");
-    serial_write(utoa(input_idt_vector, itoa_buffer, 10));
-    serial_write(_input_masked ? " (masked)" : " (unmasked)");
-    serial_write("\n\n");
+    printf("\nInput port: %d\n", input_port);
+    printf("Output port: %d\n", output_port);
+    printf("Input GSI/vector: %d/%d %s\n\n", input_com_gsi, input_idt_vector, (_input_masked ? " (masked)" : " (unmasked)"));
 }

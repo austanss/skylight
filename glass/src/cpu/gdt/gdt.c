@@ -1,4 +1,5 @@
 #include "gdt.h"
+#include <stdio.h>
 #include "mm/paging/paging.h"
 #include "dev/uart/uartsh.h"
 #include "misc/conv.h"
@@ -70,18 +71,6 @@ void __gdt_dump() {
     for (uint16_t i = 0; i < gindex; i++) {
         gdt_desc_t* descriptor = &__gdt[i];
         uint64_t base = (uint64_t)descriptor->base_low | ((uint64_t)descriptor->base_mid << 16) | ((uint64_t)descriptor->base_high << 32);
-        char itoa_buffer[67];
-        memset(itoa_buffer, '\0', 67);
-        serial_print_quiet((i<2)?"\t0":"\t");
-        serial_print_quiet(utoa(i * GDT_DESCRIPTOR_SIZE, itoa_buffer, 16));
-        serial_print_quiet(" => lo: ");
-        serial_print_quiet(utoa(base, itoa_buffer, 16));
-        serial_print_quiet(", hi: ");
-        serial_print_quiet(utoa(descriptor->limit, itoa_buffer, 16));
-        serial_print_quiet(", access: ");
-        serial_print_quiet(utoa(descriptor->flags, itoa_buffer, 16));
-        serial_print_quiet(", gran: ");
-        serial_print_quiet(utoa(descriptor->granularity, itoa_buffer, 16));
-        serial_print_quiet("\n");
+        printf("\t%s => lo: %x, hi: %x, access: %x, gran: %x\n", (i<2)?"0":"", i*GDT_DESCRIPTOR_SIZE, base, descriptor->limit, descriptor->flags, descriptor->granularity);
     }
 }

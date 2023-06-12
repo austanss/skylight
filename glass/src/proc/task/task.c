@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "proc/task/task.h"
 #include "mm/paging/paging.h"
 #include "cpu/tss/tss.h"
@@ -249,21 +250,9 @@ static char* __task_state_string(uint64_t state) {
 }
 
 void __proc_dump() {
-    serial_print_quiet("\nProcess dump:\n");
+    printf("\nProcess dump:\n");
     for (linked_task_t* task = tasks; task != NULL; task = task->next) {
-        char itoa_buffer[67];
-        memset(itoa_buffer, 0, 67);
-        serial_print_quiet("\tpid ");
-        serial_print_quiet(itoa(task->task->id, itoa_buffer, 10));
-        serial_print_quiet(", cr3=");
-        serial_print_quiet(itoa(task->task->ctx->cr3, itoa_buffer, 16));
-        serial_print_quiet(", rip=");
-        serial_print_quiet(itoa(task->task->ctx->rip, itoa_buffer, 16));
-        serial_print_quiet(", ctx@");
-        serial_print_quiet(itoa((uint64_t)task->task->ctx, itoa_buffer, 16));
-        serial_print_quiet(" ... ");
-        serial_print_quiet(__task_state_string(task->task->state));
-        serial_print_quiet("\n");
+        printf("\tpid %d, cr3=%x, rip=%x, ctx@%x ... %s\n", task->task->id, task->task->ctx->cr3, task->task->ctx->rip, task->task->ctx, __task_state_string(task->task->state));
     }
-    serial_print_quiet("\n");
+    printf("\n");
 }

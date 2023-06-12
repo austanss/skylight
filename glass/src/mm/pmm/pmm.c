@@ -5,6 +5,7 @@
 #include "boot/protocol.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern bool pfa_allowing_allocations;
 bool pfa_allowing_allocations = false;
@@ -219,23 +220,10 @@ static char* __memstate_string(uint64_t state) {
 
 void __pmm_dump() {
     pmm_recalculate_free_memory();
-    serial_print_quiet("\nmemory state:\n\n");
-    char itoa_buffer[67];
-    memset(itoa_buffer, 0, 67);
-    serial_print_quiet("free memory: ");
-    serial_print_quiet(utoa(free_memory / MEGABYTE, itoa_buffer, 10));
-    serial_print_quiet(" megabytes\ntotal memory: ");
-    serial_print_quiet(utoa(estimated_total_memory / MEGABYTE, itoa_buffer, 10));
-    serial_print_quiet(" megabytes\nallocations:\n");
-    for (pmm_section_t* current = pmm_sections; current != NULL; current = current->next) {
-        serial_print_quiet("\t");
-        serial_print_quiet(utoa(current->start, itoa_buffer, 16));
-        serial_print_quiet("h => ");
-        serial_print_quiet(utoa((current->pages * PAGING_PAGE_SIZE) / 1024, itoa_buffer, 10));
-        serial_print_quiet("kB/");
-        serial_print_quiet(utoa((current->pages * PAGING_PAGE_SIZE) / MEGABYTE, itoa_buffer, 10));
-        serial_print_quiet("mB ");
-        serial_print_quiet(__memstate_string(current->free));
-        serial_print_quiet("\n");
-    }
+    printf("\nmemory state:\n\n");
+    printf("free memory: %d megabytes\n", free_memory / MEGABYTE);
+    printf("total memory: %d megabytes\n", estimated_total_memory / MEGABYTE);
+    printf("regions:\n");
+    for (pmm_section_t* current = pmm_sections; current != NULL; current = current->next)
+        printf("\t%xh => %dkB/%dmB %s\n", current->start, (current->pages * PAGING_PAGE_SIZE) / 1024, (current->pages * PAGING_PAGE_SIZE) / MEGABYTE, __memstate_string(current->free));
 }
