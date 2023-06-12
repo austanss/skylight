@@ -6,4 +6,6 @@ typedef struct {
     char* name;
 } symbol_t;
 
-extern const symbol_t __symbol_tab[];
+extern const 
+__attribute__((weak)) 
+symbol_t __symbol_tab[];

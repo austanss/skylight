@@ -104,6 +104,11 @@ static void uart_shell_clear_buffer() {
 }
 
 static void uart_shell_command_finalize() {
+    if (command_buffer_index == 0) {
+        prompt_placed = false;
+        uart_shell_replace_prompt();
+        return;
+    }
     command_buffer[command_buffer_index] = '\0';
     char* command = (char*)command_buffer;
     for (uint16_t i = 0; i < NUMBER_OF_COMMANDS; i++) {
