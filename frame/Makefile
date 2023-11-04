@@ -49,6 +49,7 @@ $(FRAME): $(OBJECTS)
 	@ echo "	link $@ (1/2)"
 	@ $(LD) $(LDFLAGS) $(OBJECTS) -o $(FRAME)
 	@ echo "	generate symbols..."
+	@ chmod 777 $(SYMGEN)
 	@ $(SYMGEN) $(FRAME)
 	@ echo "	compile symbols..."
 	@ $(CC) $(CCFLAGS) -c $(SYMS) -o $(OUTPUT)/$(SYMS:.c=.o)

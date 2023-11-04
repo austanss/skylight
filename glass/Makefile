@@ -57,6 +57,7 @@ $(GLASS): $(OBJECTS)
 	@ echo "	link $@ (1/2)"
 	@ $(LD) $(LDFLAGS) $(OBJECTS) -o $(GLASS)
 	@ echo "	generate symbols..."
+	@ chmod 777 $(SYMGEN)
 	@ $(SYMGEN) $(GLASS)
 	@ echo "	compile symbols..."
 	@ $(CC) $(CCFLAGS) -c $(SYMS) -o $(OUTPUT)/$(SYMS:.c=.o)
