@@ -9,7 +9,8 @@ _start:
     mov rbp, rsp
     xor edi, edi
     mov bx, 0x0101
-    call $+(main-$)
+    lea r15, [rel main]
+    call r15
     pop rbp
     ret
     
