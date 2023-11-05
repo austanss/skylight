@@ -19,7 +19,6 @@ Skylight uses Linux software to compile, therefore any build process must take p
 Additionally, you require these packages:
 ```
 util-linux 
-dosfstools 
 mtools 
 nasm 
 clang 
