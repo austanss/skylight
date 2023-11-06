@@ -47,7 +47,7 @@ clean:
 QEMU_MEM	= 1G
 SERIAL_OUT	= stdio
 
-QEMU_ARGS = -bios /usr/share/ovmf/OVMF.fd \
+QEMU_ARGS = -bios OVMF.fd \
 -drive file=$(IMAGE),format=raw \
 -net none \
 -m $(QEMU_MEM) \

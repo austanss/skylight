@@ -45,3 +45,6 @@ OS development is... time consuming. I have other things to dedicate my time to,
 
 ### Contributing
 I largely do not take contributions. I do take suggestions and feedback, but most of the source code should be written by me. If the project plateaus and the work is no longer worth my dedication I may open it up to contributions to keep it alive, but for now, it's principally my effort.
+
+### Legal
+I must reproduce licenses of some of the external code and binaries I include in this repository. To view these licenses, see [LICENSES](docs/LICENSES.md).
