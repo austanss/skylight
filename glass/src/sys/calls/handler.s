@@ -118,7 +118,7 @@ extern fb_kill
 extern pid
 
 syscall_table:
-%rep 144
+%rep 143
     dq 0x0000000000000000   ; placeholders for future use
 %endrep
     dq rdinfo   ; read system information
