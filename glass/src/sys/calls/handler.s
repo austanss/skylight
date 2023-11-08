@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 6
+%define nsyscalls 150
 
 syscall_switch_kernel:
     push rbp
