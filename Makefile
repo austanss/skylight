@@ -3,7 +3,7 @@ GLASS	= $(OUTPUT)/glass.sys
 FRAME	= $(OUTPUT)/frame.se
 IMAGE	= $(OUTPUT)/skylight.hdd
 
-LIMINE-EFI		= https://github.com/limine-bootloader/limine/raw/v4.x-branch-binary/BOOTX64.EFI
+LIMINE-EFI		= https://github.com/limine-bootloader/limine/raw/v5.x-branch-binary/BOOTX64.EFI
 
 .DEFAULT-GOAL	= image
 .PHONY			= clean
