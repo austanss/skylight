@@ -16,6 +16,7 @@ SYMGEN	= ./symbol_gen.sh
 SYMS	= __symbols.c
 
 CCFLAGS = \
+-std=c17 \
 -ffreestanding \
 -fno-stack-protector \
 -I$(SOURCE) \

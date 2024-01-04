@@ -72,7 +72,7 @@ void pit_deadline_wait(uint64_t delay_ticks) {
     watching = true;
     
     while (ticks < delay_ticks) {
-        asm ("hlt");
+        __asm__ ("hlt");
         continue;
     }
 
