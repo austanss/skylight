@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 150
+%define nsyscalls 151
 
 syscall_switch_kernel:
     push rbp
@@ -93,6 +93,7 @@ syscall_dispatch:
 
     xor r10d, r10d  ; clear r10
 
+    .handle:
     cld             ; c calling convention cld
     call rax        ; call the syscall
 
@@ -105,7 +106,7 @@ syscall_dispatch:
 
     .generate_ud:
     xor eax, eax    ; clear rax
-    mov [rcx], rax  ; set null invalid opcode at return address to generate #UD
+    mov [rcx], rax  ; set null invalid opcode at return address to generate #UD (invalid opcode)
     jmp $+(.sysret-$)     ; like destroys the executing program, but it's fine it shouldn't have made a bad syscall
 
 section .data
@@ -118,7 +119,7 @@ extern fb_kill
 extern pid
 
 syscall_table:
-%rep 143
+%rep 144
     dq 0x0000000000000000   ; placeholders for future use
 %endrep
     dq rdinfo   ; read system information
