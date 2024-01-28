@@ -48,6 +48,7 @@ static bool uart_input_data_available(uint16_t port) {
 extern void __uart_shell_handle_character(uint8_t c);
 
 void __uart_input_irq_handler() {
+    if (_input_masked) return;
     while (uart_input_data_available(input_port)) {
         uint8_t c = inb(__com_port_addrs[input_port] + COM_REGISTER_DATA);
         __uart_shell_handle_character(c);
@@ -135,9 +136,9 @@ void serial_console_enable() {
         }
     }
     serial_set_input_masked(false);
-    serial_write("[debug] serial console enabled!\n");
+    serial_write("[debug] serial console enabled!\r\n");
     uart_shell_start(output_port);
-    serial_write("[info] no backspace support, re-enter command to resolve typos...\n");
+    serial_write("[info] no backspace support, re-enter command to resolve typos...\r\n");
 }
 
 
@@ -162,15 +163,15 @@ void serial_print_error(const char* error) {
     uart_shell_replace_prompt();
 }
 
-void __uart_dump() {
-    printf("\nUART info:\n\nCOM port statuses:");
+void __uartsh_uart_dump() {
+    printf("\r\nUART info:\r\n\r\nCOM port statuses:");
     for (uint8_t i = 0; i < 8; i++) {
         if (available_com_ports[i])
             printf(" y");
         else
             printf(" n");
     }
-    printf("\nInput port: %d\n", input_port);
-    printf("Output port: %d\n", output_port);
-    printf("Input GSI/vector: %d/%d %s\n\n", input_com_gsi, input_idt_vector, (_input_masked ? " (masked)" : " (unmasked)"));
+    printf("\r\nInput port: %d\r\n", input_port);
+    printf("Output port: %d\r\n", output_port);
+    printf("Input GSI/vector: %d/%d %s\r\n\r\n", input_com_gsi, input_idt_vector, (_input_masked ? " (masked)" : " (unmasked)"));
 }

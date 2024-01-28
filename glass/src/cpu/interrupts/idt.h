@@ -40,4 +40,4 @@ void 		idt_set_descriptor(uint8_t vector, uintptr_t isr, uint8_t flags, uint8_t 
 void		idt_install_irq_handler(uint8_t vector, void* handler);
 void 		idt_assemble(void);
 
-void		__idt_dump(void);
+void		__uartsh_idt_dump(void);

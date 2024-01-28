@@ -15,11 +15,11 @@ pci_function_t* find_device(uint8_t class, uint8_t subclass, uint8_t interface) 
     return NULL;
 }
 
-void __pci_dump() {
-    printf("\nPCI devices:\n\n");
+void __uartsh_pci_dump() {
+    printf("\r\nPCI devices:\r\n\r\n");
     for (size_t i = 0; i < pci_function_cache_entries; i++) {
         pci_function_t* function = &pci_function_cache[i];
         pci_dev_header_t* header = (pci_dev_header_t *)function->base;
-        printf("\t%x:%x:%x:%x, id: %x:%x, class: %x:%x:%x\n", function->segment, function->bus, function->device, function->function, header->vendor_id, header->device_id, header->device_class, header->device_subclass, header->program_interface);
+        printf("\t%x:%x:%x:%x, id: %x:%x, class: %x:%x:%x\r\n", function->segment, function->bus, function->device, function->function, header->vendor_id, header->device_id, header->device_class, header->device_subclass, header->program_interface);
     }
 }

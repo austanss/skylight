@@ -249,10 +249,10 @@ static char* __task_state_string(uint64_t state) {
     }
 }
 
-void __proc_dump() {
-    printf("\nProcess dump:\n");
+void __uartsh_proc_dump() {
+    printf("\r\nProcess dump:\r\n");
     for (linked_task_t* task = tasks; task != NULL; task = task->next) {
-        printf("\tpid %d, cr3=%x, rip=%x, ctx@%x ... %s\n", task->task->id, task->task->ctx->cr3, task->task->ctx->rip, task->task->ctx, __task_state_string(task->task->state));
+        printf("\tpid %d, cr3=%x, rip=%x, ctx@%x ... %s\r\n", task->task->id, task->task->ctx->cr3, task->task->ctx->rip, task->task->ctx, __task_state_string(task->task->state));
     }
-    printf("\n");
+    printf("\r\n");
 }

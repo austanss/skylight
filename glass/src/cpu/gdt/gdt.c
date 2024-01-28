@@ -66,11 +66,11 @@ uint16_t gdt_install_tss(uint64_t tss) {
     return (gindex - 2) * GDT_DESCRIPTOR_SIZE;
 }
 
-void __gdt_dump() {
-    serial_print_quiet("\nGDT dump:\n");
+void __uartsh_gdt_dump() {
+    serial_print_quiet("\r\nGDT dump:\r\n");
     for (uint16_t i = 0; i < gindex; i++) {
         gdt_desc_t* descriptor = &__gdt[i];
         uint64_t base = (uint64_t)descriptor->base_low | ((uint64_t)descriptor->base_mid << 16) | ((uint64_t)descriptor->base_high << 32);
-        printf("\t%s => lo: %x, hi: %x, access: %x, gran: %x\n", (i<2)?"0":"", i*GDT_DESCRIPTOR_SIZE, base, descriptor->limit, descriptor->flags, descriptor->granularity);
+        printf("\t%s => lo: %x, hi: %x, access: %x, gran: %x\r\n", (i<2)?"0":"", i*GDT_DESCRIPTOR_SIZE, base, descriptor->limit, descriptor->flags, descriptor->granularity);
     }
 }

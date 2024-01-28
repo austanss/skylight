@@ -50,22 +50,22 @@ void* tss_get_stack(int num_cpu, uint8_t stack) {
     return (void*)tss_descriptors[num_cpu].ist[stack];
 }
 
-void __tss_dump() {
-    printf("\nTSS dump:\n");
+void __uartsh_tss_dump() {
+    printf("\r\nTSS dump:\r\n");
     for (int cpu = 0; cpu < TSS_MAX_CPUS; ++cpu) {
         tss_t* tss = tss_get(cpu);
-        printf("\tTSS for CPU %d\n", cpu);
-        printf("\t\tRSP0: %x\n", tss->rsp[0]);
-        printf("\t\tRSP1: %x\n", tss->rsp[1]);
-        printf("\t\tRSP2: %x\n", tss->rsp[2]);
-        printf("\t\tIST1: %x\n", tss->ist[0]);
-        printf("\t\tIST2: %x\n", tss->ist[1]);
-        printf("\t\tIST3: %x\n", tss->ist[2]);
-        printf("\t\tIST4: %x\n", tss->ist[3]);
-        printf("\t\tIST5: %x\n", tss->ist[4]);
-        printf("\t\tIST6: %x\n", tss->ist[5]);
-        printf("\t\tIST7: %x\n", tss->ist[6]);
-        printf("\t\tIO Map: %x\n", tss->io_map);
-        printf("\n");
+        printf("\tTSS for CPU %d\r\n", cpu);
+        printf("\t\tRSP0: %x\r\n", tss->rsp[0]);
+        printf("\t\tRSP1: %x\r\n", tss->rsp[1]);
+        printf("\t\tRSP2: %x\r\n", tss->rsp[2]);
+        printf("\t\tIST1: %x\r\n", tss->ist[0]);
+        printf("\t\tIST2: %x\r\n", tss->ist[1]);
+        printf("\t\tIST3: %x\r\n", tss->ist[2]);
+        printf("\t\tIST4: %x\r\n", tss->ist[3]);
+        printf("\t\tIST5: %x\r\n", tss->ist[4]);
+        printf("\t\tIST6: %x\r\n", tss->ist[5]);
+        printf("\t\tIST7: %x\r\n", tss->ist[6]);
+        printf("\t\tIO Map: %x\r\n", tss->io_map);
+        printf("\r\n");
     }
 }

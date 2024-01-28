@@ -218,12 +218,12 @@ static char* __memstate_string(uint64_t state) {
     }
 }
 
-void __pmm_dump() {
+void __uartsh_pmm_dump() {
     pmm_recalculate_free_memory();
-    printf("\nmemory state:\n\n");
-    printf("free memory: %d megabytes\n", free_memory / MEGABYTE);
-    printf("total memory: %d megabytes\n", estimated_total_memory / MEGABYTE);
-    printf("regions:\n");
+    printf("\r\nmemory state:\r\n\r\n");
+    printf("free memory: %d megabytes\r\n", free_memory / MEGABYTE);
+    printf("total memory: %d megabytes\r\n", estimated_total_memory / MEGABYTE);
+    printf("regions:\r\n");
     for (pmm_section_t* current = pmm_sections; current != NULL; current = current->next)
-        printf("\t%xh => %dkB/%dmB %s\n", current->start, (current->pages * PAGING_PAGE_SIZE) / 1024, (current->pages * PAGING_PAGE_SIZE) / MEGABYTE, __memstate_string(current->free));
+        printf("\t%xh => %dkB/%dmB %s\r\n", current->start, (current->pages * PAGING_PAGE_SIZE) / 1024, (current->pages * PAGING_PAGE_SIZE) / MEGABYTE, __memstate_string(current->free));
 }

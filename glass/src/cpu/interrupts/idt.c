@@ -65,8 +65,8 @@ void idt_free_vector(uint8_t vector) {
     vectors[vector] = false;
 }
 
-void __idt_dump() {
-    printf("\nIDT dump:\n");
+void __uartsh_idt_dump() {
+    printf("\r\nIDT dump:\r\n");
     for (uint16_t vector = 0; vector < IDT_MAX_DESCRIPTORS; vector++) {
         if (vectors[vector]) {
             idt_desc_t* descriptor = &__idt[vector];
@@ -74,7 +74,7 @@ void __idt_dump() {
             uint8_t flags = descriptor->attributes;
             uint8_t ist = descriptor->ist;
             uint16_t cs = descriptor->cs;
-            printf("\t (%d) isr: %x, flags: %x, ist: %d, cs: %x\n", vector, vector < 32 ? isr : __routine_handlers[vector], flags, ist, cs);
+            printf("\t (%d) isr: %x, flags: %x, ist: %d, cs: %x\r\n", vector, vector < 32 ? isr : __routine_handlers[vector], flags, ist, cs);
         }
     }
 }
