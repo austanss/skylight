@@ -133,11 +133,8 @@ void ps2_kbd_handle_scancode(uint8_t* scancode, size_t bytes) {
 
 void __kbd_ps2_irq_handler() {
     if (!ps2_kbd_validate_state()) {
-        if (_ismasked) {
-            ps2_kbd_set_mask(PS2_KBD_MASKED);
-        }
-        else
-            return;
+        ps2_kbd_set_mask(PS2_KBD_MASKED);
+        return;
     }
     uint8_t* scancode = (uint8_t *)malloc(8);
     memset(&scancode[0], 0x00, 8);

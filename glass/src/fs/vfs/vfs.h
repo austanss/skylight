@@ -77,9 +77,12 @@ struct _vfs_handle {
     vfs_extras_t            available;
 };
 
-vfs_status_t    vopen(vfs_handle_t* out, char* path, vfs_open_flags_t flags);
-vfs_status_t    vclose(vfs_handle_t* handle);
-vfs_status_t    vread(vfs_handle_t* handle, void* buffer, size_t seek, size_t count);
-vfs_status_t    vwrite(vfs_handle_t* handle, void* data, size_t seek, size_t count);
-vfs_status_t    vcreate(vfs_handle_t* out, char* path, vfs_permission_flags_t flags);
-vfs_status_t    vdelete(char* path);
+// Path format: [Drive letter]::path/of/file.xxx
+// Example: x::sys/start/frame.se
+// Must be fully resolved file path, no .. or the like
+vfs_status_t    vfs_open(vfs_handle_t* out, char* path, vfs_open_flags_t flags);
+vfs_status_t    vfs_close(vfs_handle_t* handle);
+vfs_status_t    vfs_read(vfs_handle_t* handle, void* buffer, size_t seek, size_t count);
+vfs_status_t    vfs_write(vfs_handle_t* handle, void* data, size_t seek, size_t count);
+vfs_status_t    vfs_create(vfs_handle_t* out, char* path, vfs_permission_flags_t flags);
+vfs_status_t    vfs_delete(char* path);
