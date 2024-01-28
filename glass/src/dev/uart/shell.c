@@ -118,8 +118,10 @@ static bool __uart_command_match(const char* input, const char* command) {
 	}
 }
 
+#define UARTSH_BUFFER_MAX 4094
 static void uart_command_buffer_append(uint8_t c) {
-    command_buffer[command_buffer_index++] = c;
+    if (command_buffer_index <= UARTSH_BUFFER_MAX)
+        command_buffer[command_buffer_index++] = c;
 }
 
 static void uart_shell_command_finalize();
