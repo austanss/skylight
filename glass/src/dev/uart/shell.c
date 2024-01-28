@@ -124,18 +124,13 @@ static void uart_command_buffer_append(uint8_t c) {
 
 static void uart_shell_command_finalize();
 
-static bool previous_was_cr = false;
 void __uart_shell_handle_character(uint8_t c) {
     if (c == UNSUPPORTED_LF || c == SUPPORTED_CR) {
-        __uart_internal_write("\r\n", output_port);
         c = SUPPORTED_CR;
-    }
-    if (c == SUPPORTED_CR && !previous_was_cr) {
+        __uart_internal_write("\r\n", output_port);
         uart_shell_command_finalize();
-        previous_was_cr = true;
         return;
     }
-    previous_was_cr = false;
     if ((c < 0x20 || c > 0x7E) && c != SUPPORTED_CR) return;
     uint8_t cs[2] = {c == SUPPORTED_CR ? UNSUPPORTED_LF : c, '\0'};
     __uart_internal_write((const char *)&cs[0], output_port);
@@ -160,14 +155,11 @@ static void uart_shell_command_finalize() {
         }
     }
     uart_shell_write("Unknown command...\r\n");
-    prompt_placed = false;
-    uart_shell_replace_prompt();
     uart_shell_clear_buffer();
 }
 
 void uart_shell_start(uint16_t out_port) {
     output_port = out_port;
-    previous_was_cr = false;
     command_buffer = (uint8_t*)pmm_alloc_page();
     command_buffer_index = 0;
     memset(command_buffer, 0, PAGING_PAGE_SIZE);
