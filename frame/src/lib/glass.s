@@ -32,3 +32,9 @@ global pid:
     mov eax, 0x0095
     syscall
     ret
+
+global kb_man:
+    mov eax, 0x0096
+    syscall
+    ret
+

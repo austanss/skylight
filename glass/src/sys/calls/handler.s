@@ -1,6 +1,6 @@
 global syscall_dispatch
 
-%define nsyscalls 151
+%define nsyscalls 152
 
 syscall_switch_kernel:
     push rbp
@@ -83,9 +83,15 @@ syscall_dispatch:
     cmp rax, nsyscalls  ; check if syscall number is valid
     jge $+(.generate_ud-$)    ; if not, generate #UD
 
+    push rdi
+    push rsi
+    push rdx
     push rax
     call syscall_switch_kernel
     pop rax
+    pop rdx
+    pop rsi
+    pop rdi
 
     lea r10, [rel syscall_table]; relative address of syscall table
     lea r10, [r10 + (rax * 8)]  ; relative address of syscall
@@ -117,6 +123,7 @@ extern punmap
 extern fb_req
 extern fb_kill
 extern pid
+extern kb_man
 
 syscall_table:
 %rep 144
@@ -128,4 +135,5 @@ syscall_table:
     dq fb_req   ; framebuffer request
     dq fb_kill  ; framebuffer kill
     dq pid      ; get pid
+    dq kb_man   ; take keyboard manager
     dq 0x0000000000000000   ; null syscall

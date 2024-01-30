@@ -9,7 +9,7 @@
 void hid_enable_keyboard_interrupts();
 void hid_clear_keystroke_buffer();
 void hid_register_user_key_buffer(void* user_keystroke_buffer);
-bool hid_buffer_keystroke(uint8_t keycode);
+bool hid_register_keystroke(uint8_t keycode);
 
 typedef uint8_t hid_keycode_t;
 // highest bit is set if key is released

@@ -131,7 +131,7 @@ void ps2_kbd_handle_scancode(uint8_t* scancode, size_t bytes) {
         scancode_rendered <<= 8;
         scancode_rendered |= scancode[i];
     }
-    hid_buffer_keystroke(ps2_translate_keycode(scancode_rendered));
+    hid_register_keystroke(ps2_translate_keycode(scancode_rendered));
 }
 
 void __kbd_ps2_irq_handler() {
