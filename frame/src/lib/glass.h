@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <stdbool.h>
 
 #define FIELD_FREE_RAM          000
 #define FIELD_DISPLAY_WIDTH     001
@@ -15,3 +16,4 @@ void punmap(void* virt);
 void* fb_req();
 void fb_kill();
 uint64_t pid();
+void* kb_man(bool taking);

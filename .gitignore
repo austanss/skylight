@@ -1,6 +1,7 @@
 build/
 .vscode/
 glass/build/
+frame/build/
 compile_commands.json
 nohup.out
 logs/**

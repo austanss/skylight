@@ -6,6 +6,7 @@
 #include "cpu/interrupts/idt.h"
 #include "dev/apic/ioapic.h"
 #include "dev/apic/lapic.h"
+#include "dev/uart/uartsh.h"
 
 #define SCANCODE_SET_1 0x01 // old and compatible scan code set
 #define SCANCODE_SET_2 0x02 // default and universal scan code set
@@ -135,14 +136,19 @@ void ps2_kbd_handle_scancode(uint8_t* scancode, size_t bytes) {
 }
 
 void __kbd_ps2_irq_handler() {
+    serial_print_quiet("[kbd] IRQ received.\n");
     if (!ps2_kbd_validate_state()) {
         ps2_kbd_set_mask(PS2_KBD_MASKED);
+        apic_local_send_eoi();
         return;
     }
     uint8_t* scancode = (uint8_t *)malloc(8);
     memset(&scancode[0], 0x00, 8);
     uint64_t scancode_size = ps2_kbd_get_scancode(&scancode[0]);
-    if (scancode_size == 0) return;
+    if (scancode_size == 0) {
+        apic_local_send_eoi();
+        return;
+    }
     ps2_kbd_handle_scancode(&scancode[0], scancode_size);
     ps2_kbd_sync_leds();
     free(scancode);
@@ -201,6 +207,7 @@ void ps2_kbd_reset_state() {
 void ps2_kbd_init() {
     if (ps2_kbd_vector != 0x00) return;
     
+    ps2_kbd_send_command(PS2_FUNC_ENABLE, PS2_NO_OPERAND);
     outb(PS2_KBD_COMMAND_PORT, 0xAE);
     ps2_kbd_set_scancodes(SCANCODE_SET_2);
     ps2_kbd_reset_state();

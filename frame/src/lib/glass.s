@@ -16,24 +16,26 @@ punmap:
     syscall
     ret
 
-global fb_req:
+global fb_req
 fb_req:
     mov eax, 0x0093
     syscall
     ret
 
-global fb_kill:
+global fb_kill
 fb_kill:
     mov eax, 0x0094
     syscall
     ret
 
-global pid:
+global pid
+pid:
     mov eax, 0x0095
     syscall
     ret
 
-global kb_man:
+global kb_man
+kb_man:
     mov eax, 0x0096
     syscall
     ret

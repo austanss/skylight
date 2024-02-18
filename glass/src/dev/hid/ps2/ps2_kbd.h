@@ -18,3 +18,4 @@ void ps2_kbd_kill();
 
 #define PS2_FUNC_SET_LEDS       0xED
 #define PS2_FUNC_SCANSET        0xF0
+#define PS2_FUNC_ENABLE         0xF4

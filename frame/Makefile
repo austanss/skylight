@@ -23,7 +23,8 @@ CCFLAGS = \
 -mno-red-zone \
 -fpic \
 -gdwarf \
--Werror 
+-Werror \
+-Wno-switch-bool
 
 LDFLAGS = \
 -nostdlib
