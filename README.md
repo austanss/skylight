@@ -4,7 +4,9 @@
 As defined by [dictionary.com](https://www.dictionary.com/browse/skylight#), a "skylight" is:
 > an opening in a roof or ceiling, fitted with glass, for admitting daylight.
 
-Skylight is an operating system that is uniquely modeled, and aims to have consistent, clean, thorough, transparent, and easy-to-read code, in order to help other developers understand its operation and general principles of operating systems with a more clear-cut exposition.
+*"Skylight is an operating system that is uniquely modeled, and aims to have consistent, clean, thorough, transparent, and easy-to-read code, in order to help other developers understand its operation and general principles of operating systems with a more clear-cut exposition."*
+
+Skylight really is just a big ball of mud that has reached critical mass. Further development is unsustainable.
 
 ### Compilation
 Skylight relies on Linux software to compile, therefore any build process must take place under native Linux, emulated Linux, or the Windows Subsystem for Linux.
@@ -45,10 +47,14 @@ Licenses of certain external source files and binaries included in this reposito
 ## Acknowledgements
 
 ### Development Cycle
-OS development is... time consuming. I have other things to dedicate my time to, so I can't always work on Skylight. I will try to push at least one commit every week, but I can't guarantee that I will be able to do so. In summer months you can expect a high volume of commits. December is also a rather popular month for me. I have been working on this operating system project since mid-2021, and I don't intend on abandoning it. Just some times, it's a literal pain to work on. Other times, I don't have the time to do it.
+OS development is a waste of time.
 
 ### Contributing
-I largely do not take contributions. I do take suggestions and feedback, but most of the source code should be written by me. If the project plateaus and the work is no longer worth my dedication I may open it up to contributions to keep it alive, but for now, it's principally my effort.
+*"I largely do not take contributions. I do take suggestions and feedback, but most of the source code should be written by me. If the project plateaus and the work is no longer worth my dedication I may open it up to contributions to keep it alive, but for now, it's principally my effort."*
+
+Now it's archived, don't waste your time.
 
 ### Issues
-If an issue is opened on this repository, I cannot promise my full attention to its resolution. I probably will read it and give a response if I am able to articulate one with the given information, but unless a presented issue is well-debugged and well-articulated I cannot swear that the issue will see a proper resolution.
+*"If an issue is opened on this repository, I cannot promise my full attention to its resolution. I probably will read it and give a response if I am able to articulate one with the given information, but unless a presented issue is well-debugged and well-articulated I cannot swear that the issue will see a proper resolution."*
+
+That's good advice for any repository anywhere. Don't expect me to care about an archived repository.
